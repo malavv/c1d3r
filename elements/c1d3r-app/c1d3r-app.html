@@ -1,0 +1,103 @@
+<dom-module id="c1d3r-app">
+    <style>
+        :host {}
+
+        :host div[drawer] {
+            @apply(--layout-vertical);
+            background-color: #fafafa;
+        }
+        :host div[drawer] div {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.1em;
+            padding: 15px 0 15px 30px;
+            cursor: pointer;
+        }
+        :host div[drawer] div:hover {
+            background-color: #ebebeb;
+        }
+
+        :host paper-toolbar {
+            background-color: #3b3b3b;
+        }
+        :host .header div {
+            @apply(--layout-flex);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.1em;
+            padding-left: 30px;
+            color: #fbfbfb;
+            margin: auto;
+        }
+        :host div[drawer] iron-selector > .iron-selected {
+            background-color: #e0e0e0;
+        }
+        :host more-route-selector iron-selector > * {
+            display: none;
+        }
+        :host more-route-selector iron-selector > .iron-selected {
+            display: block;
+        }
+    </style>
+
+    <template>
+        <more-routing-config driver="hash"></more-routing-config>
+
+        <!--Routes-->
+        <more-route name="root" path="/"></more-route>
+        <more-route name="steps" path="/steps"></more-route>
+
+        <paper-drawer-panel>
+            <div drawer>
+                <paper-toolbar>
+                    <paper-icon-button on-tap="_onTapHome" icon="menu"></paper-icon-button>
+                    <div class="middle title">C1d3r</div>
+                </paper-toolbar>
+                <app-search></app-search>
+                <iron-selector attr-for-selected="route" selected="{{route}}">
+                    <div route="root">Dashboard</div>
+                    <div route="steps">Steps</div>
+                </iron-selector>
+            </div>
+
+            <more-route-selector main>
+                <iron-selector on-iron-select="routeSelect" on-iron-deselect="routeDeselect" attr-for-selected="route" selected="{{route}}">
+                    <c1d3r-overview class="fit" route="root"></c1d3r-overview>
+                    <c1d3r-steps class="fit" route="steps"></c1d3r-steps>
+                </iron-selector>
+            </more-route-selector>
+        </paper-drawer-panel>
+    </template>
+
+    <script>
+    (function() {
+        'use strict';
+
+        Polymer({
+            is: 'c1d3r-app',
+
+            properties: {
+                route: {
+                    type: String,
+                    observer: "_routeChanged"
+                }
+            },
+            ready: function() {
+            },
+            _onTapHome: function(event) {
+                // If you wish to navigate imperatively, `MoreRouting.navigateTo` is the
+                // way to go:
+                MoreRouting.navigateTo('root');
+                event.preventDefault();
+            },
+            _routeChanged: function() {
+                console.info('route ' + this.route);
+            },
+            routeSelect: function(evt, data) {
+                data.item.onEntersView();
+            },
+            routeDeselect: function(evt, data) {
+                data.item.onExitsView();
+            }
+        });
+    })()
+    </script>
+</dom-module>

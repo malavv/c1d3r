@@ -1,0 +1,28 @@
+<dom-module id="c1d3r-steps">
+    <style>
+        :host {}
+    </style>
+
+    <template>
+        <h1>C1d3r : The steps</h1>
+    </template>
+
+    <script>
+    (function() {
+        'use strict';
+
+        Polymer({
+            is: 'c1d3r-steps',
+
+            properties: {},
+
+            onEntersView: function() {
+                console.debug('c1d3r-steps', 'onEntersView');
+            },
+            onExitsView: function() {
+                console.debug('c1d3r-steps', 'onExitsView');
+            }
+        });
+    })()
+    </script>
+</dom-module>

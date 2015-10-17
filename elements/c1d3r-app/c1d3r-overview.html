@@ -1,0 +1,28 @@
+<dom-module id="c1d3r-overview">
+    <style>
+        :host {}
+    </style>
+
+    <template>
+        <h1>C1d3r : The amazing app</h1>
+    </template>
+
+    <script>
+    (function() {
+        'use strict';
+
+        Polymer({
+            is: 'c1d3r-overview',
+
+            properties: {},
+
+            onEntersView: function() {
+                console.debug('c1d3r-overview', 'onEntersView');
+            },
+            onExitsView: function() {
+                console.debug('c1d3r-overview', 'onExitsView');
+            }
+        });
+    })()
+    </script>
+</dom-module>
