@@ -12,3 +12,6 @@ bower_components/
 # All packaging and development related dependencies.
 node_modules/
 npm-debug.log
+
+# Distribution package. Should be rebuilt everytime.
+dist/
