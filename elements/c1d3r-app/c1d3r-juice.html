@@ -1,0 +1,28 @@
+<dom-module id="c1d3r-juice">
+    <style>
+        :host {}
+    </style>
+
+    <template>
+        <h1>C1d3r : The juice</h1>
+    </template>
+
+    <script>
+    (function() {
+        'use strict';
+
+        Polymer({
+            is: 'c1d3r-juice',
+
+            properties: {},
+
+            onEntersView: function() {
+                console.debug('c1d3r-juice', 'onEntersView');
+            },
+            onExitsView: function() {
+                console.debug('c1d3r-juice', 'onExitsView');
+            }
+        });
+    })()
+    </script>
+</dom-module>

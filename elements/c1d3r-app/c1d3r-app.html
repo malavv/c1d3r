@@ -44,6 +44,7 @@
         <!--Routes-->
         <more-route name="root" path="/"></more-route>
         <more-route name="steps" path="/steps"></more-route>
+        <more-route name="juice" path="/juice"></more-route>
 
         <paper-drawer-panel>
             <div drawer>
@@ -54,6 +55,7 @@
                 <app-search></app-search>
                 <iron-selector attr-for-selected="route" selected="{{route}}">
                     <div route="root">Dashboard</div>
+                    <div route="juice">Juice</div>
                     <div route="steps">Steps</div>
                 </iron-selector>
             </div>
@@ -61,6 +63,7 @@
             <more-route-selector main>
                 <iron-selector on-iron-select="routeSelect" on-iron-deselect="routeDeselect" attr-for-selected="route" selected="{{route}}">
                     <c1d3r-overview class="fit" route="root"></c1d3r-overview>
+                    <c1d3r-juice class="fit" route="juice"></c1d3r-juice>
                     <c1d3r-steps class="fit" route="steps"></c1d3r-steps>
                 </iron-selector>
             </more-route-selector>
@@ -91,12 +94,8 @@
             _routeChanged: function() {
                 console.info('route ' + this.route);
             },
-            routeSelect: function(evt, data) {
-                data.item.onEntersView();
-            },
-            routeDeselect: function(evt, data) {
-                data.item.onExitsView();
-            }
+            routeSelect: function(evt, data) { data.item.onEntersView(); },
+            routeDeselect: function(evt, data) { data.item.onExitsView(); }
         });
     })()
     </script>
