@@ -1,10 +1,48 @@
 <dom-module id="c1d3r-juice">
     <style>
         :host {}
+        :host div.questions {
+        }
+        :host span.idx {
+            padding: 0 10px;
+            color: #bbb;
+            font-weight: bold;
+        }
+        :host span.label {
+            display: inline-block;
+            @apply(--layout-flex);
+        }
+        :host .question input {
+            margin-right: 20px;
+        }
+        :host .question iron-icon {
+            margin-right: 20px;
+            fill: green;
+        }
+        :host .question {
+            border-bottom: 1px solid #cdcdcd;
+            background-color: #fafafa;
+            padding: 7px 0;
+            @apply(--layout-horizontal);
+        }
+        :host .invisible {
+            visibility: none;
+        }
+        :host paper-progress {
+            width: 100%;
+        }
     </style>
 
     <template>
-        <h1>C1d3r : The juice</h1>
+        <paper-progress max="[[recipe.questions.length]]" value="[[numAnswered]]"></paper-progress>
+        <template is="dom-repeat" items="{{recipe.questions}}">
+            <div class="question">
+                <span class="idx">[[index]]</span>
+                <span class="label">[[item.label]]</span>
+                <input type="[[item.type]]" on-change="onChanged" >
+                <iron-icon class$="{{questionClass(item.*)}}" icon="assignment-turned-in"></iron-icon>
+            </div>
+        </template>
     </template>
 
     <script>
@@ -14,13 +52,40 @@
         Polymer({
             is: 'c1d3r-juice',
 
-            properties: {},
+            properties: {
+                recipe: {
+                    type: Object,
+                    notify: true
+                },
+                numAnswered: Number
+            },
 
             onEntersView: function() {
                 console.debug('c1d3r-juice', 'onEntersView');
+                this.numAnswered = this.recipe.getNumberAnswered();
             },
             onExitsView: function() {
                 console.debug('c1d3r-juice', 'onExitsView');
+            },
+            questionClass: function(item, isAnswered) {
+                return item.base.isAnswered ? '' : 'invisible';
+            },
+            onChanged: function(evt)  {
+                var question = evt.model.__data__.item;
+                var value = evt.currentTarget.value;
+                var type = question.type;
+
+                // Sets the value
+                if (type === 'checkbox')
+                  this.recipe.juice[question.boundTo] = value === 'on';
+                if (type === 'text')
+                    this.recipe.juice[question.boundTo] = value;
+                // Shows completion
+                this.set('recipe.questions.' + evt.model.index + '.isAnswered', true);
+
+                // Fire event
+                this.recipe.onQuestionAnswered();
+                this.numAnswered = this.recipe.getNumberAnswered();
             }
         });
     })()

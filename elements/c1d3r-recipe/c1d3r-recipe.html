@@ -1,0 +1,80 @@
+<dom-module id="c1d3r-recipe">
+    <style>
+        :host {}
+    </style>
+
+    <template>
+        <h1>C1d3r : The recipe</h1>
+    </template>
+
+    <script>
+    (function() {
+        'use strict';
+        /**
+         * This is the standard recipe but there can be as much as you want.
+         */
+        Polymer({
+            is: 'c1d3r-recipe',
+
+            properties: {
+              name: {
+                type: String,
+                value: 'Hard Cider'
+              },
+              // Juice property
+              juice: {
+                type: Object,
+                value: function() {
+                  return {};
+                }
+              },
+              // Getting the info
+              questions: {
+                type: Array,
+                value: function() {
+                  return [];
+                }
+              },
+              // Steps to make the cider.
+              steps: {
+                type: Array,
+                value: function() {
+                  return [];
+                }
+              },
+              numAnswered: {
+                type: Number,
+                notify: true
+              }
+            },
+
+            ready: function() {
+              this.juice.isCloudy = false;
+              this.numAnswered = 0;
+              this.push('questions', {
+                boundTo: "isCloudy",
+                label: "Is the juice cloudy?",
+                type: "checkbox",
+                // Since checkbox default to false.
+                isAnswered: true
+              });
+
+              this.push('questions', {
+                boundTo: "producer",
+                label: "What the name of the producer?",
+                type: "text"
+              });
+            },
+            getNumberAnswered: function() {
+              // Since not ticking the checkbox is a no.
+              return this.questions.filter(function(q) {
+                return q.isAnswered || q.type == 'checkbox';
+              }).length;
+            },
+            onQuestionAnswered: function(data) {
+              console.log('onQuestionAnswered', JSON.stringify(this.juice));
+            }
+        });
+    })()
+    </script>
+</dom-module>
