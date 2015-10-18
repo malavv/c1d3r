@@ -40,7 +40,8 @@
                 type: Array,
                 value: function() {
                   return [];
-                }
+                },
+                notify: true
               },
               numAnswered: {
                 type: Number,
@@ -51,6 +52,7 @@
             ready: function() {
               this.juice.isCloudy = false;
               this.numAnswered = 0;
+
               this.push('questions', {
                 boundTo: "isCloudy",
                 label: "Is the juice cloudy?",
@@ -64,15 +66,44 @@
                 label: "What the name of the producer?",
                 type: "text"
               });
+
+              this.push('questions', {
+                boundTo: "volume",
+                label: "How much liquid?",
+                type: "text"
+              });
+
+              this.buildSteps();
             },
+
             getNumberAnswered: function() {
               // Since not ticking the checkbox is a no.
-              return this.questions.filter(function(q) {
-                return q.isAnswered || q.type == 'checkbox';
-              }).length;
+              return this.questions.filter(function(q) { return q.isAnswered; }).length;
             },
             onQuestionAnswered: function(data) {
-              console.log('onQuestionAnswered', JSON.stringify(this.juice));
+              console.info('onQuestionAnswered', JSON.stringify(this.juice));
+              this.push('steps', {
+                text: "Add {} of pectic enzyme.",
+                value: 2.5,
+                symbol: "tsp"
+              });
+            },
+            buildSteps: function() {
+              this.push('steps', {
+                text: "Add {} of pectic enzyme.",
+                value: 2.5,
+                symbol: "tsp"
+              });
+
+              if (this.juice.volume) {
+                this.push('steps', {
+                  text: "Add {} of pectic enzyme.",
+                  value: 2.5 * parseInt(this.juice.volume),
+                  symbol: "tsp"
+                });
+              }
+
+              console.log('buildSteps');
             }
         });
     })()

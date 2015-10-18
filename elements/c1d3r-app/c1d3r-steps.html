@@ -1,10 +1,37 @@
 <dom-module id="c1d3r-steps">
     <style>
         :host {}
+        :host {}
+        :host div.step {
+            background-color: #fafafa;
+            border-bottom: 1px solid #cdcdcd;
+        }
+        :host div.step span.quantity {
+            border: 1px solid purple;
+            padding: 0 5px;
+            color: purple;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        :host div.step span.idx {
+            padding: 0 5px;
+            color: #aaa;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
     </style>
 
     <template>
-        <h1>C1d3r : The steps</h1>
+        <div>
+            <template is="dom-repeat" items="[[steps]]">
+                <div class="step">
+                    <span class="idx">[[index]]</span>
+                    <span>[[beginTmpl(item.text)]]</span>
+                    <span class="quantity">[[getQty(item.value, item.symbol)]]</span>
+                    <span>[[endTmpl(item.text)]]</span>
+                </div>
+            </template>
+        </div>
     </template>
 
     <script>
@@ -14,11 +41,28 @@
         Polymer({
             is: 'c1d3r-steps',
 
-            properties: {},
+            properties: {
+                recipe: {
+                    type: Object
+                },
+                steps: {
+                    type: Array,
+                    value: function() { return []; }
+                }
+            },
 
             onEntersView: function() {
-                console.debug('c1d3r-steps', 'onEntersView');
+                this.recipe.buildSteps();
+                for(var i = 0; i < this.steps.length; i++)
+                    this.pop('steps');
+                for(var i = 0; i < this.recipe.steps.length; i++)
+                    this.push('steps', this.recipe.steps[i]);
             },
+
+            beginTmpl: function(template) { return template.split("{}")[0]; },
+            endTmpl: function(template) { return template.split("{}")[1]; },
+            getQty: function(value, unitSymbol) { return value + ' ' + unitSymbol; },
+
             onExitsView: function() {
                 console.debug('c1d3r-steps', 'onExitsView');
             }

@@ -64,7 +64,7 @@
                 <iron-selector on-iron-select="routeSelect" on-iron-deselect="routeDeselect" attr-for-selected="route" selected="{{route}}">
                     <c1d3r-overview class="fit" route="root"></c1d3r-overview>
                     <c1d3r-juice class="fit" recipe="{{recipe}}" route="juice"></c1d3r-juice>
-                    <c1d3r-steps class="fit" route="steps"></c1d3r-steps>
+                    <c1d3r-steps class="fit" recipe="{{recipe}}" route="steps"></c1d3r-steps>
                 </iron-selector>
             </more-route-selector>
         </paper-drawer-panel>
