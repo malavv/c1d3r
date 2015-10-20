@@ -22,51 +22,55 @@
     </style>
 
     <template>
-        <div>
-            <template is="dom-repeat" items="[[steps]]">
-                <div class="step">
-                    <span class="idx">[[index]]</span>
-                    <span>[[beginTmpl(item.text)]]</span>
-                    <span class="quantity">[[getQty(item.value, item.symbol)]]</span>
-                    <span>[[endTmpl(item.text)]]</span>
-                </div>
+      <div>
+        <template is="dom-repeat" items="{{steps}}" as="step">
+          <div class="step">
+            <span class="idx">[[index]]</span>
+            <template is="dom-repeat" items="[[step.cmpt]]">
+              <span class$="{{item.kind}}">[[item.content]]</span>
             </template>
-        </div>
+            <span class="idx">[[item.length]]</span>
+<!--             <span>[[beginTmpl(item.text)]]</span>
+            <span class="quantity">[[getQty(item.value, item.symbol)]]</span>
+            <span>[[endTmpl(item.text)]]</span> -->
+          </div>
+        </template>
+      </div>
     </template>
 
     <script>
     (function() {
-        'use strict';
+    'use strict';
 
-        Polymer({
-            is: 'c1d3r-steps',
+      Polymer({
+        is: 'c1d3r-steps',
 
-            properties: {
-                recipe: {
-                    type: Object
-                },
-                steps: {
-                    type: Array,
-                    value: function() { return []; }
-                }
-            },
+        properties: {
+          recipe: {
+            type: Object
+          },
+          steps: {
+            type: Array
+          }
+        },
+        test: function() {
+          console.log('test');
+        },
+        onEntersView: function() {
+          // I do not understand how to plug that directly to the recipe.
+          // I tried many things but strange behaviour was the result.
+          this.set('steps', this.recipe.steps);
+          console.log('c1d3r-steps', 'onEntersView');
+        },
 
-            onEntersView: function() {
-                this.recipe.buildSteps();
-                for(var i = 0; i < this.steps.length; i++)
-                    this.pop('steps');
-                for(var i = 0; i < this.recipe.steps.length; i++)
-                    this.push('steps', this.recipe.steps[i]);
-            },
+        beginTmpl: function(template) { return template.split("{}")[0]; },
+        endTmpl: function(template) { return template.split("{}")[1]; },
+        getQty: function(value, unitSymbol) { return value + ' ' + unitSymbol; },
 
-            beginTmpl: function(template) { return template.split("{}")[0]; },
-            endTmpl: function(template) { return template.split("{}")[1]; },
-            getQty: function(value, unitSymbol) { return value + ' ' + unitSymbol; },
-
-            onExitsView: function() {
-                console.debug('c1d3r-steps', 'onExitsView');
-            }
-        });
+        onExitsView: function() {
+          console.debug('c1d3r-steps', 'onExitsView');
+        }
+      });
     })()
     </script>
 </dom-module>

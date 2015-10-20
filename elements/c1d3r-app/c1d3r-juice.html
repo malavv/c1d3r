@@ -31,63 +31,97 @@
         :host paper-progress {
             width: 100%;
         }
+        :host .volume {
+            @apply(--layout-horizontal);
+        };
+        :host .volume paper-input {
+            width: 5em;
+        };
+        :host iron-selector > :not(.iron-selected) {
+            display: none;
+        }
     </style>
 
     <template>
-        <paper-progress max="[[recipe.questions.length]]" value="[[numAnswered]]"></paper-progress>
+        <paper-progress max="[[recipe.questions.length]]" value="[[recipe.numAnswered]]"></paper-progress>
         <template is="dom-repeat" items="{{recipe.questions}}">
             <div class="question">
                 <span class="idx">[[index]]</span>
                 <span class="label">[[item.label]]</span>
-                <input type="[[item.type]]" on-change="onChanged" >
-                <iron-icon class$="{{questionClass(item.*)}}" icon="assignment-turned-in"></iron-icon>
+                <iron-selector attr-for-selected="type" selected="{{item.type}}">
+                    <div type="boolean">
+                        <paper-checkbox noink on-change="onChanged"></paper-checkbox>
+                    </div>
+                    <div type="text">
+                        <paper-input no-label-float on-change="onChanged"></paper-input>
+                    </div>
+                    <div class="volume" type="volume">
+                        <paper-input no-label-float type="number" on-change="onChanged"></paper-input>
+                        <paper-radio-group id="radio" on-change="onChanged" selected="L">
+                          <paper-radio-button noink name="L">L</paper-radio-button>
+                          <paper-radio-button noink name="mL">mL</paper-radio-button>
+                          <paper-radio-button noink name="pint">pint</paper-radio-button>
+                        </paper-radio-group>
+                    </div>
+                </iron-selector>
+
+                <iron-icon class$="{{questionClass(item.isAnswered)}}" icon="assignment-turned-in"></iron-icon>
             </div>
         </template>
     </template>
 
     <script>
     (function() {
-        'use strict';
+    'use strict';
 
-        Polymer({
-            is: 'c1d3r-juice',
+      Polymer({
+        is: 'c1d3r-juice',
 
-            properties: {
-                recipe: {
-                    type: Object,
-                    notify: true
-                },
-                numAnswered: Number
-            },
-
-            onEntersView: function() {
-                console.debug('c1d3r-juice', 'onEntersView');
-                this.numAnswered = this.recipe.getNumberAnswered();
-            },
-            onExitsView: function() {
-                console.debug('c1d3r-juice', 'onExitsView');
-            },
-            questionClass: function(item, isAnswered) {
-                return item.base.isAnswered ? '' : 'invisible';
-            },
-            onChanged: function(evt)  {
-                var question = evt.model.__data__.item;
-                var value = evt.currentTarget.value;
-                var type = question.type;
-
-                // Sets the value
-                if (type === 'checkbox')
-                  this.recipe.juice[question.boundTo] = value === 'on';
-                if (type === 'text')
-                    this.recipe.juice[question.boundTo] = value;
-                // Shows completion
-                this.set('recipe.questions.' + evt.model.index + '.isAnswered', true);
-
-                // Fire event
-                this.recipe.onQuestionAnswered();
-                this.numAnswered = this.recipe.getNumberAnswered();
+        properties: {
+            recipe: {
+                type: Object,
+                notify: true
             }
-        });
+        },
+
+        onEntersView: function() {
+            console.debug('c1d3r-juice', 'onEntersView');
+        },
+        onExitsView: function() {
+            console.debug('c1d3r-juice', 'onExitsView');
+            this.notifyPath('recipe.steps', this.recipe.steps);
+        },
+        questionClass: function(isAnswered) {
+          var answered = isAnswered || false;
+          return answered ? '' : 'invisible';
+        },
+        onChanged: function(evt)  {
+          var
+            question = evt.model.__data__.item,
+            juiceKeyData = 'juice.' + question.boundTo,
+            questionIndexAnswered = 'questions.' + evt.model.index + '.isAnswered';
+
+            this.recipe.set(juiceKeyData, this.extractInfo(evt, question.type));
+            this.recipe.set(questionIndexAnswered, true);
+            this.recipe.set('numAnswered', this.recipe.getNumberAnswered());
+            this.notifyPath('recipe.' + questionIndexAnswered, true);
+            this.notifyPath('recipe.numAnswered', this.recipe.numAnswered);
+            evt.preventDefault();
+        },
+        extractInfo: function(evt, type) {
+          switch (type) {
+            case 'boolean':
+              return evt.currentTarget.checked;
+            case 'text':
+              return evt.currentTarget.value;
+            case 'volume':
+              var
+                magnitude = evt.currentTarget.value || 0,
+                unit = evt.model._rootDataHost.querySelector('#radio').selected;
+              return magnitude + ' ' + unit;
+          }
+        }
+      });
     })()
     </script>
 </dom-module>

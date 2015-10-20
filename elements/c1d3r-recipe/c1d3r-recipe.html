@@ -21,26 +21,20 @@
                 type: String,
                 value: 'Hard Cider'
               },
-              // Juice property
               juice: {
                 type: Object,
-                value: function() {
-                  return {};
-                }
+                notify: true,
+                value: function() { return {}; }
               },
               // Getting the info
               questions: {
                 type: Array,
-                value: function() {
-                  return [];
-                }
+                value: function() { return []; }
               },
               // Steps to make the cider.
               steps: {
                 type: Array,
-                value: function() {
-                  return [];
-                },
+                value: function() { return []; },
                 notify: true
               },
               numAnswered: {
@@ -49,61 +43,94 @@
               }
             },
 
+            observers: [
+              'juiceDataChanged(juice.*)'
+            ],
+
+            juiceDataChanged: function(val) {
+              if (this.steps === undefined)
+                return;
+              this.clearSteps();
+              this.buildSteps();
+              this.notifyPath('steps', this.steps);
+            },
             ready: function() {
+              // Boolean default to false.
               this.juice.isCloudy = false;
-              this.numAnswered = 0;
+              this.set('numAnswered', 1);
+
+              this.push('questions', {
+                boundTo: "isUnsuitable",
+                label: "Does the juice has preservatives; sorbates, sorbitol, or sulfite?",
+                type: "boolean",
+                isAnswered: true
+              });
 
               this.push('questions', {
                 boundTo: "isCloudy",
                 label: "Is the juice cloudy?",
-                type: "checkbox",
-                // Since checkbox default to false.
+                type: "boolean",
                 isAnswered: true
               });
-
               this.push('questions', {
                 boundTo: "producer",
                 label: "What the name of the producer?",
                 type: "text"
               });
-
               this.push('questions', {
                 boundTo: "volume",
                 label: "How much liquid?",
-                type: "text"
+                type: "volume"
               });
-
-              this.buildSteps();
             },
-
             getNumberAnswered: function() {
-              // Since not ticking the checkbox is a no.
               return this.questions.filter(function(q) { return q.isAnswered; }).length;
             },
-            onQuestionAnswered: function(data) {
-              console.info('onQuestionAnswered', JSON.stringify(this.juice));
-              this.push('steps', {
-                text: "Add {} of pectic enzyme.",
-                value: 2.5,
-                symbol: "tsp"
-              });
+            clearSteps: function() {
+              while(this.steps.length > 0) this.pop('steps');
             },
-            buildSteps: function() {
-              this.push('steps', {
-                text: "Add {} of pectic enzyme.",
-                value: 2.5,
-                symbol: "tsp"
-              });
-
-              if (this.juice.volume) {
-                this.push('steps', {
-                  text: "Add {} of pectic enzyme.",
-                  value: 2.5 * parseInt(this.juice.volume),
-                  symbol: "tsp"
+            makeStepLabel: function(data) {
+              var token = data.text.split("{}"), arr = [];
+              if (token.length <= 1) {
+                arr.push({
+                  kind: '',
+                  content: token[0]
                 });
               }
+              if (token.length == 2) {
+                arr.push({
+                  kind: '',
+                  content: token[0]
+                });
+                arr.push({
+                  kind: 'quantity',
+                  content: data.value + ' ' + data.symbol
+                });
+                arr.push({
+                  kind: '',
+                  content: token[1]
+                });
+              }
+              return {
+                cmpt: arr
+              }
+            },
+            buildSteps: function() {
+              console.log(this.name + ' Building Steps');
 
-              console.log('buildSteps');
+              if (this.juice.isUnsuitable) {
+                this.steps.push(this.makeStepLabel({
+                  text: "This juice is unsuitable for cider making, you may continue at your own risk."
+                }));
+              }
+
+              if (this.juice.isCloudy && this.juice.volume) {
+                this.steps.push(this.makeStepLabel({
+                  text: "Add {} of pectic enzyme.",
+                  value: this.juice.volume.replace("L", "") * 0.264 * 0.5,
+                  symbol: "tsp"
+                }));
+              }
             }
         });
     })()

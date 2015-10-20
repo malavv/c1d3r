@@ -99,8 +99,14 @@
             _routeChanged: function() {
                 console.info('route ' + this.route);
             },
-            routeSelect: function(evt, data) { data.item.onEntersView(); },
-            routeDeselect: function(evt, data) { data.item.onExitsView(); }
+            routeSelect: function(evt, data) {
+                if (evt.target.attrForSelected === "route")
+                    data.item.onEntersView();
+            },
+            routeDeselect: function(evt, data) {
+                if (evt.target.attrForSelected === "route")
+                    data.item.onExitsView();
+            }
         });
     })()
     </script>
