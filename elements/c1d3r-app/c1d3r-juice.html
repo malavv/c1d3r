@@ -1,74 +1,74 @@
 <dom-module id="c1d3r-juice">
-    <style>
-        :host {}
-        :host div.questions {
-        }
-        :host span.idx {
-            padding: 0 10px;
-            color: #bbb;
-            font-weight: bold;
-        }
-        :host span.label {
-            display: inline-block;
-            @apply(--layout-flex);
-        }
-        :host .question input {
-            margin-right: 20px;
-        }
-        :host .question iron-icon {
-            margin-right: 20px;
-            fill: green;
-        }
-        :host .question {
-            border-bottom: 1px solid #cdcdcd;
-            background-color: #fafafa;
-            padding: 7px 0;
-            @apply(--layout-horizontal);
-        }
-        :host .invisible {
-            visibility: none;
-        }
-        :host paper-progress {
-            width: 100%;
-        }
-        :host .volume {
-            @apply(--layout-horizontal);
-        };
-        :host .volume paper-input {
-            width: 5em;
-        };
-        :host iron-selector > :not(.iron-selected) {
-            display: none;
-        }
-    </style>
+  <style>
+    :host {}
+    :host div.questions {
+    }
+    :host span.idx {
+        padding: 0 10px;
+        color: #bbb;
+        font-weight: bold;
+    }
+    :host span.label {
+        display: inline-block;
+        @apply(--layout-flex);
+    }
+    :host .question input {
+        margin-right: 20px;
+    }
+    :host .question iron-icon {
+        margin-right: 20px;
+        fill: green;
+    }
+    :host .question {
+        border-bottom: 1px solid #cdcdcd;
+        background-color: #fafafa;
+        padding: 7px 0;
+        @apply(--layout-horizontal);
+    }
+    :host .invisible {
+        visibility: none;
+    }
+    :host paper-progress {
+        width: 100%;
+    }
+    :host .volume {
+        @apply(--layout-horizontal);
+    };
+    :host .volume paper-input {
+        width: 5em;
+    };
+    :host iron-selector > :not(.iron-selected) {
+        display: none;
+    }
+  </style>
 
-    <template>
-        <paper-progress max="[[recipe.questions.length]]" value="[[recipe.numAnswered]]"></paper-progress>
-        <template is="dom-repeat" items="{{listObjectValues(data)}}">
-            <div class="question">
-                <span class="idx">[[index]]</span>
-                <span class="label">[[item.question]]</span>
-                <iron-selector attr-for-selected="type" selected="{{item.type}}">
-                    <div type="boolean">
-                        <paper-checkbox noink on-change="onChanged"></paper-checkbox>
-                    </div>
-                    <div type="text">
-                        <paper-input no-label-float on-change="onChanged"></paper-input>
-                    </div>
-                    <div class="volume" type="volume">
-                        <paper-input no-label-float type="number" on-change="onChanged"></paper-input>
-                        <paper-radio-group id="radio" on-change="onChanged" selected="L">
-                          <paper-radio-button noink name="L">L</paper-radio-button>
-                          <paper-radio-button noink name="mL">mL</paper-radio-button>
-                          <paper-radio-button noink name="pint">pint</paper-radio-button>
-                        </paper-radio-group>
-                    </div>
-                </iron-selector>
+  <template>
+    <paper-progress max="[[recipe.questions.length]]" value="[[recipe.numAnswered]]"></paper-progress>
+    <template is="dom-repeat" items="{{listObjectValues(data)}}" filter="isNotComputed">
+      <div class="question">
+        <span class="idx">[[index]]</span>
+        <span class="label">[[item.question]]</span>
+        <iron-selector attr-for-selected="type" selected="{{item.type}}">
+          <div type="boolean">
+            <paper-checkbox noink on-change="onChanged"></paper-checkbox>
+          </div>
+          <div type="text">
+            <paper-input no-label-float on-change="onChanged"></paper-input>
+          </div>
+          <div class="volume" type="volume">
+            <paper-input no-label-float type="number" on-change="onChanged"></paper-input>
+            <paper-radio-group id="radio" on-change="onChanged" selected="L">
+              <paper-radio-button noink name="L">L</paper-radio-button>
+              <paper-radio-button noink name="mL">mL</paper-radio-button>
+              <paper-radio-button noink name="pint">pint</paper-radio-button>
+            </paper-radio-group>
+          </div>
+        </iron-selector>
 
-                <iron-icon class$="{{questionClass(item.isAnswered)}}" icon="assignment-turned-in"></iron-icon>
-            </div>
-        </template>
+        <iron-icon class$="{{questionClass(item.isAnswered)}}" icon="assignment-turned-in"></iron-icon>
+      </div>
     </template>
+  </template>
 
     <script>
     (function() {
@@ -84,7 +84,9 @@
         },
 
 
-
+        isNotComputed: function(variable) {
+          return variable.type !== "computed";
+        },
         onEntersView: function() {
             console.debug('c1d3r-juice', 'onEntersView');
         },
