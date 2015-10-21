@@ -123,6 +123,10 @@
     },
     {
       "type": "show",
+      "template": "Stir yeast in."
+    },
+    {
+      "type": "show",
       "template": "Think to add ~.5% ABV for bottle priming"
     }
   ]

@@ -132,7 +132,9 @@
               var
                 magnitude = evt.currentTarget.value || 0,
                 unit = evt.model._rootDataHost.querySelector('#radio').selected;
-              return magnitude + ' ' + unit;
+                if (unit === "L")
+                  return magnitude;
+                return magnitude + ' ' + unit;
           }
         },
         listObjectValues: function(obj) {

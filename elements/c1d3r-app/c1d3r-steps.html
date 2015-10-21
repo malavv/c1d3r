@@ -30,9 +30,8 @@
             <span class="idx">[[index]]</span>
             <iron-selector attr-for-selected="type" selected="{{step.type}}">
               <div type="show">{{step.template}}</div>
-              <div type="template">{{step.template}}</div>
+              <div type="template">{{fillTmpl(step, data, data.*)}}</div>
               <div type="if">
-                <!-- <div hidden$="{{step.isHidden}}">{{step.template}}</div> -->
                 <div hidden$="{{cif(step, data, data.*)}}">{{step.template}}</div>
               </div>
             </iron-selector>
@@ -64,15 +63,16 @@
           return !this.data[step.bind].value;
         },
 
-        computeif: function(step) {
-          if (step.type !== 'if')
-            return true;
-          return this.data[step.bind].value === false;
-        },
+        fillTmpl: function(step, data) {
+          if (step.type !== "template")
+            return;
+          var value = data[step.bind].value;
 
-        beginTmpl: function(template) { return template.split("{}")[0]; },
-        endTmpl: function(template) { return template.split("{}")[1]; },
-        getQty: function(value, unitSymbol) { return value + ' ' + unitSymbol; },
+          if (value !== undefined && typeof(value.toFixed) === "function") {
+            value = value.toFixed(2);
+          }
+          return step.template.replace('{}', value);
+        },
 
         onEntersView: function() {
           this.steps.forEach(function(step, idx) {

@@ -31,14 +31,11 @@
                 notify: true,
                 value: function() { return {}; }
               },
-
               questions: {
                 type: Array,
                 value: function() { return []; },
                 notify: true
               },
-
-              // Steps to make the cider.
               steps: {
                 type: Array,
                 value: function() { return []; },
@@ -51,8 +48,36 @@
             },
 
             observers: [
-              'juiceDataChanged(juice.*)'
+              'recompute(data, data.*)'
             ],
+
+            recompute: function(data) {
+              Object.getOwnPropertyNames(this.data).forEach(function(k) {
+                var v = this.data[k];
+                if (v.type !== "computed")
+                  return;
+                var evalStr = this._updateEvalStr(v);
+                if (evalStr.indexOf("undefined") === -1)
+                  this.set('data.' + k + '.value', this._recompute(evalStr));
+                
+              }, this);
+              console.log('recompute everything',  data);
+            },
+
+            _updateEvalStr: function(value) {
+              // brute force way
+              var evalstr = value.compute;
+              Object.getOwnPropertyNames(this.data).forEach(function(k) {
+                var re = new RegExp(k, 'g');
+                evalstr = evalstr.replace(re, this.data[k].value);
+              }, this);
+              return evalstr;
+            },
+
+            _recompute: function(evalStr) {
+              console.log('recompute', evalStr);
+              return eval(evalStr);
+            },
 
             newConfig: function(ciderConf) {
               this.name = ciderConf.name;
@@ -82,20 +107,10 @@
               console.log('newConfig', ciderConf);
             },
 
-            juiceDataChanged: function(val) {
-              if (this.steps === undefined)
-                return;
-              this.clearSteps();
-              this.buildSteps();
-              this.notifyPath('steps', this.steps);
-            },
             ready: function() {
             },
             getNumberAnswered: function() {
               return this.questions.filter(function(q) { return q.isAnswered; }).length;
-            },
-            clearSteps: function() {
-              while(this.steps.length > 0) this.pop('steps');
             },
             makeStepLabel: function(data) {
               var token = data.text.split("{}"), arr = [];
@@ -121,23 +136,6 @@
               }
               return {
                 cmpt: arr
-              }
-            },
-            buildSteps: function() {
-              console.log(this.name + ' Building Steps');
-
-              if (this.juice.isUnsuitable) {
-                this.steps.push(this.makeStepLabel({
-                  text: "This juice is unsuitable for cider making, you may continue at your own risk."
-                }));
-              }
-
-              if (this.juice.isCloudy && this.juice.volume) {
-                this.steps.push(this.makeStepLabel({
-                  text: "Add {} of pectic enzyme.",
-                  value: this.juice.volume.replace("L", "") * 0.264 * 0.5,
-                  symbol: "tsp"
-                }));
               }
             }
         });
