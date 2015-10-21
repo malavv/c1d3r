@@ -1,0 +1,120 @@
+{
+  "name": "Hard Cider",
+
+  "data": {
+    "isUnsuitable": {
+      "type": "boolean",
+      "question": "Does the juice has preservatives; sorbates, sorbitol, or sulfite?"
+    },
+    "isCloudy": {
+      "type" : "boolean",
+      "question": "Is the juice cloudy?"
+    },
+    "producer": {
+      "type" : "text",
+      "question": "What the name of the producer?"
+    },
+    "volumeInL": {
+      "type" : "volume",
+      "question": "How much liquid?"
+    },
+    "og": {
+      "type" : "text",
+      "question": "Measure the original gravity of the juice. (ex. 1.020)"
+    },
+    "pecticEnzymeInTsp": {
+      "type" : "computed",
+      "compute": "volumeInL * 0.264172 * 0.5"
+    },
+    "potassMetaInTsp": {
+      "type" : "computed",
+      "compute": "volumeInL * (1/75.7082)"
+    },
+    "yeastNutrientInTsp": {
+      "type" : "computed",
+      "compute": "volumeInL * (1/75.7082)"
+    },
+    "yeastEfficiency": {
+      "type" : "text",
+      "question": "What is the efficiency of your yeast?"
+    },
+    "degreeAlcool": {
+      "type" : "text",
+      "question": "How much alcohol do you want in percent? Suggest > 7.0 for long storage."
+    },
+    "sugarPpg": {
+      "type" : "text",
+      "question": "What is the ppg of your sugar."
+    },
+    "chaptizeTableSugarInG": {
+      "type" : "computed",
+      "compute": "(1000/sugarPpg)*((degreeAlcool-(yeastEfficiency*og*131.25)+(yeastEfficiency*131.25))/(yeastEfficiency*131.25))"
+    },
+    "tanninLvl": {
+      "type" : "text",
+      "question": "From 0 (no tannin) to 5 (full blown tannin)"
+    },
+    "acidAddition": {
+      "type" : "computed",
+      "compute": "0"
+    },
+    "juicePh": {
+      "type" : "text",
+      "question": "What is the PH of the juice?"
+    },
+    "finalPh": {
+      "type" : "text",
+      "question": "What is required PH of the juice?"
+    }
+  },
+
+  "steps": [
+    {
+      "type": "if",
+      "bind": "isCloudy",
+      "template": "This juice is unsuitable for cider making, you may continue at your own risk."
+    },
+    {
+      "type": "template",
+      "template": "Add {} tsp of pectic enzyme.",
+      "bind": "pecticEnzymeInTsp"
+    },
+    {
+      "type": "template",
+      "template": "Add {} tsp of potassium metabisulfite. Blend with juice first to dissolve.",
+      "bind": "potassMetaInTsp"
+    },
+    {
+      "type": "show",
+      "template": "Allow 3 hours for potassium metabisulfite to act."
+    },
+    {
+      "type": "template",
+      "template": "Add yeast nutrient. Roughly {} tsp, could need more as fermentation goes.",
+      "bind": "yeastNutrientInTsp"
+    },
+    {
+      "type": "template",
+      "template": "Add your sugar. {} lb to achieve the alcohol you requested.",
+      "bind": "chaptizeTableSugarInG"
+    },
+    {
+      "type": "template",
+      "template": "Add {} g of ascetic acid to achieve required PH.",
+      "bind": "acidAddition"
+    },
+    {
+      "type": "template",
+      "template": "Add {} tsp of wine tannin.",
+      "bind": "tanninLvl"
+    },
+    {
+      "type": "show",
+      "template": "Add English ale yeast"
+    },
+    {
+      "type": "show",
+      "template": "Think to add ~.5% ABV for bottle priming"
+    }
+  ]
+}
