@@ -70,8 +70,13 @@
               }, this);
 
               this.data = ciderConf.data;
-
+              ciderConf.steps.forEach(function(step) {
+                if (step.type === 'if')
+                  step.isHidden = true;
+              });
               this.steps = ciderConf.steps;
+              this.steps
+
               // Boolean default to false.
               this.set('numAnswered', 1);
               console.log('newConfig', ciderConf);

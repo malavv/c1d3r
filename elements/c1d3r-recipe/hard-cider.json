@@ -51,7 +51,7 @@
     "og": { "type" : "text" },
     "pecticEnzymeInTsp": {
       "type" : "computed",
-      "compute": "volumeInL * 0.264172 * 0.5"
+      "compute": "volumeInL * 0.264172 * 0.5 * isCloudy"
     },
     "potassMetaInTsp": {
       "type" : "computed",
@@ -80,7 +80,7 @@
   "steps": [
     {
       "type": "if",
-      "bind": "isCloudy",
+      "bind": "isUnsuitable",
       "template": "This juice is unsuitable for cider making, you may continue at your own risk."
     },
     {
