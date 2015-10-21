@@ -4,6 +4,7 @@
     </style>
 
     <template>
+
         <h1>C1d3r : The recipe</h1>
     </template>
 
@@ -17,19 +18,18 @@
             is: 'c1d3r-recipe',
 
             properties: {
+              configuration: {
+                type: Object,
+                observer: 'newConfig'
+              },
               name: {
                 type: String,
-                value: 'Hard Cider'
+                notify: true
               },
-              juice: {
+              data: {
                 type: Object,
                 notify: true,
                 value: function() { return {}; }
-              },
-              // Getting the info
-              questions: {
-                type: Array,
-                value: function() { return []; }
               },
               // Steps to make the cider.
               steps: {
@@ -47,6 +47,15 @@
               'juiceDataChanged(juice.*)'
             ],
 
+            newConfig: function(ciderConf) {
+              this.name = ciderConf.name;
+              this.data = ciderConf.data;
+              this.steps = ciderConf.steps;
+              // Boolean default to false.
+              this.set('numAnswered', 1);
+              console.log('newConfig', ciderConf);
+            },
+
             juiceDataChanged: function(val) {
               if (this.steps === undefined)
                 return;
@@ -55,33 +64,6 @@
               this.notifyPath('steps', this.steps);
             },
             ready: function() {
-              // Boolean default to false.
-              this.juice.isCloudy = false;
-              this.set('numAnswered', 1);
-
-              this.push('questions', {
-                boundTo: "isUnsuitable",
-                label: "Does the juice has preservatives; sorbates, sorbitol, or sulfite?",
-                type: "boolean",
-                isAnswered: true
-              });
-
-              this.push('questions', {
-                boundTo: "isCloudy",
-                label: "Is the juice cloudy?",
-                type: "boolean",
-                isAnswered: true
-              });
-              this.push('questions', {
-                boundTo: "producer",
-                label: "What the name of the producer?",
-                type: "text"
-              });
-              this.push('questions', {
-                boundTo: "volume",
-                label: "How much liquid?",
-                type: "volume"
-              });
             },
             getNumberAnswered: function() {
               return this.questions.filter(function(q) { return q.isAnswered; }).length;

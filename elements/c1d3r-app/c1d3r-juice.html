@@ -44,10 +44,10 @@
 
     <template>
         <paper-progress max="[[recipe.questions.length]]" value="[[recipe.numAnswered]]"></paper-progress>
-        <template is="dom-repeat" items="{{recipe.questions}}">
+        <template is="dom-repeat" items="{{listObjectValues(data)}}">
             <div class="question">
                 <span class="idx">[[index]]</span>
-                <span class="label">[[item.label]]</span>
+                <span class="label">[[item.question]]</span>
                 <iron-selector attr-for-selected="type" selected="{{item.type}}">
                     <div type="boolean">
                         <paper-checkbox noink on-change="onChanged"></paper-checkbox>
@@ -78,18 +78,18 @@
         is: 'c1d3r-juice',
 
         properties: {
-            recipe: {
-                type: Object,
-                notify: true
-            }
+          data: {
+            type: Object
+          }
         },
+
+
 
         onEntersView: function() {
             console.debug('c1d3r-juice', 'onEntersView');
         },
         onExitsView: function() {
             console.debug('c1d3r-juice', 'onExitsView');
-            this.notifyPath('recipe.steps', this.recipe.steps);
         },
         questionClass: function(isAnswered) {
           var answered = isAnswered || false;
@@ -101,11 +101,11 @@
             juiceKeyData = 'juice.' + question.boundTo,
             questionIndexAnswered = 'questions.' + evt.model.index + '.isAnswered';
 
-            this.recipe.set(juiceKeyData, this.extractInfo(evt, question.type));
-            this.recipe.set(questionIndexAnswered, true);
-            this.recipe.set('numAnswered', this.recipe.getNumberAnswered());
-            this.notifyPath('recipe.' + questionIndexAnswered, true);
-            this.notifyPath('recipe.numAnswered', this.recipe.numAnswered);
+            // this.recipe.set(juiceKeyData, this.extractInfo(evt, question.type));
+            // this.recipe.set(questionIndexAnswered, true);
+            // this.recipe.set('numAnswered', this.recipe.getNumberAnswered());
+            // this.notifyPath('recipe.' + questionIndexAnswered, true);
+            // this.notifyPath('recipe.numAnswered', this.recipe.numAnswered);
             evt.preventDefault();
         },
         extractInfo: function(evt, type) {
@@ -120,6 +120,9 @@
                 unit = evt.model._rootDataHost.querySelector('#radio').selected;
               return magnitude + ' ' + unit;
           }
+        },
+        listObjectValues: function(obj) {
+          return Object.keys(obj).map(function(k) { return obj[k]; });
         }
       });
     })()

@@ -46,11 +46,21 @@
         <more-route name="steps" path="/steps"></more-route>
         <more-route name="juice" path="/juice"></more-route>
 
+        <iron-ajax auto
+            url="../c1d3r-recipe/hard-cider.json"
+            handle-as="json"
+            last-response="{{ciderConf}}"></iron-ajax>
+        <c1d3r-recipe
+            name="{{recipeName}}"
+            data="{{data}}"
+            steps="{{steps}}"
+            configuration="{{ciderConf}}"></c1d3r-recipe>
+
         <paper-drawer-panel>
             <div drawer>
                 <paper-toolbar>
                     <paper-icon-button on-tap="_onTapHome" icon="menu"></paper-icon-button>
-                    <div class="middle title">[[recipe.name]]</div>
+                    <div class="middle title">[[recipeName]]</div>
                 </paper-toolbar>
                 <app-search></app-search>
                 <iron-selector attr-for-selected="route" selected="{{route}}">
@@ -63,8 +73,8 @@
             <more-route-selector main>
                 <iron-selector on-iron-select="routeSelect" on-iron-deselect="routeDeselect" attr-for-selected="route" selected="{{route}}">
                     <c1d3r-overview class="fit" route="root"></c1d3r-overview>
-                    <c1d3r-juice class="fit" recipe="{{recipe}}" route="juice"></c1d3r-juice>
-                    <c1d3r-steps class="fit" recipe="{{recipe}}" route="steps"></c1d3r-steps>
+                    <c1d3r-juice class="fit" data="{{data}}" route="juice"></c1d3r-juice>
+                    <c1d3r-steps class="fit" steps="{{steps}}" route="steps"></c1d3r-steps>
                 </iron-selector>
             </more-route-selector>
         </paper-drawer-panel>
@@ -81,14 +91,11 @@
                 route: {
                     type: String,
                     observer: "_routeChanged"
-                },
-                recipe: {
-                    type: Object
                 }
             },
             ready: function() {
                 // This sets the current recipe.
-                this.recipe = document.createElement('c1d3r-recipe');
+                //this.recipe = document.createElement('c1d3r-recipe');
             },
             _onTapHome: function(event) {
                 // If you wish to navigate imperatively, `MoreRouting.navigateTo` is the

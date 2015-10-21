@@ -26,13 +26,11 @@
         <template is="dom-repeat" items="{{steps}}" as="step">
           <div class="step">
             <span class="idx">[[index]]</span>
-            <template is="dom-repeat" items="[[step.cmpt]]">
+            <span>[[step.template]]</span>
+<!--             <template is="dom-repeat" items="[[step.cmpt]]">
               <span class$="{{item.kind}}">[[item.content]]</span>
             </template>
-            <span class="idx">[[item.length]]</span>
-<!--             <span>[[beginTmpl(item.text)]]</span>
-            <span class="quantity">[[getQty(item.value, item.symbol)]]</span>
-            <span>[[endTmpl(item.text)]]</span> -->
+            <span class="idx">[[item.length]]</span> -->
           </div>
         </template>
       </div>
@@ -46,27 +44,18 @@
         is: 'c1d3r-steps',
 
         properties: {
-          recipe: {
-            type: Object
-          },
           steps: {
             type: Array
           }
-        },
-        test: function() {
-          console.log('test');
-        },
-        onEntersView: function() {
-          // I do not understand how to plug that directly to the recipe.
-          // I tried many things but strange behaviour was the result.
-          this.set('steps', this.recipe.steps);
-          console.log('c1d3r-steps', 'onEntersView');
         },
 
         beginTmpl: function(template) { return template.split("{}")[0]; },
         endTmpl: function(template) { return template.split("{}")[1]; },
         getQty: function(value, unitSymbol) { return value + ' ' + unitSymbol; },
 
+        onEntersView: function() {
+          console.log('c1d3r-steps', 'onEntersView');
+        },
         onExitsView: function() {
           console.debug('c1d3r-steps', 'onExitsView');
         }
