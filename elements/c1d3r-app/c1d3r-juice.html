@@ -43,12 +43,17 @@
   </style>
 
   <template>
-    <paper-progress max="[[recipe.questions.length]]" value="[[recipe.numAnswered]]"></paper-progress>
-    <template is="dom-repeat" items="{{listObjectValues(data)}}" filter="isNotComputed">
+    <paper-progress max="[[questions.length]]" value="{{numAnswered}}"></paper-progress>
+    <template is="dom-repeat" items="{{questions}}" id="questionList" observe="isAnswered" as="question">
       <div class="question">
         <span class="idx">[[index]]</span>
-        <span class="label">[[item.question]]</span>
-        <iron-selector attr-for-selected="type" selected="{{item.type}}">
+        <span class="label">[[question.label]]</span>
+
+        <iron-icon
+            hidden$="{{!question.isAnswered}}"
+            icon="assignment-turned-in"></iron-icon>
+
+        <iron-selector attr-for-selected="type" selected="[[typeForVariable(question)]]">
           <div type="boolean">
             <paper-checkbox noink on-change="onChanged"></paper-checkbox>
           </div>
@@ -65,7 +70,7 @@
           </div>
         </iron-selector>
 
-        <iron-icon class$="{{questionClass(item.isAnswered)}}" icon="assignment-turned-in"></iron-icon>
+        
       </div>
     </template>
   </template>
@@ -74,18 +79,31 @@
     (function() {
     'use strict';
 
+      function isQuestionAnswered(q) {
+        return q.isAnswered;
+      }
+
       Polymer({
         is: 'c1d3r-juice',
 
         properties: {
           data: {
-            type: Object
+            type: Object,
+            notify: true
+          },
+          questions: {
+            type: Array,
+            notify: true
+          },
+          numAnswered: {
+            type: Number,
+            notify: true
           }
         },
 
-
-        isNotComputed: function(variable) {
-          return variable.type !== "computed";
+        // We hid the auto computed values because no user input are needed.
+        typeForVariable: function(variable) {
+          return this.data[variable.variableId].type;
         },
         onEntersView: function() {
             console.debug('c1d3r-juice', 'onEntersView');
@@ -93,22 +111,16 @@
         onExitsView: function() {
             console.debug('c1d3r-juice', 'onExitsView');
         },
-        questionClass: function(isAnswered) {
-          var answered = isAnswered || false;
-          return answered ? '' : 'invisible';
-        },
         onChanged: function(evt)  {
-          var
-            question = evt.model.__data__.item,
-            juiceKeyData = 'juice.' + question.boundTo,
-            questionIndexAnswered = 'questions.' + evt.model.index + '.isAnswered';
+          var 
+            q = evt.model.question,
+            data = this.data[q.variableId];
 
-            // this.recipe.set(juiceKeyData, this.extractInfo(evt, question.type));
-            // this.recipe.set(questionIndexAnswered, true);
-            // this.recipe.set('numAnswered', this.recipe.getNumberAnswered());
-            // this.notifyPath('recipe.' + questionIndexAnswered, true);
-            // this.notifyPath('recipe.numAnswered', this.recipe.numAnswered);
-            evt.preventDefault();
+          evt.model.set('question.isAnswered', true);
+          this.set('data.' + q.variableId + '.value', this.extractInfo(evt, data.type))
+          this.numAnswered = this.questions.filter(isQuestionAnswered).length;
+
+          evt.preventDefault();
         },
         extractInfo: function(evt, type) {
           switch (type) {

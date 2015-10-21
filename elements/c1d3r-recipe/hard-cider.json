@@ -1,27 +1,54 @@
 {
   "name": "Hard Cider",
 
+  "questions": [
+    {
+      "label": "Does the juice has preservatives; sorbates, sorbitol, or sulfite?",
+      "variableId": "isUnsuitable"
+    },
+    {
+      "label": "Is the juice cloudy?",
+      "variableId": "isCloudy"
+    },
+    {
+      "label": "How much liquid?",
+      "variableId": "volumeInL"
+    },
+    {
+      "label": "Measure the original gravity of the juice. (ex. 1.020)",
+      "variableId": "og"
+    },
+    {
+      "label": "What is the efficiency of your yeast?",
+      "variableId": "yeastEfficiency"
+    },
+    {
+      "label": "How much alcohol do you want in percent? Suggest > 7.0 for long storage.",
+      "variableId": "degreeAlcool"
+    },
+    {
+      "label": "What is the ppg of your sugar.",
+      "variableId": "sugarPpg"
+    },
+    {
+      "label": "From 0 (no tannin) to 5 (full blown tannin)",
+      "variableId": "tanninLvl"
+    },
+    {
+      "label": "What is the PH of the juice?",
+      "variableId": "juicePh"
+    },
+    {
+      "label": "What is required PH of the juice?",
+      "variableId": "finalPh"
+    }
+  ],
+
   "data": {
-    "isUnsuitable": {
-      "type": "boolean",
-      "question": "Does the juice has preservatives; sorbates, sorbitol, or sulfite?"
-    },
-    "isCloudy": {
-      "type" : "boolean",
-      "question": "Is the juice cloudy?"
-    },
-    "producer": {
-      "type" : "text",
-      "question": "What the name of the producer?"
-    },
-    "volumeInL": {
-      "type" : "volume",
-      "question": "How much liquid?"
-    },
-    "og": {
-      "type" : "text",
-      "question": "Measure the original gravity of the juice. (ex. 1.020)"
-    },
+    "isUnsuitable": { "type": "boolean" },
+    "isCloudy": { "type" : "boolean" },
+    "volumeInL": { "type" : "volume" },
+    "og": { "type" : "text" },
     "pecticEnzymeInTsp": {
       "type" : "computed",
       "compute": "volumeInL * 0.264172 * 0.5"
@@ -34,38 +61,20 @@
       "type" : "computed",
       "compute": "volumeInL * (1/75.7082)"
     },
-    "yeastEfficiency": {
-      "type" : "text",
-      "question": "What is the efficiency of your yeast?"
-    },
-    "degreeAlcool": {
-      "type" : "text",
-      "question": "How much alcohol do you want in percent? Suggest > 7.0 for long storage."
-    },
-    "sugarPpg": {
-      "type" : "text",
-      "question": "What is the ppg of your sugar."
-    },
+    "yeastEfficiency": { "type" : "text" },
+    "degreeAlcool": { "type" : "text" },
+    "sugarPpg": { "type" : "text" },
     "chaptizeTableSugarInG": {
       "type" : "computed",
       "compute": "(1000/sugarPpg)*((degreeAlcool-(yeastEfficiency*og*131.25)+(yeastEfficiency*131.25))/(yeastEfficiency*131.25))"
     },
-    "tanninLvl": {
-      "type" : "text",
-      "question": "From 0 (no tannin) to 5 (full blown tannin)"
-    },
+    "tanninLvl": { "type" : "text" },
     "acidAddition": {
       "type" : "computed",
       "compute": "0"
     },
-    "juicePh": {
-      "type" : "text",
-      "question": "What is the PH of the juice?"
-    },
-    "finalPh": {
-      "type" : "text",
-      "question": "What is required PH of the juice?"
-    }
+    "juicePh": { "type" : "text" },
+    "finalPh": { "type" : "text" }
   },
 
   "steps": [

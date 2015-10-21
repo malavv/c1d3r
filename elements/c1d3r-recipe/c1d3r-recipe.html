@@ -31,6 +31,13 @@
                 notify: true,
                 value: function() { return {}; }
               },
+
+              questions: {
+                type: Array,
+                value: function() { return []; },
+                notify: true
+              },
+
               // Steps to make the cider.
               steps: {
                 type: Array,
@@ -49,7 +56,21 @@
 
             newConfig: function(ciderConf) {
               this.name = ciderConf.name;
+              this.questions = ciderConf.questions;
+              this.questions.forEach(function(q) { 
+                q.isAnswered = ciderConf.data[q.variableId].type === 'boolean'; 
+              }, this);
+
+
+              Object.getOwnPropertyNames(ciderConf.data).map(function(key) {
+                var val = ciderConf.data[key];
+                val.name = key;
+                if (val.type === 'boolean')
+                  val.value = false;
+              }, this);
+
               this.data = ciderConf.data;
+
               this.steps = ciderConf.steps;
               // Boolean default to false.
               this.set('numAnswered', 1);

@@ -1,120 +1,141 @@
 <dom-module id="c1d3r-app">
-    <style>
-        :host {}
+  <style>
+    :host {}
 
-        :host div[drawer] {
-            @apply(--layout-vertical);
-            background-color: #fafafa;
+    /* Sidebar */
+    :host .sidebar .header {
+      background-color: #3b3b3b;
+    }
+
+    :host .sidebar {
+      @apply(--layout-vertical);
+      background-color: #fafafa;
+    }
+    :host .sidebar ul {
+      list-style: none;
+    }
+    :host .sidebar li {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 1.1em;
+      padding: 15px 0 15px 30px;
+      cursor: pointer;
+    }
+    :host .sidebar li:hover {
+      background-color: #ebebeb;
+    }
+    :host .sidebar iron-selector > .iron-selected {
+      background-color: #e0e0e0;
+    }
+
+    /* Content */
+    :host .content iron-selector > :not(.iron-selected) {
+      display: none;
+    }
+    :host .content iron-selector > * {
+      @apply(--layout-fit);
+    };
+  </style>
+
+  <template>
+    <!-- Routing configuration -->
+    <more-routing-config driver="hash"></more-routing-config>
+    <more-route name="root" path="/"></more-route>
+    <more-route name="steps" path="/steps"></more-route>
+    <more-route name="juice" path="/juice"></more-route>
+
+    <!-- Loads a recipe configuration -->
+    <iron-ajax 
+        auto 
+        url="[[recipeUrl]]" 
+        handle-as="json" 
+        last-response="{{ciderConf}}"></iron-ajax>
+    <!-- Creates a recipe object from the configuration -->
+    <c1d3r-recipe
+        name="{{recipeName}}"
+        data="{{data}}"
+        steps="{{steps}}"
+        questions="{{questions}}"
+        configuration="[[ciderConf]]"></c1d3r-recipe>
+
+    <paper-drawer-panel>
+      <div drawer class="sidebar">
+        <!-- Sidebar Header -->
+        <paper-toolbar class="header">
+          <paper-icon-button on-tap="_onTapHome" icon="menu"></paper-icon-button>
+          <div class="middle title">[[recipeName]]</div>
+        </paper-toolbar>
+        <!-- Navigation bar -->
+        <nav>
+          <ul>
+            <iron-selector attr-for-selected="route" selected="{{route}}">
+              <li route="root">Dashboard</li>
+              <li route="juice">Juice</li>
+              <li route="steps">Steps</li>
+            </iron-selector>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Main selector for the route content -->
+      <more-route-selector class="content" main
+          on-iron-select="_routeSelect"
+          on-iron-deselect="_routeDeselect">
+        <iron-selector attr-for-selected="route" selected="{{route}}">
+          <c1d3r-overview route="root"  questions="{{questions}}" data="{{data}}"></c1d3r-overview>
+          <c1d3r-juice    route="juice" questions="{{questions}}" data="{{data}}" ></c1d3r-juice>
+          <c1d3r-steps    route="steps" steps="{{steps}}"></c1d3r-steps>
+        </iron-selector>
+      </more-route-selector>
+    </paper-drawer-panel>
+  </template>
+
+  <script>
+  (function() {
+      'use strict';
+
+    /**
+     * Main page of the c1d3r application.
+     *
+     * It's loading the recipes, creating sub-component and managing current views.
+     */
+    Polymer({
+      is: 'c1d3r-app',
+
+      properties: {
+        /** Current route of the application. */
+        route: {
+          type: String,
+          observer: "_routeChanged"
+        },
+        /** URL for the configuration file of the recipe. */
+        recipeUrl: {
+          type: String,
+          value: 'elements/c1d3r-recipe/hard-cider.json'
         }
-        :host div[drawer] div {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 1.1em;
-            padding: 15px 0 15px 30px;
-            cursor: pointer;
-        }
-        :host div[drawer] div:hover {
-            background-color: #ebebeb;
-        }
+      },
 
-        :host paper-toolbar {
-            background-color: #3b3b3b;
-        }
-        :host .header div {
-            @apply(--layout-flex);
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 1.1em;
-            padding-left: 30px;
-            color: #fbfbfb;
-            margin: auto;
-        }
-        :host div[drawer] iron-selector > .iron-selected {
-            background-color: #e0e0e0;
-        }
-        :host more-route-selector iron-selector > * {
-            display: none;
-        }
-        :host more-route-selector iron-selector > .iron-selected {
-            display: block;
-        }
-    </style>
-
-    <template>
-        <more-routing-config driver="hash"></more-routing-config>
-
-        <!--Routes-->
-        <more-route name="root" path="/"></more-route>
-        <more-route name="steps" path="/steps"></more-route>
-        <more-route name="juice" path="/juice"></more-route>
-
-        <iron-ajax auto
-            url="../c1d3r-recipe/hard-cider.json"
-            handle-as="json"
-            last-response="{{ciderConf}}"></iron-ajax>
-        <c1d3r-recipe
-            name="{{recipeName}}"
-            data="{{data}}"
-            steps="{{steps}}"
-            configuration="{{ciderConf}}"></c1d3r-recipe>
-
-        <paper-drawer-panel>
-            <div drawer>
-                <paper-toolbar>
-                    <paper-icon-button on-tap="_onTapHome" icon="menu"></paper-icon-button>
-                    <div class="middle title">[[recipeName]]</div>
-                </paper-toolbar>
-                <app-search></app-search>
-                <iron-selector attr-for-selected="route" selected="{{route}}">
-                    <div route="root">Dashboard</div>
-                    <div route="juice">Juice</div>
-                    <div route="steps">Steps</div>
-                </iron-selector>
-            </div>
-
-            <more-route-selector main>
-                <iron-selector on-iron-select="routeSelect" on-iron-deselect="routeDeselect" attr-for-selected="route" selected="{{route}}">
-                    <c1d3r-overview class="fit" route="root"></c1d3r-overview>
-                    <c1d3r-juice class="fit" data="{{data}}" route="juice"></c1d3r-juice>
-                    <c1d3r-steps class="fit" steps="{{steps}}" route="steps"></c1d3r-steps>
-                </iron-selector>
-            </more-route-selector>
-        </paper-drawer-panel>
-    </template>
-
-    <script>
-    (function() {
-        'use strict';
-
-        Polymer({
-            is: 'c1d3r-app',
-
-            properties: {
-                route: {
-                    type: String,
-                    observer: "_routeChanged"
-                }
-            },
-            ready: function() {
-                // This sets the current recipe.
-                //this.recipe = document.createElement('c1d3r-recipe');
-            },
-            _onTapHome: function(event) {
-                // If you wish to navigate imperatively, `MoreRouting.navigateTo` is the
-                // way to go:
-                MoreRouting.navigateTo('root');
-                event.preventDefault();
-            },
-            _routeChanged: function() {
-                console.info('route ' + this.route);
-            },
-            routeSelect: function(evt, data) {
-                if (evt.target.attrForSelected === "route")
-                    data.item.onEntersView();
-            },
-            routeDeselect: function(evt, data) {
-                if (evt.target.attrForSelected === "route")
-                    data.item.onExitsView();
-            }
-        });
-    })()
-    </script>
+      /** Warns rooting to go to the root of the app. Maybe website later? */
+      _onTapHome: function(event) {
+        this.route = 'root';
+        event.preventDefault();
+      },
+      /** Logs page change for information reasons */
+      _routeChanged: function() {
+        console.info('route ' + this.route);
+      },
+      /** Triggers page 'enters' lifecycle callbacks */
+      _routeSelect: function(evt, data) {
+        // We get iron-select from sub-page, so we need to ignore them.
+        if (evt.target.attrForSelected !== "route") return;
+        data.item.onEntersView();
+      },
+      /** Triggers page 'enters' lifecycle callbacks */
+      _routeDeselect: function(evt, data) {
+        // We get iron-select from sub-page, so we need to ignore them.
+        if (evt.target.attrForSelected !== "route") return;
+        data.item.onExitsView();
+      }
+    });
+  })()
+  </script>
 </dom-module>
