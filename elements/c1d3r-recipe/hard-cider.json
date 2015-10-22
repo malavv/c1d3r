@@ -49,26 +49,46 @@
     "isCloudy": { "type" : "boolean" },
     "volumeInL": { "type" : "volume" },
     "og": { "type" : "text" },
-    "pecticEnzymeInTsp": {
+    "pecticEnzymeInG": {
       "type" : "computed",
-      "compute": "volumeInL * 0.264172 * 0.5 * isCloudy"
+      "compute": "volumeInL * (1/3.78541) * 4.0 * 0.5 * isCloudy",
+      "Northern Brewers Cider Guide": "½ tsp per gal",
+      "liters to gal" : 0.264172,
+      "_weigthToTsp": "http://www.nashwoodwinery.com/Equivalency_Tables.pdf"
     },
-    "potassMetaInTsp": {
+    "potassMetaInG": {
       "type" : "computed",
-      "compute": "volumeInL * (1/75.7082)"
+      "compute": "volumeInL * (1/3.78541) * (1/5) * (1/4) * 6.2",
+      "_recommendation": "Northern Brewers : ¼ tsp pot. meta. per 5 gal",
+      "_weigthToTsp": "http://winemaking.jackkeller.net/measures.asp"
     },
-    "yeastNutrientInTsp": {
+    "yeastNutrientInG": {
       "type" : "computed",
-      "compute": "volumeInL * (1/75.7082)"
+      "compute": "volumeInL * (1/3.78541) * (1/4) * 3.3",
+      "_weigthToTsp": "http://winemaking.jackkeller.net/measures.asp"
     },
     "yeastEfficiency": { "type" : "text" },
     "degreeAlcool": { "type" : "text" },
     "sugarPpg": { "type" : "text" },
-    "chaptizeTableSugarInG": {
+    "sugarPKgL": {
       "type" : "computed",
-      "compute": "(1000/sugarPpg)*((degreeAlcool-(yeastEfficiency*og*131.25)+(yeastEfficiency*131.25))/(yeastEfficiency*131.25))"
+      "compute": "(sugarPpg / 1000) * 3.78541 * 2.20462262",
+      "_PPGtoMetric": "PPG * (gallon/L) * (kg/lb)"
+    },
+    "additionalGravity": {
+      "type" : "computed",
+      "compute": "1 - og + (degreeAlcool/(131.25*yeastEfficiency))"
+    },
+    "chaptizeSugarKg": {
+      "type" : "computed",
+      "compute": "(additionalGravity*volumeInL)/sugarPKgL"
     },
     "tanninLvl": { "type" : "text" },
+    "tanninG": {
+      "type": "computed",
+      "compute": "volumeInL * (1/3.78541) * (1/4) * 2.8 * (tanninLvl/5)",
+      "_recommendation": "1/4 tsp of tannins per gallon of wine"
+    },
     "acidAddition": {
       "type" : "computed",
       "compute": "0"
@@ -85,13 +105,13 @@
     },
     {
       "type": "template",
-      "template": "Add {} tsp of pectic enzyme.",
-      "bind": "pecticEnzymeInTsp"
+      "template": "Add {} g of pectic enzyme.",
+      "bind": "pecticEnzymeInG"
     },
     {
       "type": "template",
-      "template": "Add {} tsp of potassium metabisulfite. Blend with juice first to dissolve.",
-      "bind": "potassMetaInTsp"
+      "template": "Add {} g of potassium metabisulfite. Blend with juice first to dissolve.",
+      "bind": "potassMetaInG"
     },
     {
       "type": "show",
@@ -99,13 +119,13 @@
     },
     {
       "type": "template",
-      "template": "Add yeast nutrient. Roughly {} tsp, could need more as fermentation goes.",
-      "bind": "yeastNutrientInTsp"
+      "template": "Add yeast nutrient. Roughly {} g, could need more as fermentation goes.",
+      "bind": "yeastNutrientInG"
     },
     {
       "type": "template",
-      "template": "Add your sugar. {} lb to achieve the alcohol you requested.",
-      "bind": "chaptizeTableSugarInG"
+      "template": "Add your sugar. {} kg to achieve the alcohol you requested.",
+      "bind": "chaptizeSugarKg"
     },
     {
       "type": "template",
@@ -114,8 +134,8 @@
     },
     {
       "type": "template",
-      "template": "Add {} tsp of wine tannin.",
-      "bind": "tanninLvl"
+      "template": "Add {} g of wine tannin.",
+      "bind": "tanninG"
     },
     {
       "type": "show",
