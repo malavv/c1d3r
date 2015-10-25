@@ -11,8 +11,10 @@
     paths = {
       pages: ['elements/**/*.html', 'elements/*.html', 'index.html'],
       images: 'img/**/*',
-      allDist: ['dist/index.html', 'dist/img/**/*'],
-      distImages: 'dist/img/'
+      data: 'data/**/*',
+      allDist: ['dist/index.html', 'dist/img/**/*', 'dist/data/**/*'],
+      distImages: 'dist/img/',
+      distData: 'dist/data/'
     };
 
   /**
@@ -48,7 +50,7 @@
   });
 
   /** Recreates a distribution package. */
-  gulp.task('dist', ['copy:img', 'vulcanize']);
+  gulp.task('dist', ['copy:img', 'copy:data', 'vulcanize']);
 
   /** Cleans the distribution folder. */
   gulp.task('clean:dist', function() {
@@ -59,6 +61,10 @@
   gulp.task('copy:img', function () {
     return gulp.src(paths.images)
       .pipe(gulp.dest(paths.distImages));
+  });
+  gulp.task('copy:data', function () {
+    return gulp.src(paths.data)
+      .pipe(gulp.dest(paths.distData));
   });
 
   /**
