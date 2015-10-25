@@ -44,10 +44,10 @@
     <more-route name="juice" path="/juice"></more-route>
 
     <!-- Loads a recipe configuration -->
-    <iron-ajax 
-        auto 
-        url="[[recipeUrl]]" 
-        handle-as="json" 
+    <iron-ajax
+        auto
+        url="[[recipeUrl]]"
+        handle-as="json"
         last-response="{{ciderConf}}"></iron-ajax>
     <!-- Creates a recipe object from the configuration -->
     <c1d3r-recipe
@@ -111,11 +111,17 @@
         recipeUrl: {
           type: String,
           value: 'elements/c1d3r-recipe/hard-cider.json'
+        },
+        chosen: {
+          type: String,
+          observer: '_chosenChanged',
+          notify: true
         }
       },
 
       /** Warns rooting to go to the root of the app. Maybe website later? */
       _onTapHome: function(event) {
+        this.chosen = '';
         this.route = 'root';
         event.preventDefault();
       },
@@ -134,6 +140,9 @@
         // We get iron-select from sub-page, so we need to ignore them.
         if (evt.target.attrForSelected !== "route") return;
         data.item.onExitsView();
+      },
+      _chosenChanged: function() {
+        this.hidden = this.chosen === '';
       }
     });
   })()

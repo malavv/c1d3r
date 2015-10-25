@@ -15,6 +15,9 @@
     <link rel="import" href="elements/elements.html">
 </head>
 <body class="fullbleed" unresolved>
-    <c1d3r-app class="fit"></c1d3r-app>
+    <template is="dom-bind">
+        <c1d3r-splash chosen="{{chosen}}"></c1d3r-splash>
+        <c1d3r-app hidden class="fit" chosen="{{chosen}}"></c1d3r-app>
+    <template>
 </body>
 </html>
