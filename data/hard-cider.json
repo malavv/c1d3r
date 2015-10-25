@@ -99,54 +99,38 @@
 
   "steps": [
     {
-      "type": "if",
-      "bind": "isUnsuitable",
+      "hidden": "!{{isUnsuitable}}",
       "template": "This juice is unsuitable for cider making, you may continue at your own risk."
     },
     {
-      "type": "template",
-      "template": "Add {} g of pectic enzyme.",
-      "bind": "pecticEnzymeInG"
+      "hidden": "!{{isCloudy}}",
+      "template": "Add {{pecticEnzymeInG}} g of pectic enzyme."
     },
     {
-      "type": "template",
-      "template": "Add {} g of potassium metabisulfite. Blend with juice first to dissolve.",
-      "bind": "potassMetaInG"
+      "template": "Add {{potassMetaInG}} g of potassium metabisulfite. Blend with juice first to dissolve."
     },
     {
-      "type": "show",
       "template": "Allow 3 hours for potassium metabisulfite to act."
     },
     {
-      "type": "template",
-      "template": "Add yeast nutrient. Roughly {} g, could need more as fermentation goes.",
-      "bind": "yeastNutrientInG"
+      "template": "Add yeast nutrient. Roughly {{yeastNutrientInG}} g, could need more as fermentation goes."
     },
     {
-      "type": "template",
-      "template": "Add your sugar. {} kg to achieve the alcohol you requested.",
-      "bind": "chaptizeSugarKg"
+      "template": "Add your sugar. {{chaptizeSugarKg}} kg to achieve the alcohol you requested."
     },
     {
-      "type": "template",
-      "template": "Add {} g of ascetic acid to achieve required PH.",
-      "bind": "acidAddition"
+      "template": "Add {{acidAddition}} g of ascetic acid to achieve required PH."
     },
     {
-      "type": "template",
-      "template": "Add {} g of wine tannin.",
-      "bind": "tanninG"
+      "template": "Add {{tanninG}} g of wine tannin."
     },
     {
-      "type": "show",
       "template": "Add English ale yeast"
     },
     {
-      "type": "show",
       "template": "Stir yeast in."
     },
     {
-      "type": "show",
       "template": "Think to add ~.5% ABV for bottle priming"
     }
   ]

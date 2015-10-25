@@ -1,13 +1,4 @@
 <dom-module id="c1d3r-recipe">
-    <style>
-        :host {}
-    </style>
-
-    <template>
-
-        <h1>C1d3r : The recipe</h1>
-    </template>
-
     <script>
     (function() {
         'use strict';
@@ -59,9 +50,8 @@
                 var evalStr = this._updateEvalStr(v);
                 if (evalStr.indexOf("undefined") === -1)
                   this.set('data.' + k + '.value', this._recompute(evalStr));
-                
+
               }, this);
-              console.log('recompute everything',  data);
             },
 
             _updateEvalStr: function(value) {
@@ -75,7 +65,6 @@
             },
 
             _recompute: function(evalStr) {
-              console.log('recompute', evalStr);
               return eval(evalStr);
             },
 
@@ -104,7 +93,7 @@
 
               // Boolean default to false.
               this.set('numAnswered', 1);
-              console.log('newConfig', ciderConf);
+              console.info('Loading new recipe config', ciderConf);
             },
 
             ready: function() {

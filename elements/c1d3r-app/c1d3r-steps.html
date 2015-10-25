@@ -25,16 +25,11 @@
 
     <template>
       <div>
-        <template is="dom-repeat" items="{{steps}}" as="step">
+        <template id="test" is="dom-repeat" items="{{steps}}" filter="isShown" as="step">
           <div class="step">
             <span class="idx">[[index]]</span>
-            <iron-selector attr-for-selected="type" selected="{{step.type}}">
-              <div type="show">{{step.template}}</div>
-              <div type="template">{{fillTmpl(step, data, data.*)}}</div>
-              <div type="if">
-                <div hidden$="{{cif(step, data, data.*)}}">{{step.template}}</div>
-              </div>
-            </iron-selector>
+            <!-- data and data.* are added to trigger recomputation on any change in data. -->
+            <div>{{fillTmpl(step, data, data.*)}}</div>
           </div>
         </template>
       </div>
@@ -50,39 +45,28 @@
         properties: {
           steps: {
             type: Array
-            
           },
           data: {
             type: Object
           }
         },
 
-        cif: function(step, data) {
-          if (step.type !== 'if')
-            return true;
-          return !this.data[step.bind].value;
+        isShown: function(step) {
+          if (step.hidden === undefined) return true;
+          // Unsure about this guy here.
+          if (this.data === undefined) return false;
+          return !eval(C.fillTemplate(step.hidden, this.data));
         },
 
         fillTmpl: function(step, data) {
-          if (step.type !== "template")
-            return;
-          var value = data[step.bind].value;
-
-          if (value !== undefined && typeof(value.toFixed) === "function") {
-            value = value.toFixed(2);
-          }
-          return step.template.replace('{}', value);
+          return C.fillTemplate(step.template, data);
         },
 
         onEntersView: function() {
-          this.steps.forEach(function(step, idx) {
-            if (step.type === 'if')
-              this.set('steps.' + idx + '.isHidden', this.data[step.bind].value);
-          }, this);
-          console.log('c1d3r-steps', 'onEntersView');
+          // Recompute the rendering list (rechecks filtering.)
+          this.$.test.render();
         },
         onExitsView: function() {
-          console.debug('c1d3r-steps', 'onExitsView');
         }
       });
     })()

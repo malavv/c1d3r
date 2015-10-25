@@ -1,0 +1,42 @@
+<script>
+var C = (function() {
+'use strict';
+
+var
+  exports = {},
+  varPattern = /(\{\{\w+\}\})/g;
+
+/**
+ * This assumes a double mustache style of templates {{variable}}
+ *
+ * @param tmpl A string containing variables.
+ */
+exports.extractVarFromTmpl = function(tmpl) {
+  return tmpl.match(varPattern) || [];
+};
+
+exports.unmustache = function(tmpl) {
+  return tmpl.match(/\w+/);
+};
+
+exports.fillTemplate = function(tmpl, dic) {
+  var tmp = tmpl;
+  exports.extractVarFromTmpl(tmpl)
+    .map(function(match) {
+      var variable = exports.unmustache(match)[0];
+      return {
+        variable: variable,
+        value: dic[variable].value,
+        template: match
+      }
+    })
+    .forEach(function(r) {
+      tmp = tmp.replace(r.template, r.value);
+    })
+  return tmp;
+};
+
+return exports;
+
+})();
+</script>
