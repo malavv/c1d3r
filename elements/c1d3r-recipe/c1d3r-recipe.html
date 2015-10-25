@@ -2,6 +2,7 @@
     <script>
     (function() {
         'use strict';
+
         /**
          * This is the standard recipe but there can be as much as you want.
          */
@@ -11,7 +12,7 @@
             properties: {
               configuration: {
                 type: Object,
-                observer: 'newConfig'
+                observer: '_newConfig'
               },
               name: {
                 type: String,
@@ -31,103 +32,54 @@
                 type: Array,
                 value: function() { return []; },
                 notify: true
-              },
-              numAnswered: {
-                type: Number,
-                notify: true
               }
             },
 
             observers: [
-              'recompute(data, data.*)'
+              '_recompute(data, data.*)'
             ],
 
-            recompute: function(data) {
-              Object.getOwnPropertyNames(this.data).forEach(function(k) {
-                var v = this.data[k];
-                if (v.type !== "computed")
-                  return;
-                var evalStr = this._updateEvalStr(v);
-                if (evalStr.indexOf("undefined") === -1)
-                  this.set('data.' + k + '.value', this._recompute(evalStr));
-
-              }, this);
+            _recompute: function(data) {
+              var toRecompute = Object.getOwnPropertyNames(this.data)
+                .map(function(key) { return this.data[key]; }, this)
+                .filter(function(variable) { return variable.type === 'computed'; })
+                .map(function(variable) {
+                  var filled = C.fillTemplate(variable.compute, this.data);
+                  return {
+                    name: variable.name,
+                    template: filled,
+                    value: adjustValue(eval(filled))
+                  };
+                }, this)
+                .forEach(function(variable) {
+                  this.set('data.' + variable.name + '.value', variable.value);
+                }, this);
             },
 
-            _updateEvalStr: function(value) {
-              // brute force way
-              var evalstr = value.compute;
-              Object.getOwnPropertyNames(this.data).forEach(function(k) {
-                var re = new RegExp(k, 'g');
-                evalstr = evalstr.replace(re, this.data[k].value);
-              }, this);
-              return evalstr;
-            },
-
-            _recompute: function(evalStr) {
-              return eval(evalStr);
-            },
-
-            newConfig: function(ciderConf) {
+            _newConfig: function(ciderConf) {
               this.name = ciderConf.name;
               this.questions = ciderConf.questions;
-              this.questions.forEach(function(q) { 
-                q.isAnswered = ciderConf.data[q.variableId].type === 'boolean'; 
-              }, this);
 
-
-              Object.getOwnPropertyNames(ciderConf.data).map(function(key) {
-                var val = ciderConf.data[key];
-                val.name = key;
-                if (val.type === 'boolean')
-                  val.value = false;
-              }, this);
+              // Add name to variable.
+              Object.getOwnPropertyNames(ciderConf.data).forEach(function(k) { ciderConf.data[k].name = k; });
+              // Set boolean to false.
+              Object.getOwnPropertyNames(ciderConf.data).forEach(function(k) {
+                if (ciderConf.data[k].type !== 'boolean') return;
+                ciderConf.data[k].value = false;
+              });
 
               this.data = ciderConf.data;
-              ciderConf.steps.forEach(function(step) {
-                if (step.type === 'if')
-                  step.isHidden = true;
-              });
               this.steps = ciderConf.steps;
-              this.steps
-
-              // Boolean default to false.
-              this.set('numAnswered', 1);
               console.info('Loading new recipe config', ciderConf);
-            },
-
-            ready: function() {
-            },
-            getNumberAnswered: function() {
-              return this.questions.filter(function(q) { return q.isAnswered; }).length;
-            },
-            makeStepLabel: function(data) {
-              var token = data.text.split("{}"), arr = [];
-              if (token.length <= 1) {
-                arr.push({
-                  kind: '',
-                  content: token[0]
-                });
-              }
-              if (token.length == 2) {
-                arr.push({
-                  kind: '',
-                  content: token[0]
-                });
-                arr.push({
-                  kind: 'quantity',
-                  content: data.value + ' ' + data.symbol
-                });
-                arr.push({
-                  kind: '',
-                  content: token[1]
-                });
-              }
-              return {
-                cmpt: arr
-              }
             }
         });
+
+      function adjustValue(val) {
+        if (isNaN(val)) return undefined;
+        if (val.toFixed === undefined) return val;
+        return val.toFixed(1);
+      }
+
     })()
     </script>
 </dom-module>
