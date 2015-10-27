@@ -7,7 +7,7 @@
     del  = require('del'),
     gulp = require('gulp'),
     size = require('gulp-size'),
-    vulcanize = require('gulp-vulcanize'),
+    wct = require('web-component-tester'),
     paths = {
       pages: ['elements/**/*.html', 'elements/*.html', 'index.html'],
       images: 'img/**/*',
@@ -16,6 +16,9 @@
       distImages: 'dist/img/',
       distData: 'dist/data/'
     };
+
+  // Adding test cases.
+  wct.gulp.init(gulp);
 
   /**
    * Default gulp action when just doing "$gulp".
@@ -50,7 +53,7 @@
   });
 
   /** Recreates a distribution package. */
-  gulp.task('dist', ['copy:img', 'copy:data', 'vulcanize']);
+  gulp.task('dist', ['copy:img', 'copy:data', 'vulcanize', 'test:local']);
 
   /** Cleans the distribution folder. */
   gulp.task('clean:dist', function() {
