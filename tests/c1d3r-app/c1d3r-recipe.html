@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../bower_components/web-component-tester/browser.js"></script>
+  <link rel="import" href="../../elements/elements.html">
+  <link rel="import" href="../../elements/c1d3r-recipe/c1d3r-recipe.html">
+</head>
+<body>
+  <template id="t" is="dom-bind">
+    <iron-ajax auto
+        url="../../data/hard-cider.json"
+        handle-as="json"
+        last-response="{{ciderConf}}"></iron-ajax>
+    <c1d3r-recipe id="fixture" configuration="[[ciderConf]]"></c1d3r-recipe>
+  </template>
+  <script>
+    var 
+      config = {
+        isUnsuitable: false,
+        isCloudy: true,
+        volumeInL: 23,
+        og: 1.042,
+        yeastEfficiency: 0.75,
+        degreeAlcool: 7.0,
+        sugarPpg: 46,
+        tanninLvl: 3,
+        juicePh: 5.5,
+        finalPh: 4.5
+      },
+      results = {
+        pecticEnzymeInG: 13.8,
+        potassMetaInG: 2.1,
+        yeastNutrientInG: 5.7,
+        sugarPKgL: 0.3,
+        additionalGravity: 0,
+        chaptizeSugarKg: 0,
+        tanninG: 2.9,
+        acidAddition: 0
+      };
+
+    function deltaEqual(lhs, rhs, delta) {
+      return Math.abs(lhs - rhs) < delta;
+    }
+
+    suite('<c1d3r-recipe>', function() {
+      test('Base recipe verification.', function() {
+        var recipe = document.getElementById('fixture')
+        assert.isTrue(recipe.is === "c1d3r-recipe");
+
+        // Enter recipe parameters
+        Object.getOwnPropertyNames(config).forEach(function(key) {
+          recipe.set('data.' + key + '.value', config[key]);
+        }, this);
+
+        // Check computations.
+        Object.getOwnPropertyNames(results).forEach(function(key) {
+          var
+            expected = results[key],
+            value = recipe.data[key].value;
+
+          switch(typeof(expected)) {
+            case 'number':
+              // Times 1 is conversion from string to number. Thx JS! (sic)
+              assert.closeTo(value * 1, new Number(expected), 0.01, key);
+              break;
+            case 'boolean':
+              assert.strictEqual(value, expected, key);
+              break;
+            default:
+              console.warn('we need : ' + typeof(expected));
+          }
+          
+        }, this);      
+      });
+    });
+  </script>
+</body>
+</html>
