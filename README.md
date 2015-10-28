@@ -7,9 +7,10 @@ The best way to experience C1d3r is to use the online demo found on the home pag
 
 ## Contributors
 Contribution to this project are welcome however they must comply with this projects vision of a simple, easy to use, and focused interactive guide. This being said a project is only as strong as the people who contributes to it. This is why here is a couple of way you may help :
+
 1. Using it! And reporting errors and bugs in the Github issue manager.
 2. Fixing issues reported by other users.
-3. Helping with the user experience and styling. HTML|JS|Polymer
+3. Helping with the user experience and styling. *HTML | JS | Polymer*
 4. Contributing recipes, see the [wiki page](https://github.com/malavv/c1d3r/wiki/Contributing-Recipes) for more details.
 
 This is the lovely people to thank for this guide:
@@ -23,8 +24,11 @@ After building the application, you will have a local instance of C1d3r which us
 
 ### Prerequisite
 A few tools for web development are required to build this project.
+
 1. NodeJS
-  Get it from their [website](https://nodejs.org/en/) and make sure npm is accessible from the command line.
+  * [Website](https://nodejs.org/en/)
+  * Install : Run their installer for your OS.
+  * Verify : Make sure npm is accessible from the command line.
 2. Bower package manager
   * [Website](https://nodejs.org/en/)
   * Install :```npm install -g bower```
