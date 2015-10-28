@@ -35,13 +35,10 @@ A few tools for web development are required to build this project.
 3. Gulp builder
   * [Website](http://gulpjs.com/)
   * Install :```npm install -g gulp-cli```
-4. Gulp builder
-  * [Website](http://gulpjs.com/)
-  * Install :```npm install -g gulp-cli```
-5. Polymer Vulcanizer
+4. Polymer Vulcanizer
   * [Website](https://www.polymer-project.org/1.0/)
   * Install :```npm install -g vulcanize```
-6. Polymer Web Component Tester
+5. Polymer Web Component Tester
   * [Website](https://www.polymer-project.org/1.0/)
   * Install :```npm install -g web-component-tester```
 
@@ -53,11 +50,7 @@ $bower update
 ```
 
 ## Serving the instance
-### For development
-```gulp serve:dev```
 
-### To run test suite
-```gulp test:local```
-
-### To generate distribution files
-```gulp dist```
+* **Development** ```gulp serve:dev```
+* **Testing** ```gulp test:local```
+* **Production** ```gulp dist```
