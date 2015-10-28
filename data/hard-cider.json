@@ -31,7 +31,7 @@
       "variableId": "sugarPpg"
     },
     {
-      "label": "From 0 (no tannin) to 5 (full blown tannin)",
+      "label": "From 0 (no tannin) to 10 (full blown tannin)",
       "variableId": "tanninLvl"
     },
     {
@@ -49,68 +49,37 @@
     "isCloudy": { "type" : "boolean" },
     "volumeInL": { "type" : "volume" },
     "og": { "type" : "text" },
-    "liters2gallons": {
-      "type" : "computed",
-      "compute": "(1/3.78541)"
-    },
-    "kg2lb": {
-      "type" : "computed",
-      "compute": "2.20462262"
-    },
-    "tspPecticEnzymeInG": {
-      "type" : "computed",
-      "compute": "4.0"
-    },
-    "tspPotassMetaInG": {
-      "type" : "computed",
-      "compute": "6.2"
-    },
-    "tspYeastNutrientInG": {
-      "type" : "computed",
-      "compute": "3.3"
-    },
-    "tspWineTanninInG": {
-      "type" : "computed",
-      "compute": "2.8"
-    },
-    "pecticEnzymeInG": {
-      "type" : "computed",
-      "compute": "(1/2) * {{volumeInL}} * {{liters2gallons}} * {{tspPecticEnzymeInG}}"
-    },
-    "potassMetaInG": {
-      "type" : "computed",
-      "compute": "(1/4) * (1/5) * {{volumeInL}} * {{liters2gallons}} * {{tspPotassMetaInG}}"
-    },
-    "yeastNutrientInG": {
-      "type" : "computed",
-      "compute": "(1/4) * {{volumeInL}} * {{liters2gallons}} * {{tspYeastNutrientInG}}"
-    },
+    "tanninLvl": { "type" : "text" },
     "yeastEfficiency": { "type" : "text" },
     "degreeAlcool": { "type" : "text" },
     "sugarPpg": { "type" : "text" },
-    "sugarPKgL": {
+    "juicePh": { "type" : "text" },
+    "finalPh": { "type" : "text" },
+
+    "pecticEnzymeInG": {
       "type" : "computed",
-      "compute": "({{sugarPpg}} / 1000) * (1/{{liters2gallons}}) * {{kg2lb}}"
+      "compute": "528.34 * {{volumeInL}} / 1000"
     },
-    "additionalGravity": {
+    "potassMetaInG": {
       "type" : "computed",
-      "compute": "1 - {{og}} + ({{degreeAlcool}}/(131.25*{{yeastEfficiency}}))"
+      "compute": "((52.7*({{juicePh}}*{{juicePh}}*{{juicePh}}) - 459*({{juicePh}}*{{juicePh}}) + 1352.6*{{juicePh}} - 1338.6) / 0.57) * {{volumeInL}} / 1000"
+    },
+    "yeastNutrientInG": {
+      "type" : "computed",
+      "compute": "217.94 * {{volumeInL}} / 1000"
     },
     "chaptizeSugarKg": {
       "type" : "computed",
-      "compute": "({{additionalGravity}}*{{volumeInL}})/{{sugarPKgL}}"
+      "compute": "((((4 * {{degreeAlcool}})/(525 * {{yeastEfficiency}}) - {{og}} + 1) * 1000) / ({{sugarPpg}} * 2.20462 * 3.78541)) * {{volumeInL}}"
     },
-    "tanninLvl": { "type" : "text" },
     "tanninG": {
       "type": "computed",
-      "compute": "(1/4) * {{volumeInL}} * {{liters2gallons}} * {{tspWineTanninInG}} * ({{tanninLvl}}/5)"
+      "compute": "(({{tanninLvl}} / 10) * 160) * {{volumeInL}} / 1000"
     },
     "acidAddition": {
       "type" : "computed",
       "compute": "0"
-    },
-    "juicePh": { "type" : "text" },
-    "finalPh": { "type" : "text" }
+    }
   },
 
   "steps": [
