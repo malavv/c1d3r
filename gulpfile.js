@@ -8,6 +8,7 @@
     gulp = require('gulp'),
     size = require('gulp-size'),
     wct = require('web-component-tester'),
+    vulcanize = require('gulp-vulcanize'),
     paths = {
       pages: ['elements/**/*.html', 'elements/*.html', 'index.html'],
       images: 'img/**/*',
