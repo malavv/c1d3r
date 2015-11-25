@@ -79,6 +79,14 @@
     "acidAddition": {
       "type" : "computed",
       "compute": "(Math.pow((Math.pow(10, -{{finalPh}}) - Math.pow(10, -{{juicePh}})), 2) / 7.94E-5 + (Math.pow(10, -{{finalPh}}) - Math.pow(10, -{{juicePh}}))) * {{volumeInL}} * 176.12"
+    },
+    "finalVolumeInL": {
+      "type" : "computed",
+      "compute": "({{og}} * {{volumeInL}} + {{chaptizeSugarKg}}) / {{totalGravity}}"
+    },
+    "totalGravity": {
+      "type" : "computed",
+      "compute": "(4 * {{degreeAlcool}})/(525 * {{yeastEfficiency}}) + 1"
     }
   },
 
