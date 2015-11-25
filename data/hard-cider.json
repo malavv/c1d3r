@@ -112,6 +112,9 @@
       "template": "Add your sugar. {{chaptizeSugarKg}} kg to achieve the alcohol you requested."
     },
     {
+      "template": "You should now have {{finalVolumeInL}} L of solution."
+    },
+    {
       "template": "Add {{acidAddition}} g of ascetic acid to achieve required PH."
     },
     {
