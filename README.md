@@ -1,12 +1,13 @@
 # c1d3r
-C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easily followable recipes that beginners and experts alike can follow. This is not a recipe maker nor a brewing simulator.
+C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factors in certain parameters and which will then impact the quantities and steps that are produced. 
 
-C1d3r is a single page web application which offers a few recipe and a custom mode. In the custom mode, the user defines the required target levels of ingredients.
+This project is meant to be simple and straight to the point. It offers flexibility but only based on pre-existing recipes. This is therefore not meant to be a generic recipe maker, nor a brewing simulator. Other products are much better at doing this. The core of the C1d3r application is its set of curated recipes. It will always have a custom mode, that allows some basic calculation to be done, but it is not it's intended use case.
+ 
+By leveraging web technologies, the C1d3r application can be access from your browser either remotely or on a local installation. If using it remotely, it also has the possibility to be bookmarked. The online deployment of the app is accessible at this address : https://malavv.github.io/c1d3r/.
 
-The best way to experience C1d3r is to use the online demo found on the home page at: https://malavv.github.io/c1d3r/. However, deploying your own instance is straightforward.
 
 ## Contributors
-Contribution to this project are welcome however they must comply with this projects vision of a simple, easy to use, and focused interactive guide. This being said a project is only as strong as the people who contributes to it. This is why here is a couple of way you may help :
+Contribution to this project are welcome, and this project is only as strong as the people who contributes to it. However, all work must comply with this projects vision of a simple, easy to use, and focused interactive guide. Here is a couple of way you may help :
 
 1. Using it! And reporting errors and bugs in the Github issue manager.
 2. Fixing issues reported by other users.
