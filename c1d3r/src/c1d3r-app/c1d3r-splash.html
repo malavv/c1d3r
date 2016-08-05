@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="c1d3r-splash">
+  <template>
+
+    <style include="iron-flex iron-flex-factors"></style>
+
+    <style>
+      :host {
+        display: block;
+        @apply(--layout-horizontal);
+        padding-top: 2em;
+        font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
+      }
+
+      div#app-splash {
+        width: 600px;
+      }
+
+      div#app-title {
+        font-size: 4em;
+      }
+
+      div#app-desc {
+        text-align: justify;
+      }
+
+      div.splash-recipe {
+        width: 200px;
+      }
+    </style>
+
+    <div class="flex-4"></div>
+
+    <div id="app-splash">
+      <div id="app-title">C1d3r</div>
+
+      <div id="app-desc">
+        <p>
+          C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factors in certain parameters and which will then impact the quantities and steps that are produced.
+        </p>
+        <p>
+          This project is meant to be simple and straight to the point. It offers flexibility but only based on pre-existing recipes. This is therefore not meant to be a generic recipe maker, nor a brewing simulator. Other products are much better at doing this. The core of the C1d3r application is its set of curated recipes. It will always have a custom mode, that allows some basic calculation to be done, but it is not it's intended use case.
+        </p>
+      </div>
+
+      <div class="layout horizontal wrap">
+        <template is="dom-repeat" items="{{recipes}}" as="recipe">
+          <div class="splash-recipe">Recipe: <span>{{recipe}}</span></div>
+        </template>
+        <div class="flex"></div>
+      </div>
+    </div>
+
+    <div class="flex-1"></div>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'c1d3r-splash',
+
+      hostAttributes: {},
+
+      properties: {
+        recipes: {
+          type: Array,
+          value: () => []
+        }
+      }
+
+    });
+  </script>
+</dom-module>

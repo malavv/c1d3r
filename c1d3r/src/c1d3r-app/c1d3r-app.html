@@ -1,13 +1,23 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="c1d3r-recipe.html">
+<link rel="import" href="c1d3r-splash.html">
+
 <dom-module id="c1d3r-app">
   <template>
+
     <style>
-      :host {
-        display: block;
-      }
+      :host { display: block; }
     </style>
-    <h2>Hello [[prop1]]</h2>
+
+    <c1d3r-splash recipes="[[recipes]]"></c1d3r-splash>
+
+    <!-- Recipe Data -->
+    <c1d3r-recipe url="/data/recipe1.json"></c1d3r-recipe>
+    <c1d3r-recipe url="/data/recipe1.json"></c1d3r-recipe>
+    <c1d3r-recipe url="/data/recipe1.json"></c1d3r-recipe>
+    <c1d3r-recipe url="/data/recipe1.json"></c1d3r-recipe>
+
   </template>
 
   <script>
@@ -16,12 +26,19 @@
       is: 'c1d3r-app',
 
       properties: {
-        prop1: {
-          type: String,
-          value: 'c1d3r-app',
-        },
+        recipes: {
+          type: Array,
+          value: () => []
+        }
       },
 
+      ready() {
+        this.set('recipes', this._allRecipes());
+      },
+
+      _allRecipes() {
+        return Polymer.dom(this.root).querySelectorAll('c1d3r-recipe');
+      }
     });
   </script>
 </dom-module>

@@ -124,12 +124,12 @@
           observer: '_chosenChanged'
         }
       },
-      customRecipeHandler: function() {
+      customRecipeHandler() {
         this.chosen = "custom";
         this.hidden = true;
         console.log('customRecipeHandler');
       },
-      _chosenChanged: function() {
+      _chosenChanged() {
         this.hidden = this.chosen !== '';
       }
     });
