@@ -1,60 +1,120 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <dom-module id="c1d3r-splash">
   <template>
-
     <style include="iron-flex iron-flex-factors"></style>
 
     <style>
       :host {
         display: block;
         @apply(--layout-horizontal);
-        padding-top: 2em;
+        @apply(--layout-fit);
         font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
+
+        background: url(splash_brown.jpg) right center no-repeat;
+        background-size: cover;
+        color: #fafafa;
       }
 
-      div#app-splash {
+      div#app-splash-content {
         width: 600px;
+        padding-top: 5em;
       }
 
       div#app-title {
         font-size: 4em;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       div#app-desc {
         text-align: justify;
+        padding-top: 1em;
+        font-size: 1.2em;
+      }
+
+      iron-selector {
+        padding-top: 2em;
       }
 
       div.splash-recipe {
-        width: 200px;
+        width: 290px;
+        height: 45px;
+        cursor: pointer;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        margin: 0 5px 20px 5px;
+        border-radius: 10px;
+        font-size: 1.1em;
+        padding-top: 1.1em;
+        box-shadow: 2px 2px 1px 1px rgba(0,0,0,0.75);
+      }
+
+      .iron-selected {
+        background: #eee;
+      }
+
+      paper-dropdown-menu.custom {
+        position: absolute;
+        right: 10px;
+        bottom: 0;
+        width: 7em;
+        color: #fafafa;
+
+        --paper-input-container-input: {
+          color: #ccc;
+          font-style: normal;
+          text-transform: uppercase;
+        }
+
+        /* no underline */
+        --paper-input-container-underline: {
+          display: none;
+        }
       }
     </style>
 
+    <!--background space on the left-->
     <div class="flex-4"></div>
 
-    <div id="app-splash">
-      <div id="app-title">C1d3r</div>
+    <!--Content stripe.-->
+    <div id="app-splash-content">
 
+      <!--Title-->
+      <div id="app-title">C1D3R</div>
+
+      <!--Description-->
       <div id="app-desc">
-        <p>
-          C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factors in certain parameters and which will then impact the quantities and steps that are produced.
-        </p>
-        <p>
-          This project is meant to be simple and straight to the point. It offers flexibility but only based on pre-existing recipes. This is therefore not meant to be a generic recipe maker, nor a brewing simulator. Other products are much better at doing this. The core of the C1d3r application is its set of curated recipes. It will always have a custom mode, that allows some basic calculation to be done, but it is not it's intended use case.
-        </p>
+        <p>C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factors in certain parameters and which will then impact the quantities and steps that are produced.</p>
+        <p>This project is meant to be simple and straight to the point. It offers flexibility but only based on pre-existing recipes. This is therefore not meant to be a generic recipe maker, nor a brewing simulator. Other products are much better at doing this. The core of the C1d3r application is its set of curated recipes. It will always have a custom mode, that allows some basic calculation to be done, but it is not it's intended use case.</p>
       </div>
 
-      <div class="layout horizontal wrap">
+      <!--Recipe Selector-->
+      <iron-selector selected-item="{{recipe}}" class="layout horizontal wrap">
         <template is="dom-repeat" items="{{recipes}}" as="recipe">
-          <div class="splash-recipe">Recipe: <span>{{recipe}}</span></div>
+          <div class="splash-recipe">{{recipe}}</div>
         </template>
         <div class="flex"></div>
-      </div>
+      </iron-selector>
+
     </div>
 
+    <!--background space on the right-->
     <div class="flex-1"></div>
+
+    <paper-dropdown-menu class="custom" vertical-align="bottom">
+      <paper-listbox class="dropdown-content" attr-for-selected="locale" selected="en">
+        <paper-item locale="en">English</paper-item>
+        <paper-item locale="fr">Français</paper-item>
+      </paper-listbox>
+    </paper-dropdown-menu>
 
   </template>
 
@@ -69,7 +129,19 @@
         recipes: {
           type: Array,
           value: () => []
+        },
+        recipe: {
+          type: Object,
+          value: () => {}
         }
+      },
+
+      observers: [
+        '_recipeChanged(recipe)'
+      ],
+
+      _recipeChanged(recipe) {
+        console.log('_recipeChanged', recipe);
       }
 
     });
