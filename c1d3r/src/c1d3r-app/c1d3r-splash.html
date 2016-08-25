@@ -6,6 +6,8 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
+<link rel="import" href="../../bower_components/paper-styles/classes/shadow.html">
+
 <dom-module id="c1d3r-splash">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -14,8 +16,6 @@
       :host {
         display: block;
         @apply(--layout-horizontal);
-        /*@apply(--layout-fit);*/
-        font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
 
         background: url(splash_brown.jpg) right center no-repeat;
         background-size: cover;
@@ -37,11 +37,8 @@
       div#app-desc {
         text-align: justify;
         padding-top: 1em;
+        padding-bottom: 2em;
         font-size: 1.2em;
-      }
-
-      iron-selector {
-        padding-top: 2em;
       }
 
       div.splash-recipe {
@@ -49,35 +46,12 @@
         height: 45px;
         cursor: pointer;
         text-align: center;
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(10, 10, 10, 0.6);
         margin: 0 5px 20px 5px;
         border-radius: 10px;
         font-size: 1.1em;
         padding-top: 1.1em;
-        box-shadow: 2px 2px 1px 1px rgba(0,0,0,0.75);
-      }
-
-      .iron-selected {
-        background: #eee;
-      }
-
-      paper-dropdown-menu.custom {
-        position: absolute;
-        right: 10px;
-        bottom: 0;
-        width: 7em;
-        color: #fafafa;
-
-        --paper-input-container-input: {
-          color: #ccc;
-          font-style: normal;
-          text-transform: uppercase;
-        };
-
-        /* no underline */
-        --paper-input-container-underline: {
-          display: none;
-        };
+        color: #aaa;
       }
     </style>
 
@@ -99,7 +73,7 @@
       <!--Recipe Selector-->
       <div class="layout horizontal wrap">
         <template is="dom-repeat" items="{{recipes}}">
-          <div class="splash-recipe" on-tap="recipeSelected">{{item}}</div>
+          <div class="splash-recipe shadow-elevation-6dp" on-tap="recipeSelected">{{item}}</div>
         </template>
         <div class="flex"></div>
       </div>
