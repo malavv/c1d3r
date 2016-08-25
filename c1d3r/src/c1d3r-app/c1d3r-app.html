@@ -1,16 +1,27 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
 <link rel="import" href="c1d3r-recipe.html">
 <link rel="import" href="c1d3r-splash.html">
+<link rel="import" href="c1d3r-footer.html">
 
 <dom-module id="c1d3r-app">
   <template>
 
     <style>
-      :host { display: block; }
+      :host {
+        display: block;
+        @apply(--layout-vertical);
+      }
+      c1d3r-splash {
+        @apply(--layout-flex);
+      }
     </style>
 
-    <c1d3r-splash recipes="[[recipes]]"></c1d3r-splash>
+    <c1d3r-splash on-recipe="recipeSelected" recipes="[[recipes]]"></c1d3r-splash>
+
+    <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Recipe Data -->
     <c1d3r-recipe url="/data/recipe1.json"></c1d3r-recipe>
@@ -26,6 +37,10 @@
       is: 'c1d3r-app',
 
       properties: {
+        locale: {
+          value: 'en',
+          observer: '_localeChanged'
+        },
         recipes: {
           type: Array,
           value: () => []
@@ -33,11 +48,15 @@
       },
 
       ready() {
-        this.set('recipes', this._allRecipes());
+        this.set('recipes', Polymer.dom(this.root).querySelectorAll('c1d3r-recipe'));
       },
 
-      _allRecipes() {
-        return Polymer.dom(this.root).querySelectorAll('c1d3r-recipe');
+      recipeSelected(evt) {
+        console.info('recipe ' + evt.detail.url + ' selected');
+      },
+
+      _localeChanged(newLangCode, oldLangCode) {
+        console.info('locale changed from ' + oldLangCode + ' to ' + newLangCode);
       }
     });
   </script>

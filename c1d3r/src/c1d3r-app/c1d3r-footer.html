@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
+
+<dom-module id="c1d3r-footer">
+  <template>
+    <style include="iron-flex iron-flex-factors"></style>
+
+    <style>
+      :host {
+        @apply(--layout-horizontal);
+        box-shadow: inset 0 0 10px #000000;
+        background-color: #111;
+      }
+      paper-dropdown-menu.custom {
+        width: 7em;
+
+        --paper-input-container-input: {
+          color: #aaa;
+          font-style: normal;
+        };
+
+        /* no underline */
+        --paper-input-container-underline: {
+          display: none;
+        };
+      }
+    </style>
+
+    <!--background space on the left-->
+    <div class="flex"></div>
+
+    <!--Content stripe-->
+    <div>
+      <!-- Locale -->
+      <paper-dropdown-menu class="custom" vertical-align="bottom" no-label-float="true">
+        <paper-listbox class="dropdown-content" selected="{{locale}}" attr-for-selected="code">
+          <paper-item code="en">English</paper-item>
+          <paper-item code="fr">French</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'c1d3r-footer',
+
+      hostAttributes: {},
+
+      properties: {
+        locale: {
+          type: String,
+          notify: true
+        }
+      }
+    });
+  </script>
+</dom-module>

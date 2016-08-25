@@ -14,7 +14,7 @@
       :host {
         display: block;
         @apply(--layout-horizontal);
-        @apply(--layout-fit);
+        /*@apply(--layout-fit);*/
         font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
 
         background: url(splash_brown.jpg) right center no-repeat;
@@ -72,12 +72,12 @@
           color: #ccc;
           font-style: normal;
           text-transform: uppercase;
-        }
+        };
 
         /* no underline */
         --paper-input-container-underline: {
           display: none;
-        }
+        };
       }
     </style>
 
@@ -97,24 +97,17 @@
       </div>
 
       <!--Recipe Selector-->
-      <iron-selector selected-item="{{recipe}}" class="layout horizontal wrap">
-        <template is="dom-repeat" items="{{recipes}}" as="recipe">
-          <div class="splash-recipe">{{recipe}}</div>
+      <div class="layout horizontal wrap">
+        <template is="dom-repeat" items="{{recipes}}">
+          <div class="splash-recipe" on-tap="recipeSelected">{{item}}</div>
         </template>
         <div class="flex"></div>
-      </iron-selector>
+      </div>
 
     </div>
 
     <!--background space on the right-->
     <div class="flex-1"></div>
-
-    <paper-dropdown-menu class="custom" vertical-align="bottom">
-      <paper-listbox class="dropdown-content" attr-for-selected="locale" selected="en">
-        <paper-item locale="en">English</paper-item>
-        <paper-item locale="fr">Français</paper-item>
-      </paper-listbox>
-    </paper-dropdown-menu>
 
   </template>
 
@@ -129,19 +122,11 @@
         recipes: {
           type: Array,
           value: () => []
-        },
-        recipe: {
-          type: Object,
-          value: () => {}
         }
       },
 
-      observers: [
-        '_recipeChanged(recipe)'
-      ],
-
-      _recipeChanged(recipe) {
-        console.log('_recipeChanged', recipe);
+      recipeSelected(evt) {
+        this.fire('recipe', evt.model.__data__.item)
       }
 
     });
