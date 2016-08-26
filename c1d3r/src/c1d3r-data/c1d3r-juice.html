@@ -1,0 +1,29 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="c1d3r-juice">
+  <template>
+    <style></style>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'c1d3r-juice',
+
+      hostAttributes: {
+        hidden: true
+      },
+
+      properties: {
+        data: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      ready() {
+        this.data = {};
+      }
+    });
+  </script>
+</dom-module>

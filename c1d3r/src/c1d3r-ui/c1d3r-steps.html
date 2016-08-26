@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="c1d3r-steps">
+  <template>
+    <style include="iron-flex iron-flex-factors"></style>
+    <style>
+      :host {}
+    </style>
+
+    <h2>Guide</h2>
+
+    <div>
+      <span>Recipe</span>
+      <span>{{recipe}}</span>
+    </div>
+
+    <div>
+      <span>Juice</span>
+      <span>{{juice}}</span>
+    </div>
+
+    <div>
+      <span>Guide</span>
+      <span>{{guide}}</span>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'c1d3r-steps',
+
+      hostAttributes: {},
+
+      properties: {
+        recipe: {
+          type: Object,
+          notify: true
+        },
+        juice: {
+          type: Object,
+          notify: true
+        },
+        guide: {
+          type: Object,
+          notify: true
+        }
+      }
+    });
+  </script>
+</dom-module>
