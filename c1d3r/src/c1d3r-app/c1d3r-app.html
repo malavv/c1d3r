@@ -31,7 +31,7 @@
     <iron-pages selected="{{selected}}">
       <c1d3r-splash on-recipe="recipeSelected" recipes="[[recipes]]"></c1d3r-splash>
       <c1d3r-tutorial on-home="_navHome" on-next="_navRecipe" on-store-skip="_storeSkip"></c1d3r-tutorial>
-      <c1d3r-wizard on-home="_navHome"></c1d3r-wizard>
+      <c1d3r-wizard on-home="_navHome" recipe="{{recipe}}"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
@@ -66,6 +66,10 @@
           type: Number,
           value: 0,
           observer: '_pageChanged'
+        },
+        recipe: {
+          type: Object,
+          notify: true
         }
       },
 
@@ -76,6 +80,7 @@
       recipeSelected(evt) {
         console.info('recipe ' + evt.detail.url + ' selected');
         this.$$('iron-pages').selectIndex(this.data.skipTutorial ? 2 : 1);
+        this.set('recipe', evt.detail);
       },
 
       _localeChanged(newLangCode, oldLangCode) {
