@@ -1,13 +1,130 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
 <dom-module id="c1d3r-tutorial">
   <template>
-
+    <style include="iron-flex iron-flex-factors"></style>
     <style>
-      :host {}
+      :host {
+        @apply(--layout-horizontal);
+        background-color: #eee;
+      }
+      div.content {
+        @apply(--layout-vertical);
+        padding-top: 3em;
+        max-width: 600px;
+      }
+
+      div.title {
+        font-size: 2em;
+        font-weight: 400;
+        padding-bottom: 1em;
+      }
+
+      div.desc svg {
+        padding: 1.5em 0;
+      }
+
+      div.desc div.skip {
+        font-size: 0.8em;
+        padding-top: 2em;
+      }
+
+      div.desc div.nav {
+        @apply(--layout-horizontal);
+      }
     </style>
 
-    <div>tutorial</div>
+    <div class="flex"></div>
+
+    <div class="content">
+      <div class="title">How it works?</div>
+
+      <div class="desc">
+
+        <p>
+          In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.
+        </p>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 568.87883 23.168313" version="1.1">
+          <g
+              id="layer1"
+              transform="translate(-218.47647,-709.19386)">
+            <circle
+                style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                id="path3350"
+                cx="229.80971"
+                cy="720.5271"
+                r="8.8332415" />
+            <path
+                style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                d="m 238.92139,720.52709 162.63456,0"
+                id="path4154" />
+            <circle
+                style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                id="path3350-2"
+                cx="411.57922"
+                cy="720.75507"
+                r="8.8332415" />
+            <path
+                style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                d="m 420.6909,720.75505 162.63455,0"
+                id="path4154-3" />
+            <circle
+                style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                id="path3350-7"
+                cx="594.2525"
+                cy="720.80096"
+                r="8.8332415" />
+            <path
+                style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                d="m 603.36418,720.8009 162.63455,0"
+                id="path4154-9" />
+            <circle
+                style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                id="path3350-2-8"
+                cx="776.02203"
+                cy="721.02893"
+                r="8.8332415" />
+            <circle
+                style="fill:#d45500;fill-opacity:1;stroke-width:5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+                id="path4200"
+                cx="229.86606"
+                cy="720.57648"
+                r="6.4732141" />
+          </g>
+        </svg>
+
+
+        <p>
+          This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.
+        </p>
+
+        <ul>
+          <li>Stage 1 being an introductory page that will describe the style and type of the recipe.</li>
+          <li>Stage 2 allows the user to describe the apple juice and adjustable ingredients that will serve as the base of the hard cider.</li>
+          <li>Stage 3 dictates the steps that were generated to best fit the initial ingredients that were proposed.</li>
+          <li>Stage 4 proposes way to save and archive the initial conditions and steps for future references.</li>
+        </ul>
+
+        <div class="skip">
+          <paper-checkbox checked="{{skip}}"></paper-checkbox>
+          Do not show the tutorial again.
+        </div>
+
+        <div class="nav">
+          <div class="flex"></div>
+          <paper-button on-tap="navBack">Go Back</paper-button>
+          <paper-button on-tap="navNext">Skip</paper-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex"></div>
 
   </template>
 
@@ -18,8 +135,21 @@
       hostAttributes: {},
 
       properties: {
-      }
+        skip: {
+          type: Boolean,
+          observer: '_skipChanged'
+        }
+      },
 
+      navBack() { this.fire('back'); },
+
+      navNext() { this.fire('next'); },
+
+      _skipChanged(wantsSkip) {
+        if (!wantsSkip)
+          return;
+        this.fire('store-skip');
+      }
     });
   </script>
 </dom-module>
