@@ -1,12 +1,30 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
 <link rel="import" href="c1d3r-progress.html">
 
 <dom-module id="c1d3r-wizard">
   <template>
-    <style></style>
+    <style include="iron-flex iron-flex-factors"></style>
 
-    <c1d3r-progress step="0"></c1d3r-progress>
+    <style>
+      :host {
+      }
+      div.header {
+        @apply(--layout-horizontal);
+        background-color: #eee;
+        box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+      }
+      div.header c1d3r-progress {
+        margin: 0 auto;
+      }
+    </style>
+
+    <div class="header">
+      <c1d3r-progress step="0"></c1d3r-progress>
+    </div>
+
   </template>
 
   <script>
