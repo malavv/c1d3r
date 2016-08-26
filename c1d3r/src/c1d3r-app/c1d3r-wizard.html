@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="c1d3r-progress.html">
 
 <dom-module id="c1d3r-wizard">
@@ -16,13 +16,16 @@
         background-color: #eee;
         box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.3);
       }
-      div.header c1d3r-progress {
-        margin: 0 auto;
+      div.spacer {
+        @apply(--layout-flex);
       }
     </style>
 
     <div class="header">
+      <paper-button on-tap="navHome">C1D3R</paper-button>
+      <div class="spacer"></div>
       <c1d3r-progress step="0"></c1d3r-progress>
+      <div class="spacer"></div>
     </div>
 
   </template>
@@ -33,7 +36,11 @@
 
       hostAttributes: {},
 
-      properties: {}
+      properties: {},
+
+      navHome() {
+        this.fire('home');
+      }
     });
   </script>
 </dom-module>
