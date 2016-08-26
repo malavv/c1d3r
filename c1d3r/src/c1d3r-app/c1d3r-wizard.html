@@ -51,7 +51,7 @@
     <div class="nav">
       <div class="flex"></div>
       <paper-button on-tap="navBack">Go Back</paper-button>
-      <paper-button on-tap="navNext">Next</paper-button>
+      <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
     </div>
 
   </template>
@@ -92,6 +92,10 @@
 
       onFocus() {
         this.selected = 0;
+      },
+
+      _nextOrFinishStep(selected) {
+        return selected === 3 ? 'Finish' : 'Next';
       }
     });
   </script>
