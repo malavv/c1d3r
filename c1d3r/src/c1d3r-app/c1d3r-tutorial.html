@@ -12,7 +12,7 @@
     <style include="iron-flex iron-flex-factors"></style>
     <style>
       :host {
-        @apply(--layout-horizontal);
+        @apply(--layout-vertical);
         background-color: #eee;
       }
       div.content {
@@ -24,7 +24,8 @@
       div.title {
         font-size: 2em;
         font-weight: 400;
-        padding-bottom: 1em;
+
+        padding: 1.5em 0;
       }
 
       div.desc c1d3r-progress {
@@ -36,50 +37,53 @@
         padding-top: 2em;
       }
 
-      div.desc div.nav {
+      div.nav {
         @apply(--layout-horizontal);
+        padding-bottom: 1em;
       }
     </style>
 
-    <div class="flex"></div>
+    <div class="layout horizontal">
+      <div class="flex"></div>
 
-    <div class="content">
-      <div class="title">How does it works?</div>
+      <div class="content">
+        <div class="title">How does it works?</div>
 
-      <div class="desc">
+        <div class="desc">
+          <p>
+            In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.
+          </p>
 
-        <p>
-          In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.
-        </p>
+          <c1d3r-progress id="progress-example" step="0"></c1d3r-progress>
 
+          <p>
+            This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.
+          </p>
 
-        <c1d3r-progress id="progress-example" step="0"></c1d3r-progress>
+          <ul>
+            <li>Stage 1 being an introductory page that will describe the style and type of the recipe.</li>
+            <li>Stage 2 allows the user to describe the apple juice and adjustable ingredients that will serve as the base of the hard cider.</li>
+            <li>Stage 3 dictates the steps that were generated to best fit the initial ingredients that were proposed.</li>
+            <li>Stage 4 proposes way to save and archive the initial conditions and steps for future references.</li>
+          </ul>
 
-        <p>
-          This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.
-        </p>
-
-        <ul>
-          <li>Stage 1 being an introductory page that will describe the style and type of the recipe.</li>
-          <li>Stage 2 allows the user to describe the apple juice and adjustable ingredients that will serve as the base of the hard cider.</li>
-          <li>Stage 3 dictates the steps that were generated to best fit the initial ingredients that were proposed.</li>
-          <li>Stage 4 proposes way to save and archive the initial conditions and steps for future references.</li>
-        </ul>
-
-        <div class="skip">
-          <paper-checkbox checked="{{skip}}"></paper-checkbox>
-          Do not show the tutorial again.
-        </div>
-
-        <div class="nav">
-          <div class="flex"></div>
-          <paper-button on-tap="navBack">Go Back</paper-button>
-          <paper-button on-tap="navNext">Next</paper-button>
+          <div class="skip">
+            <paper-checkbox checked="{{skip}}"></paper-checkbox>
+            Do not show the tutorial again.
+          </div>
         </div>
       </div>
+
+      <div class="flex"></div>
     </div>
 
     <div class="flex"></div>
+
+    <div class="nav">
+      <div class="flex"></div>
+      <paper-button on-tap="navBack">Go Back</paper-button>
+      <paper-button on-tap="navNext">Next</paper-button>
+    </div>
 
   </template>
 
@@ -93,27 +97,37 @@
         skip: {
           type: Boolean,
           observer: '_skipChanged'
+        },
+        cancelHandle: Number,
+        blinkPeriod: {
+          type: Number,
+          value: 2500
         }
-      },
-
-      ready() {
-        this.async(() => this._test(), 1500);
-      },
-
-      _test() {
-        let s = this.$$('c1d3r-progress').step;
-        this.$$('c1d3r-progress').set('step', (s + 1) % 4);
-        this.async(() => this._test(), 3500);
       },
 
       navBack() { this.fire('home'); },
 
       navNext() { this.fire('next'); },
 
+      _blink() {
+        let progressBar = this.$$('c1d3r-progress');
+        progressBar.set('step', (progressBar.step + 1) % 4);
+        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
+      },
+
       _skipChanged(wantsSkip) {
         if (!wantsSkip)
           return;
         this.fire('store-skip');
+      },
+
+      onBlur() {
+        this.cancelAsync(this.cancelHandle);
+      },
+
+      onFocus() {
+        this.$$('c1d3r-progress').step = 0;
+        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
       }
     });
   </script>

@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="c1d3r-progress.html">
 
@@ -10,6 +11,7 @@
 
     <style>
       :host {
+        @apply(--layout-vertical);
       }
       div.header {
         @apply(--layout-horizontal);
@@ -19,13 +21,37 @@
       div.spacer {
         @apply(--layout-flex);
       }
+      iron-pages {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+      }
+      iron-pages > * {
+        @apply(--layout-flex);
+      }
+      div.nav {
+        @apply(--layout-horizontal);
+        padding-bottom: 1em;
+      }
     </style>
 
     <div class="header">
       <paper-button on-tap="navHome">C1D3R</paper-button>
       <div class="spacer"></div>
-      <c1d3r-progress step="0"></c1d3r-progress>
+      <c1d3r-progress step="{{selected}}"></c1d3r-progress>
       <div class="spacer"></div>
+    </div>
+
+    <iron-pages selected="{{selected}}">
+      <div>Description</div>
+      <div>Juice</div>
+      <div>Steps</div>
+      <div>Final</div>
+    </iron-pages>
+
+    <div class="nav">
+      <div class="flex"></div>
+      <paper-button on-tap="navBack">Go Back</paper-button>
+      <paper-button on-tap="navNext">Next</paper-button>
     </div>
 
   </template>
@@ -36,10 +62,36 @@
 
       hostAttributes: {},
 
-      properties: {},
+      properties: {
+        selected: {
+          type: Number,
+          value: 0
+        }
+      },
 
-      navHome() {
-        this.fire('home');
+      navHome() { this.fire('home'); },
+
+      navBack() {
+        if (this.selected === 0) {
+          this.fire('home');
+          return;
+        }
+        this.set('selected', this.selected - 1);
+      },
+
+      navNext() {
+        if (this.selected === 3) {
+          this.fire('home');
+          return;
+        }
+        this.set('selected', this.selected + 1);
+      },
+
+      onBlur() {
+      },
+
+      onFocus() {
+        this.selected = 0;
       }
     });
   </script>
