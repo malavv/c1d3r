@@ -1,13 +1,22 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
 <dom-module id="c1d3r-recipe">
   <template>
     <style></style>
+
+    <iron-ajax
+        auto
+        url="{{url}}"
+        handle-as="json"
+        last-response="{{ajaxResponse}}"
+        debounce-duration="300"></iron-ajax>
+
   </template>
 
   <script>
     Polymer({
-
       is: 'c1d3r-recipe',
 
       hostAttributes: {
@@ -15,8 +24,42 @@
       },
 
       properties: {
-        url: String,
-        data: String
+        url: {
+          type: String
+        },
+        synopsis: {
+          type: String,
+          value: 'synopsis'
+        },
+        history: {
+          type: String,
+          value: 'history'
+        },
+        details: {
+          type: String,
+          value: 'details'
+        },
+        characteristics: {
+          type: Array,
+          value: () => ['1', '2', '3']
+        },
+        img: {
+          type: String,
+          value: '../../data/img/no-recipe-img.png'
+        },
+        ajaxResponse: {
+          type: Object,
+          observer: 'handleResponse'
+        }
+      },
+
+      handleResponse(response){
+        console.assert(response, 'No response for url ' + this.url);
+        this.set('synopsis', response.synopsis);
+        this.set('history', response.history);
+        this.set('details', response.details);
+        this.set('characteristics', response.characteristics);
+        this.set('img', response.img);
       },
 
       toString() { return this.url; }

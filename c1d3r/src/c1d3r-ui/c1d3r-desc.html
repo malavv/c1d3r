@@ -1,19 +1,42 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <dom-module id="c1d3r-desc">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
-      :host {}
+      :host {
+        @apply(--layout-vertical);
+      }
+
+      div.img img {
+        display: block;
+        object-fit: cover;
+        width: 400px;
+      }
+      div.desc {
+      }
     </style>
 
     <h2>Description</h2>
 
-    <div>
-      <span>Recipe</span>
-      <span>{{recipe}}</span>
+    <div class="layout horizontal flex">
+      <img src="{{recipe.img}}" class="flex" />
+      <div class="desc flex-3">
+        <div>{{recipe}}</div>
+        <div>{{recipe.synopsis}}</div>
+        <div>{{recipe.history}}</div>
+        <div>{{recipe.details}}</div>
+
+        <ul>
+        <template is="dom-repeat" items="{{recipe.characteristics}}">
+          <li>{{item}}</li>
+        </template>
+        </ul>
+      </div>
+      <div class="flex"></div>
     </div>
 
   </template>

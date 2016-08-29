@@ -1,0 +1,11 @@
+{
+  "synopsis": "synopsis recipe 1",
+  "history": "history recipe 1",
+  "details": " details recipe 1",
+  "characteristics": [
+    "c 1",
+    "c 2",
+    "c 3"
+  ],
+  "img": "no-recipe-img.png"
+}
