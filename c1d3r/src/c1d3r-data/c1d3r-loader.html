@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="c1d3r-loader">
+  <template>
+    <style></style>
+
+    <template is="dom-repeat" items="{{urls}}" as="url">
+      <iron-ajax auto url="[[url]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'c1d3r-loader',
+
+      hostAttributes: {
+        hidden: true
+      },
+
+      properties: {
+        // Provided
+        urls: Array,
+        // Loaded
+        recipes: Array
+      },
+
+      handleRecipeData(data) {
+        let raw = data.detail.response;
+        let url = data.model.url;
+        let idx = url.lastIndexOf('/');
+        let baseUrl = idx != -1 ? url.substring(0, idx) : '';
+
+        console.info('processing data for recipe', url);
+
+        this.push('recipes', {
+          synopsis: raw.synopsis,
+          history: raw.history,
+          details: raw.details,
+          characteristics: raw.characteristics,
+          name: raw.name,
+          img: raw.img != null ? baseUrl + '/' + raw.img : '../../data/img/no-recipe-img.png',
+        });
+      }
+    });
+  </script>
+</dom-module>

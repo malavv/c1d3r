@@ -23,20 +23,22 @@
     <h2>Description</h2>
 
     <div class="layout horizontal flex">
-      <img src="{{recipe.img}}" class="flex" />
+      <div class="left layout vertical">
+        <div>
+          <ul>
+            <template is="dom-repeat" items="{{recipe.characteristics}}">
+              <li>{{item}}</li>
+            </template>
+          </ul>
+        </div>
+        <img src="{{recipe.img}}" class="flex" />
+      </div>
       <div class="desc flex-3">
-        <div>{{recipe}}</div>
+        <div>{{recipe.name}}</div>
         <div>{{recipe.synopsis}}</div>
         <div>{{recipe.history}}</div>
         <div>{{recipe.details}}</div>
-
-        <ul>
-        <template is="dom-repeat" items="{{recipe.characteristics}}">
-          <li>{{item}}</li>
-        </template>
-        </ul>
       </div>
-      <div class="flex"></div>
     </div>
 
   </template>

@@ -1,11 +1,12 @@
 {
+  "name": "Dry Hard Cider",
   "synopsis": "synopsis recipe 1",
   "history": "history recipe 1",
   "details": " details recipe 1",
   "characteristics": [
-    "c 1",
-    "c 2",
-    "c 3"
+    "Highly Refreshing",
+    "Low alcohol Content",
+    "Medium to Low Apple Taste"
   ],
-  "img": "no-recipe-img.png"
+  "img": "dryHardCider.png"
 }

@@ -5,7 +5,7 @@
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 
 <link rel="import" href="../c1d3r-ui/c1d3r-footer.html">
-<link rel="import" href="../c1d3r-data/c1d3r-recipe.html">
+<link rel="import" href="../c1d3r-data/c1d3r-loader.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-splash.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-tutorial.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-wizard.html">
@@ -29,18 +29,18 @@
     </style>
 
     <iron-pages selected="{{selected}}">
-      <c1d3r-splash on-recipe="recipeSelected" recipes="[[recipes]]"></c1d3r-splash>
+      <c1d3r-splash recipes="{{recipes}}" on-recipe="recipeSelected"></c1d3r-splash>
       <c1d3r-tutorial on-home="_navHome" on-next="_navRecipe" on-store-skip="_storeSkip"></c1d3r-tutorial>
-      <c1d3r-wizard on-home="_navHome" recipe="{{recipe}}"></c1d3r-wizard>
+      <c1d3r-wizard recipe="{{recipe}}" on-home="_navHome"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Recipe Data -->
-    <c1d3r-recipe url="../../data/recipes/dryHardCider/recipe.json"></c1d3r-recipe>
-    <c1d3r-recipe url="/data/recipe2.json"></c1d3r-recipe>
-    <c1d3r-recipe url="/data/recipe3.json"></c1d3r-recipe>
-    <c1d3r-recipe url="/data/recipe4.json"></c1d3r-recipe>
+    <c1d3r-loader urls="[[urls]]" recipes="{{recipes}}"></c1d3r-loader>
+    <template is="dom-repeat" items="{{urls}}" as="url">
+      <c1d3r-recipe url="{{url}}" recipe="{{recipes.#0}}"></c1d3r-recipe>
+    </template>
 
     <iron-localstorage name="c1d3r-app" value="{{data}}" on-iron-localstorage-load-empty="_initData"></iron-localstorage>
   </template>
@@ -51,6 +51,14 @@
       is: 'c1d3r-app',
 
       properties: {
+        // Recipes Data Locations
+        urls: {
+          type: Array,
+          value: () => [
+            '../../data/recipes/dryHardCider/recipe.json'
+          ]
+        },
+
         locale: {
           value: 'en',
           observer: '_localeChanged'

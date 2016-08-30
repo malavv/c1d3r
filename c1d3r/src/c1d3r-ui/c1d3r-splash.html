@@ -73,7 +73,7 @@
       <!--Recipe Selector-->
       <div class="layout horizontal wrap">
         <template is="dom-repeat" items="{{recipes}}">
-          <div class="splash-recipe shadow-elevation-6dp" on-tap="recipeSelected">{{item}}</div>
+          <div class="splash-recipe shadow-elevation-6dp" on-tap="recipeSelected">{{item.name}}</div>
         </template>
         <div class="flex"></div>
       </div>
@@ -93,10 +93,7 @@
       hostAttributes: {},
 
       properties: {
-        recipes: {
-          type: Array,
-          value: () => []
-        }
+        recipes: Array
       },
 
       recipeSelected(evt) {
