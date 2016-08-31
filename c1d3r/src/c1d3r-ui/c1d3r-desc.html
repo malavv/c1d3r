@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <dom-module id="c1d3r-desc">
@@ -9,20 +10,35 @@
     <style>
       :host {
         @apply(--layout-vertical);
+        font-family: 'Open Sans Condensed', sans-serif;
+      }
+      div.content div.left {
+        width: 23em;
+      }
+      div.content div.left ul {
+        padding: 1.5em 0;
+        margin: 0;
+        font-size: 1.3em;
       }
 
-      div.img img {
-        display: block;
-        object-fit: cover;
-        width: 400px;
-      }
       div.desc {
+        font-size: 1.5em;
+      }
+      div.desc div.name {
+        padding-bottom: 1em;
+        padding-top: 3em;
+        font-weight: bold;
+      }
+      div.desc div.detail {
+        padding-bottom: 1em;
+      }
+      div.content div.spacer {
+        width: 3em;
       }
     </style>
 
-    <h2>Description</h2>
-
-    <div class="layout horizontal flex">
+    <div class="content layout horizontal flex">
+      <div class="flex"></div>
       <div class="left layout vertical">
         <div>
           <ul>
@@ -31,14 +47,16 @@
             </template>
           </ul>
         </div>
-        <img src="{{recipe.img}}" class="flex" />
+        <iron-image src="{{recipe.img}}" sizing="contain" class="flex"></iron-image>
       </div>
-      <div class="desc flex-3">
-        <div>{{recipe.name}}</div>
-        <div>{{recipe.synopsis}}</div>
-        <div>{{recipe.history}}</div>
-        <div>{{recipe.details}}</div>
+      <div class="spacer"></div>
+      <div class="desc flex-4">
+        <div class="name">{{recipe.name}}</div>
+        <div class="detail">{{recipe.synopsis}}</div>
+        <div class="detail">{{recipe.history}}</div>
+        <div class="detail">{{recipe.details}}</div>
       </div>
+      <div class="flex"></div>
     </div>
 
   </template>
