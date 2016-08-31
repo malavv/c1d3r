@@ -1,29 +1,89 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
 <dom-module id="c1d3r-entry">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
-      :host {}
+      :host {
+        @apply(--layout-horizontal);
+      }
+
+      div.sidebar {
+        padding: 2em;
+        width: 17em;
+      }
+      div.sidebar div.warning {
+        border: 1px solid #d04437;
+        border-radius: 5px;
+        padding: 1.5em;
+        background-color: #FADCD9;
+        @apply(--shadow-elevation-2dp);
+        font-size: 0.8em;
+      }
+      div.sidebar div.detail {
+        padding-top: 4em;
+      }
+      div.heading {
+        text-align: center;
+        background-color: #3c3c3c;
+        color: white;
+      }
+      div.entry {
+        @apply(--layout-vertical);
+        min-height: 2em;
+      }
+      div.entry div.header {
+        @apply(--layout-horizontal);
+        align-items: center;
+        margin: auto 0;
+      }
+      div.index {
+        padding: 0 1em;
+      }
+      div.data {
+        text-align: center;
+        width: 10em;
+      }
     </style>
 
-    <h2>Juice</h2>
-
-    <div>
-      <span>Recipe</span>
-      <span>{{recipe}}</span>
+    <div class="sidebar">
+      <div class="warning">
+        Watch out for juice that contains preservatives such as that and such.
+      </div>
+      <div class="detail">
+        Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.
+      </div>
     </div>
 
-    <div>
-      <span>Juice</span>
-      <span>{{juice}}</span>
+    <div class="entryset flex">
+      <div class="heading">Ingredients</div>
+      <div class="entry">
+        <div class="header">
+          <div class="index">1</div>
+          <div class="title flex">Is the juice cloudy?</div>
+          <div class="data">
+            <paper-checkbox></paper-checkbox>
+          </div>
+          <div>
+            <iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon>
+          </div>
+        </div>
+      </div>
+      <div class="heading">Personalization</div>
+      <div class="entry">
+      </div>
     </div>
 
   </template>
 
   <script>
+    let txt = 'Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.';
     Polymer({
       is: 'c1d3r-entry',
 
@@ -38,6 +98,16 @@
           type: Object,
           notify: true
         }
+      },
+      onFocus(evt, b, c) {
+        evt.stopPropagation();
+        this.$$('div.sidebar div.detail').innerText = 'This is the explanation for the first item.';
+        //console.info('onFocus', b, c);
+      },
+      onBlur(evt, b, c) {
+        evt.stopPropagation();
+        this.$$('div.sidebar div.detail').innerText = txt;
+        //console.info('onBlur', b, c);
       }
     });
   </script>
