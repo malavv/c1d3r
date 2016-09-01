@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
@@ -63,15 +64,33 @@
           <div class="index">{{index}}</div>
           <div class="title flex">{{item.label}}</div>
           <div class="data">
-            <paper-checkbox></paper-checkbox>
+            <template is="dom-if" if="{{isBoolean(item)}}">
+              <paper-checkbox></paper-checkbox>
+            </template>
+            <template is="dom-if" if="{{isNumber(item)}}">
+              <paper-input type="number" placeholder="{{item.placeholder}}"></paper-input>
+            </template>
           </div>
           <div><iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon></div>
         </div>
       </template>
 
       <div class="heading">Personalization</div>
-      <div class="entry">
-      </div>
+      <template is="dom-repeat" filter="isAboutAdjustments" items="{{recipe.data}}">
+        <div class="entry">
+          <div class="index">{{index}}</div>
+          <div class="title flex">{{item.label}}</div>
+          <div class="data">
+            <template is="dom-if" if="{{isBoolean(item)}}">
+              <paper-checkbox></paper-checkbox>
+            </template>
+            <template is="dom-if" if="{{isNumber(item)}}">
+              <paper-input type="number" placeholder="{{item.placeholder}}"></paper-input>
+            </template>
+          </div>
+          <div><iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon></div>
+        </div>
+      </template>
     </div>
 
   </template>
@@ -99,7 +118,9 @@
       },
       onFocus(evt) {
         evt.stopPropagation();
-        this.$$('div.sidebar div.detail').innerText = evt.model.__data__.item.details;
+        let html = '<div>Question ' + evt.model.__data__.index + '</div>';
+        html += '<div>' + evt.model.__data__.item.details + '</div>';
+        this.$$('div.sidebar div.detail').innerHTML = html;
       },
       onBlur(evt) {
         evt.stopPropagation();
@@ -107,7 +128,12 @@
       },
       isAboutIngredient(ing) {
         return ing.group === 'ingredient';
-      }
+      },
+      isAboutAdjustments(ing) {
+        return ing.group === 'adjust';
+      },
+      isBoolean(entry) { return entry.datatype === 'boolean'; },
+      isNumber(entry) { return entry.datatype === 'number'; }
     });
   </script>
 </dom-module>
