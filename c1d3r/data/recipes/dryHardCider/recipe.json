@@ -8,5 +8,16 @@
     "Low alcohol Content",
     "Medium to Low Apple Taste"
   ],
-  "img": "dryHardCider.png"
+  "img": "dryHardCider.png",
+
+  "data": [
+    {
+      "id": "isCloudy",
+      "datatype": "boolean",
+      "group": "ingredient",
+      "label": "Is the juice cloudy?",
+      "details": "A cloudy (vs transparent) juice means the juice contains pectin protein that contributes to the gelification of the final product. This is usually undesirable and must be taken into account."
+    }
+  ],
+  "recipeData": []
 }

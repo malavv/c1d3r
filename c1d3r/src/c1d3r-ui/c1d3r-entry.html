@@ -35,13 +35,10 @@
         color: white;
       }
       div.entry {
-        @apply(--layout-vertical);
-        min-height: 2em;
-      }
-      div.entry div.header {
         @apply(--layout-horizontal);
         align-items: center;
         margin: auto 0;
+        min-height: 2em;
       }
       div.index {
         padding: 0 1em;
@@ -54,27 +51,24 @@
 
     <div class="sidebar">
       <div class="warning">
-        Watch out for juice that contains preservatives such as that and such.
+        Watch out for juice that contains preservatives; sorbates, sorbitol, or sulfite.
       </div>
-      <div class="detail">
-        Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.
-      </div>
+      <div class="detail"></div>
     </div>
 
     <div class="entryset flex">
       <div class="heading">Ingredients</div>
-      <div class="entry">
-        <div class="header">
-          <div class="index">1</div>
-          <div class="title flex">Is the juice cloudy?</div>
+      <template is="dom-repeat" filter="isAboutIngredient" items="{{recipe.data}}">
+        <div class="entry">
+          <div class="index">{{index}}</div>
+          <div class="title flex">{{item.label}}</div>
           <div class="data">
             <paper-checkbox></paper-checkbox>
           </div>
-          <div>
-            <iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon>
-          </div>
+          <div><iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon></div>
         </div>
-      </div>
+      </template>
+
       <div class="heading">Personalization</div>
       <div class="entry">
       </div>
@@ -99,15 +93,20 @@
           notify: true
         }
       },
-      onFocus(evt, b, c) {
-        evt.stopPropagation();
-        this.$$('div.sidebar div.detail').innerText = 'This is the explanation for the first item.';
-        //console.info('onFocus', b, c);
+
+      attached() {
+        this.$$('div.sidebar div.detail').innerText = txt;
       },
-      onBlur(evt, b, c) {
+      onFocus(evt) {
+        evt.stopPropagation();
+        this.$$('div.sidebar div.detail').innerText = evt.model.__data__.item.details;
+      },
+      onBlur(evt) {
         evt.stopPropagation();
         this.$$('div.sidebar div.detail').innerText = txt;
-        //console.info('onBlur', b, c);
+      },
+      isAboutIngredient(ing) {
+        return ing.group === 'ingredient';
       }
     });
   </script>
