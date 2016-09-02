@@ -7,6 +7,8 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
+<link rel="import" href="../c1d3r-data/c1d3r-validator.html">
+
 <dom-module id="c1d3r-entry">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -52,10 +54,12 @@
 
     <div class="sidebar">
       <div class="warning">
-        Watch out for juice that contains preservatives; sorbates, sorbitol, or sulfite.
+        Watch out for juice that contains preservatives; sorbates, or sorbitol.
       </div>
       <div class="detail"></div>
     </div>
+
+    <c1d3r-validator validator-name="validator1"></c1d3r-validator>
 
     <div class="entryset flex">
       <div class="heading">Ingredients</div>
@@ -68,7 +72,7 @@
               <paper-checkbox></paper-checkbox>
             </template>
             <template is="dom-if" if="{{isNumber(item)}}">
-              <paper-input type="number" placeholder="{{item.placeholder}}"></paper-input>
+              <paper-input placeholder="{{item.placeholder}}" auto-validate validator="validator1" error-message="Invalid input!"></paper-input>
             </template>
           </div>
           <div><iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon></div>
@@ -85,14 +89,13 @@
               <paper-checkbox></paper-checkbox>
             </template>
             <template is="dom-if" if="{{isNumber(item)}}">
-              <paper-input type="number" placeholder="{{item.placeholder}}"></paper-input>
+              <paper-input type="number" placeholder="{{item.placeholder}}" ></paper-input>
             </template>
           </div>
           <div><iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon></div>
         </div>
       </template>
     </div>
-
   </template>
 
   <script>
@@ -133,7 +136,11 @@
         return ing.group === 'adjust';
       },
       isBoolean(entry) { return entry.datatype === 'boolean'; },
-      isNumber(entry) { return entry.datatype === 'number'; }
+      isNumber(entry) { return entry.datatype === 'number'; },
+
+      test(a, b, c) {
+        console.log("my-custom-validator", a, b, c);
+      }
     });
   </script>
 </dom-module>

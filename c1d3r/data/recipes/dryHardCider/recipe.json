@@ -75,6 +75,24 @@
       "placeholder": 3,
       "above": -0.1,
       "below": 10.0
+    },
+    {
+      "id": "yeastEfficiency",
+      "datatype": "number",
+      "group": "preset",
+      "value": 0.75
+    },
+    {
+      "id": "sugarPpg",
+      "datatype": "number",
+      "group": "preset",
+      "value": 46
+    },
+    {
+      "id": "finalPh",
+      "datatype": "number",
+      "group": "preset",
+      "value": 3.4
     }
   ]
 }

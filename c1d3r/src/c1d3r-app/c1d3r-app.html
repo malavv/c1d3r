@@ -15,32 +15,30 @@
 
     <style>
       :host {
-        display: block;
         @apply(--layout-vertical);
       }
 
       iron-pages {
         @apply(--layout-flex);
         @apply(--layout-vertical);
+        overflow-y: auto;
       }
+
       iron-pages > * {
         @apply(--layout-flex);
       }
     </style>
 
     <iron-pages selected="{{selected}}">
-      <c1d3r-splash recipes="{{recipes}}" on-recipe="recipeSelected"></c1d3r-splash>
-      <c1d3r-tutorial on-home="_navHome" on-next="_navRecipe" on-store-skip="_storeSkip"></c1d3r-tutorial>
-      <c1d3r-wizard recipe="{{recipe}}" on-home="_navHome"></c1d3r-wizard>
+      <c1d3r-splash   recipes="{{recipes}}" on-recipe="recipeSelected"></c1d3r-splash>
+      <c1d3r-tutorial on-next="_navRecipe"  on-home="_navHome" on-store-skip="_storeSkip"></c1d3r-tutorial>
+      <c1d3r-wizard   recipe="{{recipe}}"   on-home="_navHome"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Recipe Data -->
     <c1d3r-loader urls="[[urls]]" recipes="{{recipes}}"></c1d3r-loader>
-    <template is="dom-repeat" items="{{urls}}" as="url">
-      <c1d3r-recipe url="{{url}}" recipe="{{recipes.#0}}"></c1d3r-recipe>
-    </template>
 
     <iron-localstorage name="c1d3r-app" value="{{data}}" on-iron-localstorage-load-empty="_initData"></iron-localstorage>
   </template>
