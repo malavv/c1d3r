@@ -116,18 +116,21 @@
         }
       },
 
-      attached() {
-        this.$$('div.sidebar div.detail').innerText = txt;
+      setDetails(title, content) {
+        this.$$('div.sidebar div.detail').innerHTML = '<div>' + title + '</div><div>' + content + '</div>';
       },
+
+      attached() {
+        this.setDetails('Instructions', txt);
+      },
+
       onFocus(evt) {
         evt.stopPropagation();
-        let html = '<div>Question ' + evt.model.__data__.index + '</div>';
-        html += '<div>' + evt.model.__data__.item.details + '</div>';
-        this.$$('div.sidebar div.detail').innerHTML = html;
+        this.setDetails(this.itemToRowTitle(evt.model.__data__), evt.model.__data__.item.details);
       },
       onBlur(evt) {
         evt.stopPropagation();
-        this.$$('div.sidebar div.detail').innerText = txt;
+        this.setDetails('Instructions', txt);
       },
       isAboutIngredient(ing) {
         return ing.group === 'ingredient';
@@ -137,6 +140,10 @@
       },
       isBoolean(entry) { return entry.datatype === 'boolean'; },
       isNumber(entry) { return entry.datatype === 'number'; },
+
+      itemToRowTitle(dataModel) {
+        return (this.isAboutAdjustments(dataModel.item) ? 'Personalization' : 'Ingredient') + ' ' + dataModel.index;
+      },
 
       test(a, b, c) {
         console.log("my-custom-validator", a, b, c);
