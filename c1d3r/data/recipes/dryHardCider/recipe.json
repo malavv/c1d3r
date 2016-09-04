@@ -24,7 +24,8 @@
       "group": "ingredient",
       "label": "How much liquid? (in Liters)",
       "details": "The volume of the original juice will greatly affect many aspect of the recipe.",
-      "placeholder": 0.0
+      "placeholder": 0.0,
+      "min": 0.0
     },
     {
       "id": "og",

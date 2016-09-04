@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="c1d3r-dataentry">
+  <script>
+    Polymer({
+      is: 'c1d3r-dataentry',
+
+      hostAttributes: {},
+
+      properties: {
+        id: String,
+        title: String,
+        isBool: Boolean,
+        isNumber: Boolean,
+        placeholder: String,
+        value: {
+          type: String,
+          observer: 'valueChanged'
+        },
+        errorMessage: String,
+
+        min: Number
+      },
+
+      initWithData(data) {
+        console.log('initWithData', data);
+        this.set('title', data.label);
+        this.set('isBool', data.datatype === 'boolean');
+        this.set('isNumber', data.datatype === 'number');
+        this.set('placeholder', data.placeholder);
+        this.set('invalid', false);
+        this.set('id', data.id);
+        if (data.min != null)
+          this.set('min', data.min);
+        return this;
+      },
+
+      valueChanged(newValue, oldValue) {
+        console.log('valueChanged', newValue, oldValue);
+        this.set('errorMessage', newValue);
+        this.set('invalid', true);
+      },
+
+
+      invalidChanged(newValue, oldValue) {
+        console.log('invalidChanged', newValue, oldValue)
+      }
+    });
+  </script>
+</dom-module>

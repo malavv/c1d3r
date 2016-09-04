@@ -7,7 +7,10 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
+<link rel="import" href="../../bower_components/iron-validator-behavior/iron-validator-behavior.html">
+
 <link rel="import" href="../c1d3r-data/c1d3r-validator.html">
+<link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
 
 <dom-module id="c1d3r-entry">
   <template>
@@ -59,23 +62,32 @@
       <div class="detail"></div>
     </div>
 
-    <c1d3r-validator validator-name="validator1"></c1d3r-validator>
-
     <div class="entryset flex">
       <div class="heading">Ingredients</div>
-      <template is="dom-repeat" filter="isAboutIngredient" items="{{recipe.data}}">
+      <template is="dom-repeat" items="[[ingEntries]]">
         <div class="entry">
           <div class="index">{{index}}</div>
-          <div class="title flex">{{item.label}}</div>
+          <div class="title flex">{{item.title}}</div>
           <div class="data">
-            <template is="dom-if" if="{{isBoolean(item)}}">
-              <paper-checkbox></paper-checkbox>
+            <template is="dom-if" if="[[item.isBool]]">
+              <paper-checkbox checked="{{item.value}}"></paper-checkbox>
             </template>
-            <template is="dom-if" if="{{isNumber(item)}}">
-              <paper-input placeholder="{{item.placeholder}}" auto-validate validator="validator1" error-message="Invalid input!"></paper-input>
+            <template is="dom-if" if="[[item.isNumber]]">
+              <c1d3r-validator
+                  item="{{item}}"
+                  error-message="{{item.errorMessage}}"
+                  validator-name="[[item.id]]"></c1d3r-validator>
+              <paper-input
+                  auto-validate
+                  placeholder="[[item.placeholder]]"
+                  value="{{item.value}}"
+                  validator$="[[item.id]]"
+                  error-message="{{item.errorMessage}}"></paper-input>
             </template>
           </div>
-          <div><iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon></div>
+          <div>
+            <iron-icon icon="icons:help" on-mouseover="onFocus" on-mouseout="onBlur"></iron-icon>
+          </div>
         </div>
       </template>
 
@@ -108,12 +120,25 @@
       properties: {
         recipe: {
           type: Object,
-          notify: true
+          notify: true,
+          observer: 'onRecipeChanged'
         },
         juice: {
           type: Object,
           notify: true
+        },
+        ingEntries: {
+          type: Array
         }
+      },
+
+      onRecipeChanged(newRecipe) {
+        this.set(
+          'ingEntries',
+          newRecipe.data
+            .filter(data => this.isAboutIngredient(data))
+            .map(data => document.createElement('c1d3r-dataentry').initWithData(data))
+        );
       },
 
       setDetails(title, content) {
@@ -140,13 +165,11 @@
       },
       isBoolean(entry) { return entry.datatype === 'boolean'; },
       isNumber(entry) { return entry.datatype === 'number'; },
-
       itemToRowTitle(dataModel) {
         return (this.isAboutAdjustments(dataModel.item) ? 'Personalization' : 'Ingredient') + ' ' + dataModel.index;
       },
-
-      test(a, b, c) {
-        console.log("my-custom-validator", a, b, c);
+      toRowID(item, idx) {
+        return item.group + idx;
       }
     });
   </script>

@@ -10,7 +10,16 @@
       Polymer.IronValidatorBehavior
     ],
 
+    properties: {
+      item: Object,
+      errorMessage: {
+        type: String,
+        notify: true
+      }
+    },
+
     validateObject: function(obj) {
+      debugger;
       let valid = true;
       for (let key in obj) {
         if (obj[key] !== 'cats') {
@@ -22,12 +31,14 @@
     },
 
     validate: function(values) {
-      if (typeof values === 'object') {
-        return this.validateObject(values);
-      } else {
-        var value = Array.isArray(values) ? values.join('') : values;
-        return value.match(/^(c|ca|cat|cats)?$/) !== null;
-      }
+      console.log('validate', this.min);
+      this.set('errorMessage', 'no error');
+      return false;
+      return (typeof values === 'object')
+          ? this.validateObject(values)
+          : (Array.isArray(values)
+            ? values.join('')
+            : values).match(/^(c|ca|cat|cats)?$/) !== null;
     }
   });
 </script>
