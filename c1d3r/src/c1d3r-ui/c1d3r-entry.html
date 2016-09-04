@@ -84,7 +84,7 @@
           notify: true,
           observer: 'onRecipeChanged'
         },
-        juice: {
+        data: {
           type: Object,
           notify: true
         },
@@ -104,13 +104,19 @@
           'ingEntries',
           newRecipe.data
             .filter(data => data.group === 'ingredient')
-            .map(data => document.createElement('c1d3r-dataentry').initWithData(data))
+            .map(data => document.createElement('c1d3r-dataentry')
+                .initWithData(data)
+                .dataMap((key, val) => this.set('data.' + key, val))
+            )
         );
         this.set(
             'adjustEntries',
             newRecipe.data
                 .filter(data => data.group === 'adjust')
-                .map(data => document.createElement('c1d3r-dataentry').initWithData(data))
+                .map(data => document.createElement('c1d3r-dataentry')
+                    .initWithData(data)
+                    .dataMap((key, val) => this.set('data.' + key, val))
+                )
         );
       },
 

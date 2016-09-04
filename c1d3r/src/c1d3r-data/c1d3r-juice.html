@@ -17,12 +17,17 @@
       properties: {
         data: {
           type: Object,
-          notify: true
+          notify: true,
+          value: function() { return {}; }
         }
       },
 
-      ready() {
-        this.data = {};
+      observers: [
+          '_attributeChanged(data.*)'
+      ],
+
+      _attributeChanged(values) {
+        console.info('juice _attributeChanged', values);
       }
     });
   </script>

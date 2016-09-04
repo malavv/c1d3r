@@ -41,8 +41,14 @@
         return this;
       },
 
-      valueChanged(newValue, oldValue) {
-        console.info(this.id + ' changed from ' + oldValue + ' to ' + newValue);
+      dataMap(valueFunc) {
+        this.valueFunc = valueFunc;
+        return this;
+      },
+
+      valueChanged(value) {
+        console.info('dataentry value changed');
+        this.valueFunc(this.id, value);
       }
     });
   </script>
