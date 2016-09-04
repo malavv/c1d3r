@@ -34,8 +34,8 @@
       "label": "Measure the original gravity of the juice. (In Specific Gravity, SG)",
       "details": "The original gravity is an indicator of the quantity of sugar present in the apples.",
       "placeholder": 1.042,
-      "above": 1.000,
-      "below": 1.100
+      "min": 1.000,
+      "max": 1.100
     },
     {
       "id": "degreeAlcool",
@@ -44,8 +44,8 @@
       "label": "What is your desired ABV?",
       "details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement.",
       "placeholder": 4.5,
-      "above": 3.0,
-      "below": 8.0
+      "min": 3.0,
+      "max": 8.0
     },
     {
       "id": "origTanninLvl",
@@ -54,8 +54,8 @@
       "label": "Original Tanning Levels (0-low, to 10-high)",
       "details": "Tannins levels influence the body and character of the final product.",
       "placeholder": 1,
-      "above": -0.1,
-      "below": 10.1
+      "min": 0,
+      "max": 10
     },
     {
       "id": "juicePh",
@@ -64,8 +64,8 @@
       "label": "What is the PH of the juice?",
       "details": "The PH influences the balance, tanginess, preservations, sulfite levels, and others.",
       "placeholder": 4.0,
-      "above": 1.0,
-      "below": 6.0
+      "min": 1.0,
+      "max": 6.0
     },
     {
       "id": "desiredTanninLvl",
@@ -74,8 +74,8 @@
       "label": "Desired Tanning Levels (0-low, to 10-high)",
       "details": "This makes the link from the level of tannin your juice currently has, and the desired level. Must be above original level. (and on the same scale)",
       "placeholder": 3,
-      "above": -0.1,
-      "below": 10.0
+      "min": 0,
+      "max": 10
     },
     {
       "id": "yeastEfficiency",

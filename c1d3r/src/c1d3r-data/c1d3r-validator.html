@@ -18,27 +18,33 @@
       }
     },
 
-    validateObject: function(obj) {
-      debugger;
-      let valid = true;
-      for (let key in obj) {
-        if (obj[key] !== 'cats') {
-          valid = false;
-          break;
-        }
-      }
-      return valid;
+    _validate(raw) {
+      if (raw == null)
+        throw new Error('No Value');
+
+      let val = raw.trim();
+      if (val.length === 0)
+        throw new Error('No Value');
+
+      let number = Number(val);
+      if (Number.isNaN(Number(val)))
+        throw new Error('Not a valid number');
+
+      if (this.item.min != null && number < this.item.min)
+        throw new Error('Under minimum value of ' + this.item.min);
+      if (this.item.max != null && number > this.item.max)
+        throw new Error('Over maximum value of ' + this.item.max);
+
+      return true;
     },
 
     validate: function(values) {
-      console.log('validate', this.min);
-      this.set('errorMessage', 'no error');
-      return false;
-      return (typeof values === 'object')
-          ? this.validateObject(values)
-          : (Array.isArray(values)
-            ? values.join('')
-            : values).match(/^(c|ca|cat|cats)?$/) !== null;
+      try {
+        return this._validate(values);
+      } catch(err) {
+        this.set('errorMessage', err.message);
+        return false;
+      }
     }
   });
 </script>

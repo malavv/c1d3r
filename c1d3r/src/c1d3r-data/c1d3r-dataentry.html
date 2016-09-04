@@ -13,37 +13,36 @@
         isBool: Boolean,
         isNumber: Boolean,
         placeholder: String,
+        details: String,
+        group: String,
         value: {
           type: String,
           observer: 'valueChanged'
         },
         errorMessage: String,
 
-        min: Number
+        min: Number,
+        max: Number
       },
 
       initWithData(data) {
-        console.log('initWithData', data);
         this.set('title', data.label);
         this.set('isBool', data.datatype === 'boolean');
         this.set('isNumber', data.datatype === 'number');
         this.set('placeholder', data.placeholder);
+        this.set('details', data.details);
+        this.set('group', data.group);
         this.set('invalid', false);
         this.set('id', data.id);
         if (data.min != null)
           this.set('min', data.min);
+        if (data.max != null)
+          this.set('max', data.max);
         return this;
       },
 
       valueChanged(newValue, oldValue) {
-        console.log('valueChanged', newValue, oldValue);
-        this.set('errorMessage', newValue);
-        this.set('invalid', true);
-      },
-
-
-      invalidChanged(newValue, oldValue) {
-        console.log('invalidChanged', newValue, oldValue)
+        console.info(this.id + ' changed from ' + oldValue + ' to ' + newValue);
       }
     });
   </script>
