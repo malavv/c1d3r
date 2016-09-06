@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 
 <dom-module id="c1d3r-steps">
   <template>
@@ -15,8 +16,20 @@
         width: 17em;
       }
       div.content {
+        overflow-y: auto;
         @apply(--layout-flex);
         @apply(--layout-vertical);
+      }
+      div.head {
+        color: #333;
+        padding-top: 30px;
+        padding-bottom: 10px;
+      }
+      div.step {
+        @apply(--shadow-elevation-2dp);
+        margin-top: 1px;
+        padding: 10px;
+        background-color: white;
       }
     </style>
 
@@ -39,7 +52,37 @@
       </div>
     </div>
     <div class="content">
-
+      <div class="content-block">
+        <div class="head">Configuring Juice Properties</div>
+        <div class="step">Acid</div>
+        <div class="step">Metabisulfite</div>
+        <div class="step">Tanin</div>
+        <div class="step">Pectinase</div>
+      </div>
+      <div class="content-block">
+        <div class="head">Sanitization</div>
+        <div class="step">Let liquid rest for 3 hours</div>
+      </div>
+      <div class="content-block">
+        <div class="head">Yeast Prep</div>
+        <div class="step">Add Yeast Nutrient</div>
+        <div class="step">Add Yeast</div>
+        <div class="step">Stir liquid thoroughly</div>
+      </div>
+      <div class="content-block">
+        <div class="head">First Fermentation</div>
+        <div class="step">Ferment in air-locked fermentor for 6 days or until 1.010</div>
+      </div>
+      <div class="content-block">
+        <div class="head">Second Fermentation</div>
+        <div class="step">Transfer and ferment in secondary fermentor for 2 weeks.</div>
+      </div>
+      <div class="content-block">
+        <div class="head">Packaging</div>
+        <div class="step">Transfer to bottling bucket</div>
+        <div class="step">Mix-in Priming Sugar thoroughly</div>
+        <div class="step">Package in bottles</div>
+      </div>
     </div>
   </template>
 
