@@ -6,26 +6,41 @@
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
-      :host {}
+      :host {
+        @apply(--layout-horizontal);
+        overflow-y: auto;
+        background-color: rgb(242, 242, 242);
+      }
+      div.sidebar {
+        width: 17em;
+      }
+      div.content {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+      }
     </style>
 
-    <h2>Guide</h2>
+    <div class="sidebar">
+      <h2>Guide</h2>
 
-    <div>
-      <span>Recipe</span>
-      <span>{{recipe}}</span>
+      <div>
+        <span>Recipe</span>
+        <span>[[recipe]]</span>
+      </div>
+
+      <div>
+        <span>Data</span>
+        <span>[[data]]</span>
+      </div>
+
+      <div>
+        <span>Guide</span>
+        <span>[[guide]]</span>
+      </div>
     </div>
+    <div class="content">
 
-    <div>
-      <span>Juice</span>
-      <span>{{juice}}</span>
     </div>
-
-    <div>
-      <span>Guide</span>
-      <span>{{guide}}</span>
-    </div>
-
   </template>
 
   <script>
@@ -35,18 +50,9 @@
       hostAttributes: {},
 
       properties: {
-        recipe: {
-          type: Object,
-          notify: true
-        },
-        juice: {
-          type: Object,
-          notify: true
-        },
-        guide: {
-          type: Object,
-          notify: true
-        }
+        recipe: Object,
+        data: Object,
+        guide: Object
       }
     });
   </script>
