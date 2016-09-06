@@ -13,7 +13,6 @@
     <style>
       :host {
         @apply(--layout-vertical);
-        background-color: #eee;
       }
       div.content {
         @apply(--layout-vertical);
@@ -41,9 +40,12 @@
         @apply(--layout-horizontal);
         padding-bottom: 1em;
       }
+      div.box {
+        overflow-y: auto;
+      }
     </style>
 
-    <div class="layout horizontal">
+    <div class="box layout horizontal">
       <div class="flex"></div>
 
       <div class="content">
