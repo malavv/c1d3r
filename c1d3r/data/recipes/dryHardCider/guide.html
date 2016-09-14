@@ -25,11 +25,11 @@
 
     <div class="content">
       <div class="content-block">
-        <div class="head">1 Configuring Juice Properties</div>
+        <div class="head">0 Configuring Juice Properties</div>
         <div class="step">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
         <div class="step">0.1 Add {{data.potassMetaAddInG}} g of potassium metabisulfite.</div>
         <div class="step">0.2 Add {{data.tanninAddInG}} g of wine tannin.</div>
-        <div class="step" hidden$="{{!isCloudy}}">0.4 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
+        <div class="step" hidden$="{{!data.isCloudy}}">0.4 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
       </div>
     </div>
 
@@ -90,7 +90,10 @@
         '_dataChanged(data)',
         '_dataAttrChanged(data.*)',
         // attr
-        '_computeAcid(data.juicePh, data.finalPh, data.volumeInL)'
+        '_computeAcid(data.juicePh, data.finalPh, data.volumeInL)',
+        '_potassMetaAddInG(data.juicePh, data.volumeInL)',
+        '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)',
+        '_pectinaseAddInG(data.volumeInL)'
       ],
 
 
@@ -108,12 +111,31 @@
       },
 
       _computeAcid(juicePh, finalPh, volumeInL) {
-        console.log('[dryHardCider]_computeAcid');
         let exp10 = (exp) => Math.pow(10, exp);
         let diff = exp10(-finalPh) - exp10(-juicePh);
         let square = (base) => Math.pow(base, 2);
         let multiplier = square(diff) / 7.94E-5 + diff;
         this.set('data.acidAddInG', multiplier * volumeInL * 176.12);
+      },
+
+      _potassMetaAddInG(juicePh, volumeInL) {
+        let v = ((52.7*(juicePh*juicePh*juicePh) - 459*(juicePh*juicePh) + 1352.6*juicePh - 1338.6) / 0.57) * volumeInL / 1000;
+        this.set('data.potassMetaAddInG', v);
+      },
+
+      _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
+        console.assert(origTanninLvl < 0 || origTanninLvl > 10, 'Original tannin level out of scale.');
+        console.assert(desiredTanninLvl < 0 || desiredTanninLvl > 10, 'Desired tannin level out of scale.');
+        console.assert(origTanninLvl <= desiredTanninLvl, 'Desired tannin must be lower than initial.');
+        let diff = desiredTanninLvl - origTanninLvl;
+        console.assert(diff <= 10, 'Increase is out of range. (1 to 10 scale)');
+
+        let v = ((diff / 10) * 160) * volumeInL / 1000;
+        this.set('data.tanninAddInG', v);
+      },
+
+      _pectinaseAddInG(volumeInL) {
+        this.set('data.pectinaseAddInG', 528.34 * volumeInL / 1000);
       }
     });
   </script>
