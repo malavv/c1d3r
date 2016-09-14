@@ -24,6 +24,7 @@
     </style>
 
     <div class="content">
+      <!--Initial Prep-->
       <div class="content-block">
         <div class="head">0 Configuring Juice Properties</div>
         <div class="step">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
@@ -31,45 +32,36 @@
         <div class="step">0.2 Add {{data.tanninAddInG}} g of wine tannin.</div>
         <div class="step" hidden$="{{!data.isCloudy}}">0.4 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
       </div>
+      <!--Sanitization-->
+      <div class="content-block">
+        <div class="head">1 Sanitization</div>
+        <div class="step">1.0 Let liquid rest for 3 hours</div>
+      </div>
+      <!--Yeast Preparation-->
+      <div class="content-block">
+        <div class="head">2 Yeast Prep</div>
+        <div class="step">2.0 Add {{data.nutrientAddInG}} g of Yeast Nutrient.</div>
+        <div class="step">2.1 Add the content of a Yeast packet.</div>
+        <div class="step">2.3 Stir liquid thoroughly for 2 minutes.</div>
+      </div>
+      <!--First Fermentation-->
+      <div class="content-block">
+        <div class="head">3 First Fermentation</div>
+        <div class="step">3.0 Ferment in an air-locked fermentor for 5 days or until 1.010.</div>
+      </div>
+      <!--Second Fermentation-->
+      <div class="content-block">
+        <div class="head">4 Second Fermentation</div>
+        <div class="step">4.0 Transfer and ferment in secondary fermentor for 2 weeks or until desired dryness.</div>
+      </div>
+      <!-- Packaging and Bottling -->
+      <div class="content-block">
+        <div class="head">5 Packaging</div>
+        <div class="step">5.0 Transfer to bottling bucket.</div>
+        <div class="step">5.1 Mix-in {{data.chaptizationSugarAddKg}} kg of priming sugar (table sugar) thoroughly.</div>
+        <div class="step">5.2 Package in bottles.</div>
+      </div>
     </div>
-
-    <!-- Not Yet Done -->
-    <div class="content-block">
-      <div class="head">1 Sanitization</div>
-      <div class="step">1.0 Let liquid rest for 3 hours</div>
-    </div>
-
-    <!--<div class="content-block">-->
-    <!--<div class="head">Configuring Juice Properties</div>-->
-    <!--<div class="step">Acid</div>-->
-    <!--<div class="step">Metabisulfite</div>-->
-    <!--<div class="step">Tanin</div>-->
-    <!--<div class="step">Pectinase</div>-->
-    <!--</div>-->
-    <!--<div class="content-block">-->
-    <!--<div class="head">Sanitization</div>-->
-    <!--<div class="step">Let liquid rest for 3 hours</div>-->
-    <!--</div>-->
-    <!--<div class="content-block">-->
-    <!--<div class="head">Yeast Prep</div>-->
-    <!--<div class="step">Add Yeast Nutrient</div>-->
-    <!--<div class="step">Add Yeast</div>-->
-    <!--<div class="step">Stir liquid thoroughly</div>-->
-    <!--</div>-->
-    <!--<div class="content-block">-->
-    <!--<div class="head">First Fermentation</div>-->
-    <!--<div class="step">Ferment in air-locked fermentor for 6 days or until 1.010</div>-->
-    <!--</div>-->
-    <!--<div class="content-block">-->
-    <!--<div class="head">Second Fermentation</div>-->
-    <!--<div class="step">Transfer and ferment in secondary fermentor for 2 weeks.</div>-->
-    <!--</div>-->
-    <!--<div class="content-block">-->
-    <!--<div class="head">Packaging</div>-->
-    <!--<div class="step">Transfer to bottling bucket</div>-->
-    <!--<div class="step">Mix-in Priming Sugar thoroughly</div>-->
-    <!--<div class="step">Package in bottles</div>-->
-    <!--</div>-->
   </template>
 
   <script>
@@ -81,7 +73,7 @@
         data: Object,
         isLogging: {
           type: Boolean,
-          value: true
+          value: false
         }
       },
 
@@ -93,23 +85,21 @@
         '_computeAcid(data.juicePh, data.finalPh, data.volumeInL)',
         '_potassMetaAddInG(data.juicePh, data.volumeInL)',
         '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)',
-        '_pectinaseAddInG(data.volumeInL)'
+        '_pectinaseAddInG(data.volumeInL)',
+        '_nutrientAddInG(data.volumeInL)',
+        '_chaptizationSugarAddKg(data.degreeAlcool, data.yeastEfficiency, data.og, data.sugarPpg, data.volumeInL)'
       ],
-
 
       _recipeChanged(recipe) {
         console.log('[dryHardCider]_recipeChanged', recipe.name);
       },
-
       _dataChanged(update) {
         console.log('[dryHardCider]_dataChanged', update);
       },
-
       _dataAttrChanged(evt) {
         if (this.isLogging)
           console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
       },
-
       _computeAcid(juicePh, finalPh, volumeInL) {
         let exp10 = (exp) => Math.pow(10, exp);
         let diff = exp10(-finalPh) - exp10(-juicePh);
@@ -117,12 +107,10 @@
         let multiplier = square(diff) / 7.94E-5 + diff;
         this.set('data.acidAddInG', multiplier * volumeInL * 176.12);
       },
-
       _potassMetaAddInG(juicePh, volumeInL) {
         let v = ((52.7*(juicePh*juicePh*juicePh) - 459*(juicePh*juicePh) + 1352.6*juicePh - 1338.6) / 0.57) * volumeInL / 1000;
         this.set('data.potassMetaAddInG', v);
       },
-
       _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
         console.assert(origTanninLvl < 0 || origTanninLvl > 10, 'Original tannin level out of scale.');
         console.assert(desiredTanninLvl < 0 || desiredTanninLvl > 10, 'Desired tannin level out of scale.');
@@ -133,9 +121,15 @@
         let v = ((diff / 10) * 160) * volumeInL / 1000;
         this.set('data.tanninAddInG', v);
       },
-
       _pectinaseAddInG(volumeInL) {
         this.set('data.pectinaseAddInG', 528.34 * volumeInL / 1000);
+      },
+      _nutrientAddInG(volumeInL) {
+        this.set('data.nutrientAddInG', 217.94 * volumeInL / 1000);
+      },
+      _chaptizationSugarAddKg(degreeAlcool, yeastEfficiency, og, sugarPpg, volumeInL) {
+        let v = ((((4 * degreeAlcool)/(525 * yeastEfficiency) - og + 1) * 1000) / (sugarPpg * 2.20462 * 3.78541)) * volumeInL;
+        this.set('data.chaptizationSugarAddKg', v);
       }
     });
   </script>
