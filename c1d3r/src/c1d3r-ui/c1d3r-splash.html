@@ -1,6 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
@@ -98,7 +96,7 @@
       },
 
       recipeSelected(evt) {
-        this.fire('recipe', evt.model.__data__.item)
+        this.fire('selected', evt.model.__data__.item)
       },
 
       onBlur() {},

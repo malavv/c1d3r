@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 
 <link rel="import" href="../c1d3r-ui/c1d3r-footer.html">
@@ -19,8 +19,8 @@
       }
 
       iron-pages {
-        @apply(--layout-flex);
         @apply(--layout-vertical);
+        @apply(--layout-flex);
         overflow-y: auto;
       }
 
@@ -30,17 +30,16 @@
     </style>
 
     <iron-pages selected="{{selected}}">
-      <c1d3r-splash   recipes="{{recipes}}" on-recipe="recipeSelected"></c1d3r-splash>
-      <c1d3r-tutorial on-next="_navRecipe"  on-home="_navHome" on-store-skip="_storeSkip"></c1d3r-tutorial>
-      <c1d3r-wizard   recipe="{{recipe}}"   on-home="_navHome"></c1d3r-wizard>
+      <c1d3r-splash recipes="{{recipes}}" on-selected="recipeSelected"></c1d3r-splash>
+      <c1d3r-tutorial on-next="_navRecipe" on-home="_navHome"></c1d3r-tutorial>
+      <c1d3r-wizard recipe="{{recipe}}" on-home="_navHome"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Recipe Data -->
     <c1d3r-loader urls="[[urls]]" recipes="{{recipes}}"></c1d3r-loader>
-
-    <iron-localstorage name="c1d3r-app" value="{{data}}" on-iron-localstorage-load-empty="_initData"></iron-localstorage>
+    <iron-localstorage name="c1d3r-app" value="{{data}}"></iron-localstorage>
   </template>
 
   <script>
@@ -53,7 +52,7 @@
         urls: {
           type: Array,
           value: () => [
-            '../../data/recipes/dryHardCider/recipe.json'
+            '../../data/recipes/dryHardCider'
           ]
         },
 
@@ -66,7 +65,8 @@
           value: () => []
         },
         data: {
-          type: Object
+          type: Object,
+          value: function() { return { skipTutorial: false }; }
         },
         selected: {
           type: Number,
@@ -84,7 +84,6 @@
       },
 
       recipeSelected(evt) {
-        console.info('recipe ' + evt.detail.url + ' selected');
         this.$$('iron-pages').selectIndex(this.data.skipTutorial ? 2 : 1);
         this.set('recipe', evt.detail);
       },
@@ -97,16 +96,6 @@
         this.$$('iron-pages').selectIndex(0);
       },
 
-      _initData() {
-        this.data = {
-          skipTutorial: false
-        };
-      },
-
-      _storeSkip() {
-        console.info('tutorial skipping is now stored ');
-        this.set('data.skipTutorial', true);
-      },
       _navRecipe() {
         this.$$('iron-pages').selectIndex(2);
       },

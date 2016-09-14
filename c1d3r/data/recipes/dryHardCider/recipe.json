@@ -1,4 +1,5 @@
 {
+  "id": "dryHardCider",
   "name": "Dry Hard Cider",
   "synopsis": "Refreshing sparkling alcoholic cider that is clear and of light straw color. With low residual sugars and medium alcohol content, it is better serve cold.",
   "history": "There are documented references of the Romans encountering hard cider in Britain two thousand years ago. Dry Hard Cider is a classical alcoholic beverage of great tradition.",
@@ -94,6 +95,11 @@
       "datatype": "number",
       "group": "preset",
       "value": 3.4
+    },
+    {
+      "id": "acidAddInG",
+      "datatype": "number",
+      "group": "computed"
     }
   ]
 }

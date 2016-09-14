@@ -15,19 +15,33 @@
       },
 
       properties: {
+
         data: {
           type: Object,
           notify: true,
           value: function() { return {}; }
-        }
+        },
+        isLogging: {
+          type: Boolean,
+          value: false
+        },
+        recipe: Object
       },
 
       observers: [
+          '_newRecipe(recipe)',
           '_attributeChanged(data.*)'
       ],
 
+      _newRecipe(recipe) {
+        recipe.data
+            .filter(d => d.group === 'preset')
+            .forEach(d => this.set('data.' + d.id, d.value));
+      },
+
       _attributeChanged(values) {
-        console.info('juice _attributeChanged', values);
+        if (this.isLogging)
+          console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));
       }
     });
   </script>

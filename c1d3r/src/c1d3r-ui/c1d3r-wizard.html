@@ -1,6 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
@@ -22,48 +21,37 @@
         @apply(--layout-vertical);
         background-color: rgb(242, 242, 242);
       }
-      div.header {
-        @apply(--layout-horizontal);
-      }
-      div.spacer {
-        @apply(--layout-flex);
-      }
-      iron-pages {
-        @apply(--layout-flex);
-        @apply(--layout-vertical);
-      }
       iron-pages > * {
         @apply(--layout-flex);
       }
       div.nav {
-        @apply(--layout-horizontal);
         padding-bottom: 1em;
       }
     </style>
 
-    <div class="header">
+    <div class="header layout horizontal">
       <paper-button on-tap="navHome">C1D3R</paper-button>
-      <div class="spacer"></div>
+      <div class="flex"></div>
       <c1d3r-progress step="{{selected}}"></c1d3r-progress>
-      <div class="spacer"></div>
+      <div class="flex"></div>
     </div>
 
-    <iron-pages selected="{{selected}}">
+    <iron-pages selected="{{selected}}" class="flex layout vertical">
       <c1d3r-desc recipe="{{recipe}}"></c1d3r-desc>
       <c1d3r-entry recipe="{{recipe}}" data="{{data}}"></c1d3r-entry>
       <c1d3r-steps recipe="{{recipe}}" data="{{data}}" guide="{{guide}}"></c1d3r-steps>
       <c1d3r-final recipe="{{recipe}}" juice="{{juice}}" guide="{{guide}}"></c1d3r-final>
     </iron-pages>
 
-    <div class="nav">
+    <div class="nav layout horizontal">
       <div class="flex"></div>
       <paper-button on-tap="navBack">Go Back</paper-button>
       <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
     </div>
 
     <!-- Data -->
-    <c1d3r-juice data="{{data}}"></c1d3r-juice>
-    <c1d3r-guide data="{{guide}}"></c1d3r-guide>
+    <c1d3r-juice recipe="[[recipe]]" data="{{data}}"></c1d3r-juice>
+    <c1d3r-guide recipe="[[recipe]]" data="{{data}}" guide="{{guide}}"></c1d3r-guide>
   </template>
 
   <script>

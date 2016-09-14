@@ -7,7 +7,8 @@
     <style></style>
 
     <template is="dom-repeat" items="{{urls}}" as="url">
-      <iron-ajax auto url="[[url]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
+      <iron-ajax auto url="[[_toURL(url)]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
+      <link rel="import" href="[[_toElemURL(url)]]">
     </template>
 
   </template>
@@ -27,13 +28,18 @@
         recipes: Array
       },
 
+      _toURL(url) {
+        return url + '/recipe.json';
+      },
+
+      _toElemURL(url) {
+        return url + '/guide.html';
+      },
+
       handleRecipeData(data) {
         let raw = data.detail.response;
         let url = data.model.url;
-        let idx = url.lastIndexOf('/');
-        let baseUrl = idx != -1 ? url.substring(0, idx) : '';
-
-        console.info('processing data for recipe', url);
+        console.info('loading recipe data for ', url);
 
         this.push('recipes', {
           synopsis: raw.synopsis,
@@ -42,7 +48,7 @@
           characteristics: raw.characteristics,
           name: raw.name,
           data: raw.data,
-          img: raw.img != null ? baseUrl + '/' + raw.img : '../../data/img/no-recipe-img.png',
+          img: raw.img != null ? url + '/' + raw.img : '../data/img/no-recipe-img.png',
         });
       }
     });

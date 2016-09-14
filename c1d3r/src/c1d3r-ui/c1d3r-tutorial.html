@@ -1,7 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
@@ -87,6 +85,8 @@
       <paper-button on-tap="navNext">Next</paper-button>
     </div>
 
+    <iron-localstorage name="c1d3r-app" value="{{data}}" on-iron-localstorage-load-empty="_initData"></iron-localstorage>
+
   </template>
 
   <script>
@@ -120,7 +120,8 @@
       _skipChanged(wantsSkip) {
         if (!wantsSkip)
           return;
-        this.fire('store-skip');
+        console.info('now skipping tutorial.');
+        this.set('data.skipTutorial', true);
       },
 
       onBlur() {
@@ -130,7 +131,11 @@
       onFocus() {
         this.$$('c1d3r-progress').step = 0;
         this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
-      }
+      },
+
+      _initData() {
+        this.data = { skipTutorial: false };
+      },
     });
   </script>
 </dom-module>

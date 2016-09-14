@@ -11,6 +11,10 @@
         id: String,
         title: String,
         isBool: Boolean,
+        isLogging: {
+          type: Boolean,
+          value: false
+        },
         isNumber: Boolean,
         placeholder: String,
         details: String,
@@ -47,7 +51,8 @@
       },
 
       valueChanged(value) {
-        console.info('dataentry value changed');
+        if (this.isLogging)
+          console.info('[data]<' + this.id + '> => ' + JSON.stringify(this.value));
         this.valueFunc(this.id, value);
       }
     });
