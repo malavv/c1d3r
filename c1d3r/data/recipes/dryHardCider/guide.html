@@ -30,7 +30,7 @@
         <div class="step">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
         <div class="step">0.1 Add {{data.potassMetaAddInG}} g of potassium metabisulfite.</div>
         <div class="step">0.2 Add {{data.tanninAddInG}} g of wine tannin.</div>
-        <div class="step" hidden$="{{!data.isCloudy}}">0.4 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
+        <div class="step" hidden$="{{!data.isCloudy}}">0.3 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
       </div>
       <!--Sanitization-->
       <div class="content-block">
@@ -70,7 +70,10 @@
 
       properties: {
         recipe: Object,
-        data: Object,
+        data: {
+          type: Object,
+          notify: true
+        },
         isLogging: {
           type: Boolean,
           value: false
@@ -130,6 +133,22 @@
       _chaptizationSugarAddKg(degreeAlcool, yeastEfficiency, og, sugarPpg, volumeInL) {
         let v = ((((4 * degreeAlcool)/(525 * yeastEfficiency) - og + 1) * 1000) / (sugarPpg * 2.20462 * 3.78541)) * volumeInL;
         this.set('data.chaptizationSugarAddKg', v);
+      },
+
+      listSteps() {
+        let instructions = Array.from(Polymer.dom(this.root).querySelectorAll('.content-block'));
+        let extract = steps => {
+          return {
+            text: steps[0].innerText,
+            steps: steps.slice(1)
+                .filter(s => !s.hidden)
+                .map(s => s.innerText)
+          };
+        };
+
+        return instructions
+            .map(block => Array.from(block.children))
+            .map(steps => extract(steps));
       }
     });
   </script>

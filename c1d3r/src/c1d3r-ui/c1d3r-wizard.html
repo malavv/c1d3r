@@ -39,7 +39,7 @@
       <c1d3r-desc recipe="{{recipe}}"></c1d3r-desc>
       <c1d3r-entry recipe="{{recipe}}" data="{{data}}"></c1d3r-entry>
       <c1d3r-steps recipe="{{recipe}}" data="{{data}}" guide="{{guide}}"></c1d3r-steps>
-      <c1d3r-final recipe="{{recipe}}" juice="{{juice}}" guide="{{guide}}"></c1d3r-final>
+      <c1d3r-final recipe="{{recipe}}" juice="{{data}}" guide="{{guide}}"></c1d3r-final>
     </iron-pages>
 
     <div class="nav layout horizontal">
@@ -61,7 +61,8 @@
       properties: {
         selected: {
           type: Number,
-          value: 0
+          value: 0,
+          observer: '_pageChanged'
         },
         recipe: {
           type: Object,
@@ -91,15 +92,19 @@
         this.set('selected', this.selected + 1);
       },
 
-      onBlur() {
-      },
-
-      onFocus() {
-        this.selected = 0;
-      },
+      onBlur() {},
+      onFocus() { this.selected = 0; },
 
       _nextOrFinishStep(selected) {
         return selected === 3 ? 'Finish' : 'Next';
+      },
+
+      _pageChanged(newPage, oldPage) {
+        let pages = this.$$('iron-pages').children;
+        if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)
+          pages[oldPage].onBlur();
+        if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null)
+          pages[newPage].onFocus();
       }
     });
   </script>

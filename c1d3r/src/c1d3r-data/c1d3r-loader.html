@@ -42,6 +42,7 @@
         console.info('loading recipe data for ', url);
 
         this.push('recipes', {
+          id: raw.id,
           synopsis: raw.synopsis,
           history: raw.history,
           details: raw.details,

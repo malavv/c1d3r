@@ -1,6 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+
+<link rel="import" href="../../data/recipes/dryHardCider/guide.html">
 
 <dom-module id="c1d3r-steps">
   <template>
@@ -20,6 +24,10 @@
       <h2>Guide</h2>
     </div>
 
+    <iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">
+      <c1d3r-dryHardCider recipe-id="dryHardCider" class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-dryHardCider>
+    </iron-pages>
+
   </template>
 
   <script>
@@ -30,43 +38,20 @@
 
       properties: {
         recipe: Object,
-        data: Object
+        data: {
+          type: Object,
+          notify: true
+        },
+        guide: {
+          type: Array,
+          notify: true
+        }
       },
 
-      observers: [
-        '_recipeChanged(recipe)',
-        '_dataChanged(data)',
-        '_dataAttrChanged(data.*)',
-      ],
-
-      attached() {
-        let guideEl = document.createElement('c1d3r-dryHardCider');
-        guideEl.id = 'guide';
-        this.appendChild(guideEl);
-
-        if (this.recipe)
-          this.querySelector('#guide').set('recipe', this.recipe);
-        if (this.data)
-          this.querySelector('#guide').set('data', this.data);
+      onBlur() {
+        this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
       },
-
-      _recipeChanged(recipe) {
-        let guideEl = this.querySelector('#guide');
-        if (this.recipe && guideEl)
-          guideEl.set('recipe', this.recipe);
-      },
-
-      _dataChanged(data) {
-        let guideEl = this.querySelector('#guide');
-        if (this.data && guideEl)
-          guideEl.set('data', this.data);
-      },
-
-      _dataAttrChanged(evt) {
-        let guideEl = this.querySelector('#guide');
-        if (this.data && guideEl)
-          guideEl.set(evt.path, evt.value);
-      }
+      onFocus() {}
     });
   </script>
 </dom-module>

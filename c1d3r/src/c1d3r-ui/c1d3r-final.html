@@ -9,19 +9,21 @@
 
     <h2>Final</h2>
 
+    Enjoy your recipe, and please save the following information for futher years.
+
     <div>
       <span>Recipe</span>
-      <span>{{recipe}}</span>
+      <textarea>{{_stringify(recipe)}}</textarea>
     </div>
 
     <div>
       <span>Juice</span>
-      <span>{{juice}}</span>
+      <textarea>{{_stringify(juice)}}</textarea>
     </div>
 
     <div>
       <span>Guide</span>
-      <span>{{guide}}</span>
+      <textarea>{{_stringify(guide)}}</textarea>
     </div>
 
   </template>
@@ -33,18 +35,16 @@
       hostAttributes: {},
 
       properties: {
-        recipe: {
-          type: Object,
-          notify: true
-        },
-        juice: {
-          type: Object,
-          notify: true
-        },
-        guide: {
-          type: Object,
-          notify: true
-        }
+        recipe: Object,
+        juice: Object,
+        guide: Array
+      },
+
+      onBlur() {},
+      onFocus() {},
+
+      _stringify(obj) {
+        return JSON.stringify(obj, undefined, 2);
       }
     });
   </script>
