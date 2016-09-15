@@ -1,7 +1,10 @@
 {
   "name": "c1d3r",
-  "short_name": "c1d3r",
+  "version": "2.0.0",
+
+  "default_locale": "en",
   "description": "C1d3r is an interactive *hard* cider brewing guide.",
-  "start_url": "/",
+
+  "start_url": ".",
   "display": "standalone"
 }

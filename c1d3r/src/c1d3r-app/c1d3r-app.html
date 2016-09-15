@@ -38,6 +38,7 @@
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Recipe Data -->
+    <iron-ajax auto url="../../manifest.webmanifest" handle-as="json" on-response="_handleManifest"></iron-ajax>
     <c1d3r-loader urls="[[urls]]" recipes="{{recipes}}"></c1d3r-loader>
     <iron-localstorage name="c1d3r-app" value="{{data}}"></iron-localstorage>
   </template>
@@ -100,6 +101,11 @@
 
       _navRecipe() {
         this.$$('iron-pages').selectIndex(2);
+      },
+
+      _handleManifest(evt) {
+        window.app = evt.detail.response;
+        this.$$('c1d3r-footer').setVersion(window.app.version);
       },
 
       _pageChanged(newPage, oldPage) {

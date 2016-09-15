@@ -47,7 +47,7 @@
         let now = new Date().toISOString().slice(0, 10);
 
         download(JSON.stringify({
-          version: 2.0,
+          version: window.app.version,
           recipe: this.recipe,
           data: this.juice,
           guide: this.guide
