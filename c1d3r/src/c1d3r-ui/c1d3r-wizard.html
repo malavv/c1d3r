@@ -86,10 +86,16 @@
 
       navNext() {
         if (this.selected === 3) {
+          this.set('selected', this.selected + 1);
           this.fire('home');
           return;
         }
         this.set('selected', this.selected + 1);
+      },
+
+      reset() {
+        this.set('selected', 0);
+        this.set('juice', {});
       },
 
       onBlur() {},

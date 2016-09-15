@@ -1,31 +1,27 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<script src='//js.zapjs.com/js/download.js'></script>
+
+<!--download("hello world", "dlText.json", "application/json");-->
+
 <dom-module id="c1d3r-final">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
       :host {}
+      paper-icon-button{
+        width: 150px;
+        height: 150px;
+      }
     </style>
 
     <h2>Final</h2>
 
     Enjoy your recipe, and please save the following information for futher years.
 
-    <div>
-      <span>Recipe</span>
-      <textarea>{{_stringify(recipe)}}</textarea>
-    </div>
-
-    <div>
-      <span>Juice</span>
-      <textarea>{{_stringify(juice)}}</textarea>
-    </div>
-
-    <div>
-      <span>Guide</span>
-      <textarea>{{_stringify(guide)}}</textarea>
-    </div>
-
+    <paper-icon-button icon="icons:archive" on-tap="_onArchive">Raised button</paper-icon-button>
   </template>
 
   <script>
@@ -40,11 +36,22 @@
         guide: Array
       },
 
-      onBlur() {},
+      onBlur() {
+      },
       onFocus() {},
 
       _stringify(obj) {
         return JSON.stringify(obj, undefined, 2);
+      },
+      _onArchive() {
+        let now = new Date().toISOString().slice(0, 10);
+
+        download(JSON.stringify({
+          version: 2.0,
+          recipe: this.recipe,
+          data: this.juice,
+          guide: this.guide
+        }), this.recipe.id + "_" + now + ".json", "application/json");
       }
     });
   </script>

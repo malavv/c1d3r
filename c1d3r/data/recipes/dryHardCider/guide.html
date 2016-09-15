@@ -94,6 +94,8 @@
       ],
 
       _recipeChanged(recipe) {
+        if (recipe == null)
+          return;
         console.log('[dryHardCider]_recipeChanged', recipe.name);
       },
       _dataChanged(update) {
@@ -108,11 +110,12 @@
         let diff = exp10(-finalPh) - exp10(-juicePh);
         let square = (base) => Math.pow(base, 2);
         let multiplier = square(diff) / 7.94E-5 + diff;
-        this.set('data.acidAddInG', multiplier * volumeInL * 176.12);
+        let value = multiplier * volumeInL * 176.12;
+        this.set('data.acidAddInG', this._toReal(value));
       },
       _potassMetaAddInG(juicePh, volumeInL) {
-        let v = ((52.7*(juicePh*juicePh*juicePh) - 459*(juicePh*juicePh) + 1352.6*juicePh - 1338.6) / 0.57) * volumeInL / 1000;
-        this.set('data.potassMetaAddInG', v);
+        let value = ((52.7*(juicePh*juicePh*juicePh) - 459*(juicePh*juicePh) + 1352.6*juicePh - 1338.6) / 0.57) * volumeInL / 1000;
+        this.set('data.potassMetaAddInG', this._toReal(value));
       },
       _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
         console.assert(origTanninLvl < 0 || origTanninLvl > 10, 'Original tannin level out of scale.');
@@ -121,18 +124,29 @@
         let diff = desiredTanninLvl - origTanninLvl;
         console.assert(diff <= 10, 'Increase is out of range. (1 to 10 scale)');
 
-        let v = ((diff / 10) * 160) * volumeInL / 1000;
-        this.set('data.tanninAddInG', v);
+        let value = ((diff / 10) * 160) * volumeInL / 1000;
+        this.set('data.tanninAddInG', this._toReal(value));
       },
       _pectinaseAddInG(volumeInL) {
-        this.set('data.pectinaseAddInG', 528.34 * volumeInL / 1000);
+        let value = 528.34 * volumeInL / 1000;
+        this.set('data.pectinaseAddInG', this._toReal(value));
       },
       _nutrientAddInG(volumeInL) {
-        this.set('data.nutrientAddInG', 217.94 * volumeInL / 1000);
+        let value = 217.94 * volumeInL / 1000;
+        this.set('data.nutrientAddInG', this._toReal(value));
       },
       _chaptizationSugarAddKg(degreeAlcool, yeastEfficiency, og, sugarPpg, volumeInL) {
-        let v = ((((4 * degreeAlcool)/(525 * yeastEfficiency) - og + 1) * 1000) / (sugarPpg * 2.20462 * 3.78541)) * volumeInL;
-        this.set('data.chaptizationSugarAddKg', v);
+        let value = ((((4 * degreeAlcool)/(525 * yeastEfficiency) - og + 1) * 1000) / (sugarPpg * 2.20462 * 3.78541)) * volumeInL;
+        this.set('data.chaptizationSugarAddKg', this._toReal(value));
+      },
+
+      _toReal(real) {
+        if (real % 1 == 0)
+          return real;
+
+        if (real < 0)
+          return Number(real.toString().slice(0, 6));
+        return Number(real.toString().slice(0, 5))
       },
 
       listSteps() {

@@ -93,6 +93,8 @@
       },
 
       _navHome() {
+        this.set('recipe', undefined);
+        this.$$('c1d3r-wizard').reset();
         this.$$('iron-pages').selectIndex(0);
       },
 

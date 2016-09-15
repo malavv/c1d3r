@@ -99,6 +99,8 @@
 
       // Property Changed
       onRecipeChanged(newRecipe) {
+        if (newRecipe == null)
+          return;
         this.set(
           'ingEntries',
           newRecipe.data
