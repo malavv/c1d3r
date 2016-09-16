@@ -1,20 +1,16 @@
 {
-  "name": "C1d3r",
-  "version": "0.0.1",
-  "homepage": "http://malavv.github.io/c1d3r/",
-  "authors": [
-    "Maxime Lavigne (malavv) <duguigne@gmail.com>"
-  ],
-  "description": "A simple and interactive cider brewing guide.",
+  "name": "c1d3r",
+  "description": "C1d3r is an interactive *hard* cider brewing guide.",
   "main": "index.html",
-  "license": "MIT",
-  "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7"
+  },
   "devDependencies": {
-    "polymer": "polymer#^1.0.0",
-    "iron-elements": "PolymerElements/iron-elements#^1.0.0",
-    "paper-elements": "PolymerElements/paper-elements#^1.0.0",
-    "more-routing": "PolymerLabs/more-routing#~1.0.0",
-    "web-component-tester": "Polymer/web-component-tester#~3.3.29"
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.5",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   }
 }
