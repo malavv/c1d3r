@@ -73,9 +73,19 @@
         }
       },
 
+      reset() {
+        let pi = this.$$('paper-input');
+        if (pi != null)
+          pi.invalid = false;
+
+        let pc = this.$$('paper-checkbox');
+        if (pc != null)
+          pc.active = false;
+      },
+
       _onFocus(evt) {
         evt.stopPropagation();
-        this.fire('show-details', {index:this.number, model:this.entryItem});
+        this.fire('show-details', { index: this.number, model: this.entryItem });
       },
       _onBlur(evt) {
         evt.stopPropagation();

@@ -158,7 +158,9 @@
       },
 
       onBlur() {},
-      onFocus() {}
+      onFocus() {
+        Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.reset())
+      }
     });
   </script>
 </dom-module>

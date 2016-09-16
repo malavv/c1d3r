@@ -20,11 +20,11 @@
 
     _validate(raw) {
       if (raw == null)
-        throw new Error('No Value');
+        return true;
 
       let val = raw.trim();
       if (val.length === 0)
-        throw new Error('No Value');
+        return true;
 
       let number = Number(val);
       if (Number.isNaN(Number(val)))
