@@ -29,18 +29,23 @@
       }
     </style>
 
-    <iron-pages selected="{{selected}}">
-      <c1d3r-splash recipes="{{recipes}}" on-selected="recipeSelected"></c1d3r-splash>
+    <iron-pages selected="[[selected]]">
+      <c1d3r-splash recipes="[[recipes]]" on-selected="_selectRecipe"></c1d3r-splash>
       <c1d3r-tutorial on-next="_navRecipe" on-home="_navHome"></c1d3r-tutorial>
-      <c1d3r-wizard recipe="{{recipe}}" on-home="_navHome"></c1d3r-wizard>
+      <c1d3r-wizard recipe="[[recipe]]" on-home="_navHome"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
-    <!-- Recipe Data -->
-    <iron-ajax auto url="../../manifest.webmanifest" handle-as="json" on-response="_handleManifest"></iron-ajax>
-    <c1d3r-loader urls="[[urls]]" recipes="{{recipes}}"></c1d3r-loader>
-    <iron-localstorage name="c1d3r-app" value="{{data}}"></iron-localstorage>
+    <!-- Loads the application manifest -->
+    <iron-ajax auto
+        url="../../manifest.webmanifest"
+        handle-as="json"
+        on-response="_handleManifest"></iron-ajax>
+    <!--Load All Possible Recipe (need to also load in c1d3r-steps-->
+    <c1d3r-loader
+        urls='["../../data/recipes/dryHardCider"]'
+        recipes="{{recipes}}"></c1d3r-loader>
   </template>
 
   <script>
@@ -49,65 +54,69 @@
       is: 'c1d3r-app',
 
       properties: {
-        // Recipes Data Locations
-        urls: {
-          type: Array,
-          value: () => [
-            '../../data/recipes/dryHardCider'
-          ]
-        },
-
         locale: {
           value: 'en',
           observer: '_localeChanged'
         },
-        recipes: {
-          type: Array,
-          value: () => []
-        },
-        data: {
+        recipe: {
           type: Object,
-          value: function() { return { skipTutorial: false }; }
+          notify: true
         },
+        recipes: Array,
         selected: {
           type: Number,
           value: 0,
           observer: '_pageChanged'
-        },
-        recipe: {
-          type: Object,
-          notify: true
         }
       },
 
+      /**
+       * On component Ready (part of component life-cycle)
+       */
       ready() {
         this.set('recipes', Polymer.dom(this.root).querySelectorAll('c1d3r-recipe'));
       },
 
-      recipeSelected(evt) {
-        this.$$('iron-pages').selectIndex(this.data.skipTutorial ? 2 : 1);
-        this.set('recipe', evt.detail);
+      /**
+       * Processes Application Manifest.
+       */
+      _handleManifest(evt) {
+        window.app = evt.detail.response;
+        this.$$('c1d3r-footer').setVersion(window.app.version);
       },
-
+      /**
+       * On user switched locale
+       */
       _localeChanged(newLangCode, oldLangCode) {
         console.info('locale changed from ' + oldLangCode + ' to ' + newLangCode);
       },
-
+      /**
+       * Navigate to the Home (splash page)
+       */
       _navHome() {
         this.set('recipe', undefined);
         this.$$('c1d3r-wizard').reset();
         this.$$('iron-pages').selectIndex(0);
       },
-
+      /**
+       * Navigate to the app with a recipe selected.
+       */
       _navRecipe() {
-        this.$$('iron-pages').selectIndex(2);
+        this.set('selected', 2);
       },
-
-      _handleManifest(evt) {
-        window.app = evt.detail.response;
-        this.$$('c1d3r-footer').setVersion(window.app.version);
+      /**
+       * Select a specific recipe.
+       */
+      _selectRecipe(evt) {
+        this.set('selected', 1);
+        this.set('recipe', evt.detail);
       },
-
+      /**
+       * Manages calling onFocus and onBlur during page switching.
+       * @param newPage Page moving to
+       * @param oldPage Page moving from
+       * @private
+       */
       _pageChanged(newPage, oldPage) {
         let pages = this.$$('iron-pages').children;
         if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)

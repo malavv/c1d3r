@@ -2,6 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles-classes.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
 <dom-module id="c1d3r-desc">
   <template>
@@ -13,14 +14,15 @@
         @apply(--layout-center-center);
 
         font-size: 120%;
-        font-family: 'Open Sans Condensed', sans-serif;
+        font-family: var(--main-title-font);
       }
 
       div.container {
-        background-color: white;
-
-        height: auto;
         @apply(--layout-horizontal);
+        @apply(--shadow-elevation-4dp);
+
+        background-color: white;
+        height: auto;
         padding: 20px;
       }
 
@@ -30,6 +32,12 @@
 
       div.desc {
         max-width: 450px;
+      }
+      div.name {
+        font-size: 24px;
+      }
+      div.charac ul li {
+        font-family: 'Open Sans', sans-serif;
       }
     </style>
 

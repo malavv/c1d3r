@@ -35,10 +35,21 @@
       div.sidebar div.detail {
         padding-top: 4em;
       }
-      div.heading {
-        text-align: center;
-        background-color: #3c3c3c;
-        color: white;
+      div.content {
+        @apply(--layout-vertical);
+      }
+      div.head {
+        @apply(--layout-horizontal);
+        color: #333;
+        padding-top: 30px;
+        padding-bottom: 10px;
+      }
+      div.step {
+        @apply(--layout-horizontal);
+        @apply(--shadow-elevation-2dp);
+        margin-top: 1px;
+        padding: 10px;
+        background-color: white;
       }
     </style>
 
@@ -49,24 +60,32 @@
       <div class="detail"></div>
     </div>
 
-    <div class="entryset flex">
-      <div class="heading">Ingredients</div>
-      <template is="dom-repeat" items="[[ingEntries]]">
-        <c1d3r-input
-            number="[[index]]"
-            entry-item="{{item}}"
-            on-show-details="_onShowDetails"
-            on-hide-details="_onHideDetails"></c1d3r-input>
-      </template>
+    <div class="content flex">
+      <div class="content-block">
+        <div class="head">Ingredients</div>
+        <template is="dom-repeat" items="[[ingEntries]]">
+          <div class="step">
+            <c1d3r-input
+              class="flex"
+              number="[[index]]"
+              entry-item="{{item}}"
+              on-show-details="_onShowDetails"
+              on-hide-details="_onHideDetails"></c1d3r-input>
+          </div>
+        </template>
 
-      <div class="heading">Personalization</div>
-      <template is="dom-repeat" items="[[adjustEntries]]">
-        <c1d3r-input
-            number="[[index]]"
-            entry-item="{{item}}"
-            on-show-details="_onShowDetails"
-            on-hide-details="_onHideDetails"></c1d3r-input>
-      </template>
+        <div class="head">Personalization</div>
+        <template is="dom-repeat" items="[[adjustEntries]]">
+          <div class="step">
+            <c1d3r-input
+                class="flex"
+                number="[[index]]"
+                entry-item="{{item}}"
+                on-show-details="_onShowDetails"
+                on-hide-details="_onHideDetails"></c1d3r-input>
+          </div>
+        </template>
+      </div>
     </div>
   </template>
 

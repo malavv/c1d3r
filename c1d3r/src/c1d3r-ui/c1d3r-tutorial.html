@@ -11,6 +11,7 @@
     <style>
       :host {
         @apply(--layout-vertical);
+        background-color: var(--main-bg-color);
       }
       div.content {
         @apply(--layout-vertical);
@@ -21,8 +22,8 @@
       div.title {
         font-size: 2em;
         font-weight: 400;
-
         padding: 1.5em 0;
+        font-family: var(--main-title-font);
       }
 
       div.desc c1d3r-progress {
@@ -50,15 +51,11 @@
         <div class="title">How does it works?</div>
 
         <div class="desc">
-          <p>
-            In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.
-          </p>
+          <p>In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.</p>
 
           <c1d3r-progress id="progress-example" step="0"></c1d3r-progress>
 
-          <p>
-            This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.
-          </p>
+          <p>This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.</p>
 
           <ul>
             <li>Stage 1 being an introductory page that will describe the style and type of the recipe.</li>
@@ -68,7 +65,7 @@
           </ul>
 
           <div class="skip">
-            <paper-checkbox checked="{{skip}}"></paper-checkbox>
+            <paper-checkbox checked="{{storage.skipTutorial}}"></paper-checkbox>
             Do not show the tutorial again.
           </div>
         </div>
@@ -81,12 +78,14 @@
 
     <div class="nav">
       <div class="flex"></div>
-      <paper-button on-tap="navBack">Go Back</paper-button>
-      <paper-button on-tap="navNext">Next</paper-button>
+      <paper-button on-tap="_navBack">Go Back</paper-button>
+      <paper-button on-tap="_navNext">Next</paper-button>
     </div>
 
-    <iron-localstorage name="c1d3r-app" value="{{data}}" on-iron-localstorage-load-empty="_initData"></iron-localstorage>
-
+    <iron-localstorage
+        name="c1d3r-app-storage"
+        value="{{storage}}"
+        on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
   </template>
 
   <script>
@@ -104,12 +103,19 @@
         blinkPeriod: {
           type: Number,
           value: 2500
-        }
+        },
+        storage: Object
       },
 
-      navBack() { this.fire('home'); },
 
-      navNext() { this.fire('next'); },
+      onBlur() { this.cancelAsync(this.cancelHandle); },
+
+      onFocus() {
+        if (this.storage.skipTutorial)
+          this.fire('next');
+        this.$$('c1d3r-progress').step = 0;
+        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
+      },
 
       _blink() {
         let progressBar = this.$$('c1d3r-progress');
@@ -121,21 +127,18 @@
         if (!wantsSkip)
           return;
         console.info('now skipping tutorial.');
-        this.set('data.skipTutorial', true);
+        this.set('storage.skipTutorial', true);
       },
 
-      onBlur() {
-        this.cancelAsync(this.cancelHandle);
+      _initStorage() {
+        this.storage = {
+          skipTutorial: false
+        };
       },
 
-      onFocus() {
-        this.$$('c1d3r-progress').step = 0;
-        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
-      },
+      _navBack() { this.fire('home'); },
 
-      _initData() {
-        this.data = { skipTutorial: false };
-      },
+      _navNext() { this.fire('next'); }
     });
   </script>
 </dom-module>
