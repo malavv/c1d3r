@@ -86,7 +86,7 @@
         '_dataAttrChanged(data.*)',
         // attr
         '_computeAcid(data.juicePh, data.finalPh, data.volumeInL)',
-        '_potassMetaAddInG(data.juicePh, data.volumeInL)',
+        '_potassMetaAddInG(data.finalPh, data.volumeInL)',
         '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)',
         '_pectinaseAddInG(data.volumeInL)',
         '_nutrientAddInG(data.volumeInL)',
@@ -113,8 +113,8 @@
         let value = multiplier * volumeInL * 176.12;
         this.set('data.acidAddInG', this._toReal(value));
       },
-      _potassMetaAddInG(juicePh, volumeInL) {
-        let value = ((52.7*(juicePh*juicePh*juicePh) - 459*(juicePh*juicePh) + 1352.6*juicePh - 1338.6) / 0.57) * volumeInL / 1000;
+      _potassMetaAddInG(finalPh, volumeInL) {
+        let value = ((52.7*(finalPh*finalPh*finalPh) - 459*(finalPh*finalPh) + 1352.6*finalPh - 1338.6) / 0.57) * volumeInL / 1000;
         this.set('data.potassMetaAddInG', this._toReal(value));
       },
       _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
