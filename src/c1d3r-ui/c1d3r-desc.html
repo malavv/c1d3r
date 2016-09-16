@@ -1,10 +1,10 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles-classes.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
-<dom-module id="c1d3r-desc">
+</head><body><dom-module id="c1d3r-desc">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -42,9 +42,7 @@
     </style>
 
     <div class="container shadow-elevation-2dp">
-      <iron-image
-          src="{{recipe.img}}"
-          sizing="contain"></iron-image>
+      <iron-image src="{{recipe.img}}" sizing="contain"></iron-image>
 
       <div class="desc">
         <div class="name">{{recipe.name}}</div>
@@ -82,3 +80,4 @@
     });
   </script>
 </dom-module>
+</body></html>

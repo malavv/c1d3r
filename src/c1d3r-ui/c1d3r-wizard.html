@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -11,7 +11,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-juice.html">
 
-<dom-module id="c1d3r-wizard">
+</head><body><dom-module id="c1d3r-wizard">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
 
@@ -48,7 +48,7 @@
       <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
     </div>
 
-    <!-- Data -->
+    
     <c1d3r-juice recipe="[[recipe]]" data="{{data}}"></c1d3r-juice>
   </template>
 
@@ -115,3 +115,4 @@
     });
   </script>
 </dom-module>
+</body></html>

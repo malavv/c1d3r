@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -11,7 +11,7 @@
 <link rel="import" href="../c1d3r-data/c1d3r-validator.html">
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
 
-<dom-module id="c1d3r-input">
+</head><body><dom-module id="c1d3r-input">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -38,24 +38,12 @@
         <paper-checkbox checked="{{entryItem.value}}"></paper-checkbox>
       </template>
       <template is="dom-if" if="[[entryItem.isNumber]]">
-        <c1d3r-validator
-            item="{{entryItem}}"
-            error-message="{{entryItem.errorMessage}}"
-            validator-name="[[entryItem.id]]"></c1d3r-validator>
-        <paper-input
-            auto-validate
-            required
-            placeholder="[[entryItem.placeholder]]"
-            value="{{entryItem.value}}"
-            validator$="[[entryItem.id]]"
-            error-message="{{entryItem.errorMessage}}"></paper-input>
+        <c1d3r-validator item="{{entryItem}}" error-message="{{entryItem.errorMessage}}" validator-name="[[entryItem.id]]"></c1d3r-validator>
+        <paper-input auto-validate="" required="" placeholder="[[entryItem.placeholder]]" value="{{entryItem.value}}" validator$="[[entryItem.id]]" error-message="{{entryItem.errorMessage}}"></paper-input>
       </template>
     </div>
     <div>
-      <iron-icon
-          icon="icons:help"
-          on-mouseover="_onFocus"
-          on-mouseout="_onBlur"></iron-icon>
+      <iron-icon icon="icons:help" on-mouseover="_onFocus" on-mouseout="_onBlur"></iron-icon>
     </div>
   </template>
 
@@ -94,3 +82,4 @@
     });
   </script>
 </dom-module>
+</body></html>

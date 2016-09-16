@@ -1,8 +1,8 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/paper-styles/shadow.html">
 
-<dom-module id="c1d3r-dryHardCider">
+</head><body><dom-module id="c1d3r-dryHardCider">
   <template>
     <style>
       div.content {
@@ -24,7 +24,7 @@
     </style>
 
     <div class="content">
-      <!--Initial Prep-->
+      
       <div class="content-block">
         <div class="head">0 Configuring Juice Properties</div>
         <div class="step">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
@@ -32,29 +32,29 @@
         <div class="step">0.2 Add {{data.tanninAddInG}} g of wine tannin.</div>
         <div class="step" hidden$="{{!data.isCloudy}}">0.3 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
       </div>
-      <!--Sanitization-->
+      
       <div class="content-block">
         <div class="head">1 Sanitization</div>
         <div class="step">1.0 Let liquid rest for 3 hours</div>
       </div>
-      <!--Yeast Preparation-->
+      
       <div class="content-block">
         <div class="head">2 Yeast Prep</div>
         <div class="step">2.0 Add {{data.nutrientAddInG}} g of Yeast Nutrient.</div>
         <div class="step">2.1 Add the content of a Yeast packet.</div>
         <div class="step">2.3 Stir liquid thoroughly for 2 minutes.</div>
       </div>
-      <!--First Fermentation-->
+      
       <div class="content-block">
         <div class="head">3 First Fermentation</div>
         <div class="step">3.0 Ferment in an air-locked fermentor for 5 days or until 1.010.</div>
       </div>
-      <!--Second Fermentation-->
+      
       <div class="content-block">
         <div class="head">4 Second Fermentation</div>
         <div class="step">4.0 Transfer and ferment in secondary fermentor for 2 weeks or until desired dryness.</div>
       </div>
-      <!-- Packaging and Bottling -->
+      
       <div class="content-block">
         <div class="head">5 Packaging</div>
         <div class="step">5.0 Transfer to bottling bucket.</div>
@@ -167,3 +167,4 @@
     });
   </script>
 </dom-module>
+</body></html>

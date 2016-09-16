@@ -1,9 +1,9 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
-<dom-module id="c1d3r-footer">
+</head><body><dom-module id="c1d3r-footer">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
 
@@ -40,24 +40,16 @@
 
     <div class="version">v[[version]]</div>
 
-    <iframe
-        allowtransparency="true"
-        scrolling="no"
-        frameborder="0"
-        src="https://buttons.github.io/buttons.html#href=https%3A%2F%2Fgithub.com%2Fmalavv%2Fc1d3r%2Fissues&amp;text=Issue&amp;data.count.api=%2Frepos%2Fmalavv%2Fc1d3r%23open_issues_count&amp;data.count.href=https%3A%2F%2Fgithub.com%2Fmalavv%2Fc1d3r%2Fissues&amp;data.count.aria.label=%23%20issues%20on%20GitHub&amp;data.style=&amp;data.icon=octicon-issue-opened&amp;aria.label=Issue%20malavv%2Fc1d3r%20on%20GitHub" style="width: 78px; height: 20px; border: none;"></iframe>
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" src="https://buttons.github.io/buttons.html#href=https%3A%2F%2Fgithub.com%2Fmalavv%2Fc1d3r%2Fissues&amp;text=Issue&amp;data.count.api=%2Frepos%2Fmalavv%2Fc1d3r%23open_issues_count&amp;data.count.href=https%3A%2F%2Fgithub.com%2Fmalavv%2Fc1d3r%2Fissues&amp;data.count.aria.label=%23%20issues%20on%20GitHub&amp;data.style=&amp;data.icon=octicon-issue-opened&amp;aria.label=Issue%20malavv%2Fc1d3r%20on%20GitHub" style="width: 78px; height: 20px; border: none"></iframe>
 
-    <iframe
-        allowtransparency="true"
-        scrolling="no"
-        frameborder="0"
-        src="https://buttons.github.io/buttons.html#href=https%3A%2F%2Fgithub.com%2Fmalavv%2Fc1d3r&amp;text=Watch&amp;data.count.api=%2Frepos%2Fmalavv%2Fc1d3r%23subscribers_count&amp;data.count.href=%2Fmalavv%2Fc1d3r%2Fwatchers&amp;data.count.aria.label=%23%20watchers%20on%20GitHub&amp;data.style=&amp;data.icon=octicon-eye&amp;aria.label=Watch%20malavv%2Fc1d3r%20on%20GitHub" style="width: 84px; height: 20px; border: none;"></iframe>
+    <iframe allowtransparency="true" scrolling="no" frameborder="0" src="https://buttons.github.io/buttons.html#href=https%3A%2F%2Fgithub.com%2Fmalavv%2Fc1d3r&amp;text=Watch&amp;data.count.api=%2Frepos%2Fmalavv%2Fc1d3r%23subscribers_count&amp;data.count.href=%2Fmalavv%2Fc1d3r%2Fwatchers&amp;data.count.aria.label=%23%20watchers%20on%20GitHub&amp;data.style=&amp;data.icon=octicon-eye&amp;aria.label=Watch%20malavv%2Fc1d3r%20on%20GitHub" style="width: 84px; height: 20px; border: none"></iframe>
 
-    <!--background space on the left-->
+    
     <div class="flex"></div>
 
-    <!--Content stripe-->
+    
     <div>
-      <!-- Locale -->
+      
       <paper-dropdown-menu class="custom" vertical-align="bottom" no-label-float="true">
         <paper-listbox class="dropdown-content" selected="{{locale}}" attr-for-selected="code">
           <paper-item code="en">English</paper-item>
@@ -87,3 +79,4 @@
     });
   </script>
 </dom-module>
+</body></html>

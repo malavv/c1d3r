@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -12,7 +12,7 @@
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
 <link rel="import" href="c1d3r-input.html">
 
-<dom-module id="c1d3r-entry">
+</head><body><dom-module id="c1d3r-entry">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -65,24 +65,14 @@
         <div class="head">Ingredients</div>
         <template is="dom-repeat" items="[[ingEntries]]">
           <div class="step">
-            <c1d3r-input
-              class="flex"
-              number="[[index]]"
-              entry-item="{{item}}"
-              on-show-details="_onShowDetails"
-              on-hide-details="_onHideDetails"></c1d3r-input>
+            <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
           </div>
         </template>
 
         <div class="head">Personalization</div>
         <template is="dom-repeat" items="[[adjustEntries]]">
           <div class="step">
-            <c1d3r-input
-                class="flex"
-                number="[[index]]"
-                entry-item="{{item}}"
-                on-show-details="_onShowDetails"
-                on-hide-details="_onHideDetails"></c1d3r-input>
+            <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
           </div>
         </template>
       </div>
@@ -164,3 +154,4 @@
     });
   </script>
 </dom-module>
+</body></html>

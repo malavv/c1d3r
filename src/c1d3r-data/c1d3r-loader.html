@@ -1,12 +1,12 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
-<dom-module id="c1d3r-loader">
+</head><body><dom-module id="c1d3r-loader">
   <template>
     <style></style>
 
-    <template is="dom-repeat" items="{{urls}}" as="url"><iron-ajax auto url="[[_toURL(url)]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
+    <template is="dom-repeat" items="{{urls}}" as="url"><iron-ajax auto="" url="[[_toURL(url)]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
 
       <link rel="import" href="[[_toElemURL(url)]]">
     </template>
@@ -55,3 +55,4 @@
     });
   </script>
 </dom-module>
+</body></html>

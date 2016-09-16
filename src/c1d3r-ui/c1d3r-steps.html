@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
@@ -6,7 +6,7 @@
 
 <link rel="import" href="../../data/recipes/dryHardCider/guide.html">
 
-<dom-module id="c1d3r-steps">
+</head><body><dom-module id="c1d3r-steps">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -25,7 +25,7 @@
     </div>
 
     <iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">
-      <c1d3r-dryHardCider recipe-id="dryHardCider" class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-dryHardCider>
+      <c1d3r-dryhardcider recipe-id="dryHardCider" class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-dryhardcider>
     </iron-pages>
 
   </template>
@@ -55,3 +55,4 @@
     });
   </script>
 </dom-module>
+</body></html>

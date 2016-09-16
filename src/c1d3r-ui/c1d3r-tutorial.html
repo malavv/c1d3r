@@ -1,11 +1,11 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="c1d3r-progress.html">
 
-<dom-module id="c1d3r-tutorial">
+</head><body><dom-module id="c1d3r-tutorial">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -82,10 +82,7 @@
       <paper-button on-tap="_navNext">Next</paper-button>
     </div>
 
-    <iron-localstorage
-        name="c1d3r-app-storage"
-        value="{{storage}}"
-        on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
+    <iron-localstorage name="c1d3r-app-storage" value="{{storage}}" on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
   </template>
 
   <script>
@@ -142,3 +139,4 @@
     });
   </script>
 </dom-module>
+</body></html>

@@ -1,11 +1,11 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-styles/classes/shadow.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
-<dom-module id="c1d3r-splash">
+</head><body><dom-module id="c1d3r-splash">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
 
@@ -54,7 +54,7 @@
       }
     </style>
 
-    <!--background space on the left-->
+    
     <div class="flex-4"></div>
 
     <div class="container">
@@ -65,7 +65,7 @@
         <p>This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.</p>
       </div>
 
-      <!--Recipe Selector-->
+      
       <div class="layout horizontal wrap">
         <template is="dom-repeat" items="[[recipes]]">
           <div class="recipe enabled" on-tap="_selectRecipe">{{item.name}}</div>
@@ -78,7 +78,7 @@
 
     </div>
 
-    <!--background space on the right-->
+    
     <div class="flex-1"></div>
 
   </template>
@@ -125,3 +125,4 @@
     });
   </script>
 </dom-module>
+</body></html>

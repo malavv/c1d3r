@@ -1,11 +1,8 @@
-<!doctype html>
-
-<html lang="en">
-  <head>
+<!DOCTYPE html><html lang="en"><head>
     <title>c1d3r</title>
     <meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <link rel="manifest" href="manifest.webmanifest">
 
@@ -14,13 +11,7 @@
 
     <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
-    <script>
-      /* this script must run before Polymer is imported */
-      window.Polymer = {
-        dom: 'shadow',
-        lazyRegister: true
-      };
-    </script>
+    <script>window.Polymer={dom:"shadow",lazyRegister:!0};</script>
 
     <link rel="import" href="src/c1d3r-app/c1d3r-app.html">
     <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -28,7 +19,8 @@
     <style include="iron-positioning"></style>
     <link rel="import" href="src/c1d3r-app/global-styles.html">
   </head>
-  <body class="fullbleed" unresolved>
+  <body class="fullbleed" unresolved="">
     <c1d3r-app class="fit layout vertical"></c1d3r-app>
-  </body>
-</html>
+  
+
+</body></html>
