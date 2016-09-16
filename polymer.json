@@ -1,0 +1,11 @@
+{
+  "entrypoint": "index.html",
+  "sources": [
+    "src/**/*",
+    "bower.json"
+  ],
+  "includeDependencies": [
+    "manifest.webmanifest",
+    "data/**/*"
+  ]
+}

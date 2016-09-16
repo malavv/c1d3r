@@ -14,7 +14,7 @@ node_modules/
 npm-debug.log
 
 # Distribution package. Should be rebuilt everytime.
-dist/
+build/
 
 # Remove IDE project files.
 .idea
