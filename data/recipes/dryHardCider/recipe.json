@@ -42,8 +42,8 @@
       "id": "degreeAlcool",
       "datatype": "number",
       "group": "adjust",
-      "label": "What is your desired ABV?",
-      "details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement.",
+      "label": "What is your desired ABV? (+0.5% see details)",
+      "details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement. The sugar used for priming will be converted in a 0.5% addition to the requested ABV.",
       "placeholder": 4.5,
       "min": 3.0,
       "max": 8.0
@@ -79,6 +79,16 @@
       "max": 10
     },
     {
+      "id": "primingSugarAddKg",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "addedVolumeOfSugarAddInL",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
       "id": "yeastEfficiency",
       "datatype": "number",
       "group": "preset",
@@ -98,6 +108,16 @@
     },
     {
       "id": "acidAddInG",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "tg",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "sugarYieldPtsKgL",
       "datatype": "number",
       "group": "computed"
     }
