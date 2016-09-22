@@ -42,7 +42,8 @@
         <div class="head">2 Yeast Prep</div>
         <div class="step">2.0 Add {{data.nutrientAddInG}} g of Yeast Nutrient.</div>
         <div class="step">2.1 Add the content of a Yeast packet.</div>
-        <div class="step">2.3 Stir liquid thoroughly for 2 minutes.</div>
+        <div class="step">2.2 Mix-in {{data.chaptizationSugarAddKg}} kg of table sugar thoroughly.</div>
+        <div class="step">2.3 Stir liquid thoroughly for at least 2 minutes.</div>
       </div>
       <!--First Fermentation-->
       <div class="content-block">
@@ -58,7 +59,7 @@
       <div class="content-block">
         <div class="head">5 Packaging</div>
         <div class="step">5.0 Transfer to bottling bucket.</div>
-        <div class="step">5.1 Mix-in {{data.chaptizationSugarAddKg}} kg of priming sugar (table sugar) thoroughly.</div>
+        <div class="step">5.1 Mix-in {{data.primingSugarAddKg}} kg of priming sugar (table sugar) thoroughly.</div>
         <div class="step">5.2 Package in bottles.</div>
       </div>
     </div>
@@ -90,7 +91,8 @@
         '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)',
         '_pectinaseAddInG(data.volumeInL)',
         '_nutrientAddInG(data.volumeInL)',
-        '_chaptizationSugarAddKg(data.degreeAlcool, data.yeastEfficiency, data.og, data.sugarPpg, data.volumeInL)'
+        '_chaptizationSugarAddKg(data.degreeAlcool, data.yeastEfficiency, data.og, data.sugarPpg, data.volumeInL)',
+        '_primingSugarAddKg(data.sugarPpg, data.volumeInL)'
       ],
 
       _recipeChanged(recipe) {
@@ -138,6 +140,13 @@
       _chaptizationSugarAddKg(degreeAlcool, yeastEfficiency, og, sugarPpg, volumeInL) {
         let value = ((((4 * degreeAlcool)/(525 * yeastEfficiency) - og + 1) * 1000) / (sugarPpg * 2.20462 * 3.78541)) * volumeInL;
         this.set('data.chaptizationSugarAddKg', this._toReal(value));
+      },
+      _primingSugarAddKg(sugarPpg, volumeInL) {
+        // Assuming 2.5 Volumes of CO2 at 20C and Table Sugar.
+        // This is not a technical formula, just a bug fix before cider
+        // season. This is coming from
+        // http://www.brewersfriend.com/beer-priming-calculator/
+        this.set('data.primingSugarAddKg', this._toReal(6.55 * volumeInL/1000));
       },
 
       _toReal(real) {

@@ -79,6 +79,11 @@
       "max": 10
     },
     {
+      "id": "primingSugarAddKg",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
       "id": "yeastEfficiency",
       "datatype": "number",
       "group": "preset",
