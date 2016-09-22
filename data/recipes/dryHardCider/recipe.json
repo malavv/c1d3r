@@ -115,6 +115,11 @@
       "id": "tg",
       "datatype": "number",
       "group": "computed"
+    },
+    {
+      "id": "sugarYieldPtsKgL",
+      "datatype": "number",
+      "group": "computed"
     }
   ]
 }
