@@ -44,6 +44,8 @@
         <div class="step">2.1 Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04</div>
         <div class="step">2.2 Mix-in {{data.chaptizationSugarAddKg}} kg of table sugar thoroughly.</div>
         <div class="step">2.3 Stir liquid thoroughly for at least 2 minutes.</div>
+        <div class="step">2.4 Be warned that the sugar addition will add {{data.addedVolumeOfSugarAddInL}} L to the total volume.</div>
+
       </div>
       <!--First Fermentation-->
       <div class="content-block">
@@ -92,7 +94,8 @@
         '_pectinaseAddInG(data.volumeInL)',
         '_nutrientAddInG(data.volumeInL)',
         '_chaptizationSugarAddKg(data.degreeAlcool, data.yeastEfficiency, data.og, data.sugarPpg, data.volumeInL)',
-        '_primingSugarAddKg(data.sugarPpg, data.volumeInL)'
+        '_primingSugarAddKg(data.sugarPpg, data.volumeInL)',
+        '_addedVolumeOfSugarAddInL(data.og, data.chaptizationSugarAddKg, data.volumeInL)'
       ],
 
       _recipeChanged(recipe) {
@@ -147,6 +150,9 @@
         // season. This is coming from
         // http://www.brewersfriend.com/beer-priming-calculator/
         this.set('data.primingSugarAddKg', this._toReal(6.55 * volumeInL/1000));
+      },
+      _addedVolumeOfSugarAddInL(og, chaptizationSugarAddKg, volumeInL) {
+        this.set('data.addedVolumeOfSugarAddInL', this._toReal(-5.0));
       },
 
       _toReal(real) {
