@@ -84,6 +84,11 @@
       "group": "computed"
     },
     {
+      "id": "addedVolumeOfSugarAddInL",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
       "id": "yeastEfficiency",
       "datatype": "number",
       "group": "preset",
@@ -103,6 +108,11 @@
     },
     {
       "id": "acidAddInG",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "tg",
       "datatype": "number",
       "group": "computed"
     }
