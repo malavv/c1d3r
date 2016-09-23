@@ -146,9 +146,26 @@
 
         this.set('data.tanninAddInG', this._toReal(normalizedDiff * maxTanninPerLInGram * volume));
       },
+      /**
+       * Computes the recommended pectic enzime addition.
+       *
+       * This is a fixed amount per Liter in G. This was mesured with my precise
+       * balanced using loose pectinase (do not pack).
+       *
+       * @see https://github.com/malavv/c1d3r/wiki/Pectic-Enzyme
+       */
       _pectinaseAddInG(volumeInL) {
-        let value = 528.34 * volumeInL / 1000;
-        this.set('data.pectinaseAddInG', this._toReal(value));
+        // Northern Brewer recommendation.
+        const pectinaseInGPerL = 0.4362;
+
+        let volume = this._fromString(volumeInL);
+
+        if (volume == null)
+          this.set('data.pectinaseAddInG', null);
+
+        console.assert(volume >= 0, 'Volume must be positive');
+
+        this.set('data.pectinaseAddInG', this._toReal(pectinaseInGPerL * volume));
       },
       _nutrientAddInG(volumeInL) {
         let value = 217.94 * volumeInL / 1000;
