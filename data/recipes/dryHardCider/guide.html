@@ -41,7 +41,7 @@
       <div class="content-block">
         <div class="head">2 Yeast Prep</div>
         <div class="step">2.0 Add {{data.nutrientAddInG}} g of Yeast Nutrient.</div>
-        <div class="step">2.1 Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04</div>
+        <div class="step">2.1 Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04. A fruity white yeast can also be used to a fruitier finish (Wyeast 4242 Chablis).</div>
         <div class="step">2.2 Mix-in {{data.chaptizationSugarAddKg}} kg of table sugar thoroughly.</div>
         <div class="step">2.3 Stir liquid thoroughly for at least 2 minutes.</div>
         <div class="step">2.4 Be warned that due to the sugar addition, the final volume will increase from {{data.volumeInL}} to {{data.addedVolumeOfSugarAddInL}} L.</div>
@@ -51,6 +51,7 @@
       <div class="content-block">
         <div class="head">3 First Fermentation</div>
         <div class="step">3.0 Ferment in an air-locked fermentor for 5 days or until 1.010.</div>
+        <div class="step">3.1 Make sure the room of the fermentor is at a temperature between 18 and 21 °C. Hotter than this and the yeast might contribute unwanted "yeasty" or "bready" taste.</div>
       </div>
       
       <div class="content-block">
@@ -123,9 +124,28 @@
         let value = multiplier * volumeInL * 176.12;
         this.set('data.acidAddInG', this._toReal(value));
       },
+      /**
+       * Computes the amount of potassium métabisulfite to add in g.
+       *
+       * @see https://github.com/malavv/c1d3r/wiki/Potassium-Metabisulfite
+       */
       _potassMetaAddInG(finalPh, volumeInL) {
-        let value = ((52.7*(finalPh*finalPh*finalPh) - 459*(finalPh*finalPh) + 1352.6*finalPh - 1338.6) / 0.57) * volumeInL / 1000;
-        this.set('data.potassMetaAddInG', this._toReal(value));
+        // Convert an amount of SO2 in grams to an amount of potas. metab.
+        const sulfDiox2Metabisulfite = 1/0.57;
+        // Convert an amount in mg to an amount in g.
+        const mg2g = 1/1000;
+        let
+          ph = this._fromString(finalPh),
+          volume = this._fromString(volumeInL);
+
+        if (ph == null || volume == null)
+          this.set('data.potassMetaAddInG', null);
+
+        console.assert(ph >= 2 && ph <= 5, 'Final PH outside of valid range');
+        console.assert(volume >= 0, 'Volume must be positive');
+
+        let neededSO2InPPM = 52.7 * (ph*ph*ph) - 459 * (ph*ph) + 1352.6 * ph - 1338.6;
+        this.set('data.potassMetaAddInG', this._toReal(neededSO2InPPM * sulfDiox2Metabisulfite * volume * mg2g));
       },
       _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
         const maxTanninPerLInGram = 0.160;
@@ -146,9 +166,26 @@
 
         this.set('data.tanninAddInG', this._toReal(normalizedDiff * maxTanninPerLInGram * volume));
       },
+      /**
+       * Computes the recommended pectic enzime addition.
+       *
+       * This is a fixed amount per Liter in G. This was mesured with my precise
+       * balanced using loose pectinase (do not pack).
+       *
+       * @see https://github.com/malavv/c1d3r/wiki/Pectic-Enzyme
+       */
       _pectinaseAddInG(volumeInL) {
-        let value = 528.34 * volumeInL / 1000;
-        this.set('data.pectinaseAddInG', this._toReal(value));
+        // Northern Brewer recommendation.
+        const pectinaseInGPerL = 0.4362;
+
+        let volume = this._fromString(volumeInL);
+
+        if (volume == null)
+          this.set('data.pectinaseAddInG', null);
+
+        console.assert(volume >= 0, 'Volume must be positive');
+
+        this.set('data.pectinaseAddInG', this._toReal(pectinaseInGPerL * volume));
       },
       _nutrientAddInG(volumeInL) {
         let value = 217.94 * volumeInL / 1000;
