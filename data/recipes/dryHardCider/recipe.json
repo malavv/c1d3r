@@ -101,6 +101,18 @@
       "value": 46
     },
     {
+      "id": "acidPka",
+      "datatype": "number",
+      "group": "preset",
+      "value": 4.10
+    },
+    {
+      "id": "acidMolarMass",
+      "datatype": "number",
+      "group": "preset",
+      "value": 176.12
+    },
+    {
       "id": "finalPh",
       "datatype": "number",
       "group": "preset",

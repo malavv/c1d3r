@@ -69,6 +69,19 @@
   </template>
 
   <script>
+    let exp10 = (exp) => Math.pow(10, exp);
+    let square = (base) => Math.pow(base, 2);
+
+    /**
+     * Computes the molarity of hydronium from a solution PH.
+     *
+     * @param ph The PH of the solution
+     * @return The concentration fo hydronium in moles per liters.
+     */
+    function phToH30(ph) {
+      return Math.pow(10, -ph)
+    }
+
     const poundsInKg = 2.20462;
     const litresInGal = 3.78541;
 
@@ -92,7 +105,7 @@
         '_dataChanged(data)',
         '_dataAttrChanged(data.*)',
         // attr
-        '_computeAcid(data.juicePh, data.finalPh, data.volumeInL)',
+        '_computeAcid(data.juicePh, data.finalPh, data.volumeInL, data.acidPka, data.acidMolarMass)',
         '_potassMetaAddInG(data.finalPh, data.volumeInL)',
         '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)',
         '_pectinaseAddInG(data.volumeInL)',
@@ -103,6 +116,27 @@
         '_addedVolumeOfSugarAddInL(data.og, data.chaptizationSugarAddKg, data.volumeInL, data.tg)',
         '_sugarYieldPtsKgL(data.sugarPpg)'
       ],
+
+      /**
+       * Computes a PH correction based on ascorbic acid.
+       *
+       * Make sure the arguments are exactly in the same order as the helper function.
+       * @see https://github.com/malavv/c1d3r/wiki/PH-Correction
+       *
+       * @param oPh Original PH of the solution.
+       * @param fPh Final PH of the solution.
+       * @param volumeL Solution volume in liters.
+       * @param pka Chosen Acid Pka
+       * @param molarMass Molar mass of the chosen acid.
+       * @return Mass of the acid to add to achieve the final PH.
+       */
+      _getAcidAddInG(oPh, fPh, volumeL, pka, molarMass) {
+        let
+          // Required change in hydronium concentration.
+          deltaMol = phToH30(fPh) - phToH30(oPh),
+          acidAddInMol = (deltaMol * deltaMol) / phToH30(pka) + deltaMol;
+        return acidAddInMol * volumeL * molarMass;
+      },
 
       _recipeChanged(recipe) {
         if (recipe == null)
@@ -116,13 +150,12 @@
         if (this.isLogging)
           console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
       },
-      _computeAcid(juicePh, finalPh, volumeInL) {
-        let exp10 = (exp) => Math.pow(10, exp);
-        let diff = exp10(-finalPh) - exp10(-juicePh);
-        let square = (base) => Math.pow(base, 2);
-        let multiplier = square(diff) / 7.94E-5 + diff;
-        let value = multiplier * volumeInL * 176.12;
-        this.set('data.acidAddInG', this._toReal(value));
+      _computeAcid(juicePh, finalPh, volumeInL, acidPka, acidMolarMass) {
+        let 
+          args = [...arguments].map(arg => this._fromString(arg));
+
+        this.set('data.acidAddInG', args.some(arg => arg == null) ? null
+            : this._toReal(this._getAcidAddInG.apply(this, args)));
       },
       /**
        * Computes the amount of potassium métabisulfite to add in g.
@@ -138,8 +171,10 @@
           ph = this._fromString(finalPh),
           volume = this._fromString(volumeInL);
 
-        if (ph == null || volume == null)
+        if (ph == null || volume == null) {
           this.set('data.potassMetaAddInG', null);
+          return
+        }
 
         console.assert(ph >= 2 && ph <= 5, 'Final PH outside of valid range');
         console.assert(volume >= 0, 'Volume must be positive');
