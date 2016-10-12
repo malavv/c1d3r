@@ -92,7 +92,7 @@
       "id": "yeastEfficiency",
       "datatype": "number",
       "group": "preset",
-      "value": 0.75
+      "value": 0.85
     },
     {
       "id": "sugarPpg",

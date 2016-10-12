@@ -27,7 +27,8 @@
       <!--Initial Prep-->
       <div class="content-block">
         <div class="head">0 Configuring Juice Properties</div>
-        <div class="step">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
+        <div class="step" hidden$="{{_isLower(data.juicePh, data.finalPh)}}">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
+        <div class="step" hidden$="{{!_isLower(data.juicePh, data.finalPh)}}">0.0 The juice is already more acidic than the {{data.finalPh}} pH recipe target.</div>
         <div class="step">0.1 Add {{data.potassMetaAddInG}} g of potassium metabisulfite.</div>
         <div class="step">0.2 Add {{data.tanninAddInG}} g of wine tannin.</div>
         <div class="step" hidden$="{{!data.isCloudy}}">0.3 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
@@ -45,7 +46,6 @@
         <div class="step">2.2 Mix-in {{data.chaptizationSugarAddKg}} kg of table sugar thoroughly.</div>
         <div class="step">2.3 Stir liquid thoroughly for at least 2 minutes.</div>
         <div class="step">2.4 Be warned that due to the sugar addition, the final volume will increase from {{data.volumeInL}} to {{data.addedVolumeOfSugarAddInL}} L.</div>
-
       </div>
       <!--First Fermentation-->
       <div class="content-block">
@@ -132,7 +132,7 @@
         '_dataAttrChanged(data.*)',
         // attr
         '_acidAddInG(data.juicePh, data.finalPh, data.volumeInL, data.acidPka, data.acidMolarMass)',
-        '_potassMetaAddInG(data.finalPh, data.volumeInL)',
+        '_potassMetaAddInG(data.juicePh, data.finalPh, data.volumeInL)',
         '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)',
         '_pectinaseAddInG(data.volumeInL)',
         '_nutrientAddInG(data.volumeInL)',
@@ -179,7 +179,7 @@
        * This is a fixed amount per Liter in G. This was mesured with my precise
        * balanced using loose pectinase (do not pack).
        * @see https://github.com/malavv/c1d3r/wiki/Pectic-Enzyme
-       * 
+       *
        * @param volumeL Solution volume in liters.
        * @return Mass of pectinase to add.
        */
@@ -196,10 +196,11 @@
        * @param volumeL Solution volume in liters.
        * @return Mass of potassium metabisulfite to add.
        */
-      _getPotassMetaAddInG(fPh, volumeL) {
+      _getPotassMetaAddInG(oPh, fPh, volumeL) {
+        let juicePh = _fromString(oPh);
         let phToSO2Ppm = ph => 52.7 * (ph*ph*ph) - 459 * (ph*ph) + 1352.6 * ph - 1338.6;
 
-        return phToSO2Ppm(fPh, volumeL) * ppmToG * (1 / metabisulfiteToSulfDioxEfficiency) * volumeL;
+        return phToSO2Ppm(Math.min(juicePh, fPh), volumeL) * ppmToG * (1 / metabisulfiteToSulfDioxEfficiency) * volumeL;
       },
       /**
        * Computes the addition of wine tannin in grams.
@@ -233,7 +234,8 @@
 
         // Check for assumptions
         if (args[0] < args[1])
-          throw new RecipeComputationException("Cannot lower PH with acid.");
+          // Unable to lower PH
+          this.set('data.acidAddInG', null);
         if (args[2] < 0)
           throw new RecipeComputationException("Invalid Negative Volume.");
 
@@ -379,6 +381,9 @@
 
         let mass = og * volume + chaptizationSugarAddKg;
         this.set('data.addedVolumeOfSugarAddInL', toReal(mass / tg));
+      },
+      _isLower(lhs, rhs) {
+        return _fromString(lhs) < _fromString(rhs);
       },
 
       listSteps() {
