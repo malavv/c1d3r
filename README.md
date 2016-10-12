@@ -1,17 +1,20 @@
 # c1d3r
-C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factors in certain parameters and which will then impact the quantities and steps that are produced. 
+C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.
 
-This project is meant to be simple and straight to the point. It offers flexibility but only based on pre-existing recipes. This is therefore not meant to be a generic recipe maker, nor a brewing simulator. Other products are much better at doing this. The core of the C1d3r application is its set of curated recipes. It will always have a custom mode, that allows some basic calculation to be done, but it is not it's intended use case.
- 
-By leveraging web technologies, the C1d3r application can be access from your browser either remotely or on a local installation. If using it remotely, it also has the possibility to be bookmarked. The online deployment of the app is accessible at this address : https://malavv.github.io/c1d3r/.
+This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.
 
+## Technology
+
+The C1d3r guide leverages the latest web technologies to provide an easy to follow and stylistic interactive experience. The latest version of the application is continuously built and deployed to https://malavv.github.io/c1d3r/. This should handle most use cases, and efforts are made to keep this deployment reliable, free of regressions, and backward compatible through the years. This link is meant to be bookmarked and consulted annually.
+
+Advanced users and programmers alike, might want to personalize their guide, and the use of web technologies makes that simple and hassle free. Although it is strongly suggested that any useful development be pushed back for the benefit of the community, local deployment can be made to run any alternate code without any issues.
 
 ## Contributors
-Contribution to this project are welcome, and this project is only as strong as the people who contributes to it. However, all work must comply with this projects vision of a simple, easy to use, and focused interactive guide. Here is a couple of way you may help :
+Contributions to this project are very welcome. This being an open source project, it is only as strong as the people who caries it and volunteer their time for the benefit of the overall community. This being said, all work must comply with the project vision's of a simple, easy to use, and focused interactive guide. Here is a couple of way you may help :
 
-1. Using it! And reporting errors and bugs in the Github issue manager.
-2. Fixing issues reported by other users.
-3. Helping with the user experience and styling. *HTML | JS | Polymer*
+1. Using it! And reporting errors and bugs in the [Github issue manager](https://github.com/malavv/c1d3r/issues).
+2. Helping with the user experience and styling. *HTML | JS | Polymer*
+3. Tacking a reported bug, and fixing it.
 4. Contributing recipes, see the [wiki page](https://github.com/malavv/c1d3r/wiki/Contributing-Recipes) for more details.
 
 This is the lovely people to thank for this guide:
@@ -19,68 +22,6 @@ This is the lovely people to thank for this guide:
 Maxime Lavigne (malavv)
 # Generated using git log --format='%aN' | sort -u
 ```
+## Building the application
 
-## Building application
-After building the application, you will have a local instance of C1d3r which uses the code you have in your local repository.
-
-### Prerequisite
-A few tools for web development are required to build this project.
-
-1. NodeJS
-  * [Website](https://nodejs.org/en/)
-  * Install : Run their installer for your OS.
-  * Verify : Make sure npm is accessible from the command line.
-2. Bower package manager
-  * [Website](https://nodejs.org/en/)
-  * Install :```npm install -g bower```
-3. Gulp builder
-  * [Website](http://gulpjs.com/)
-  * Install :```npm install -g gulp-cli```
-4. Polymer Vulcanizer
-  * [Website](https://www.polymer-project.org/1.0/)
-  * Install :```npm install -g vulcanize```
-5. Polymer Web Component Tester
-  * [Website](https://www.polymer-project.org/1.0/)
-  * Install :```npm install -g web-component-tester```
-
-### Updating libraries
-From the root folder of the project, update the *Node* and *Bower* libraries.
-```
-$npm update
-$bower update
-```
-
-## Install the Polymer-CLI
-
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
-
-## Viewing Your Application
-
-```
-$ polymer serve
-```
-
-## Building Your Application
-
-```
-$ polymer build
-```
-
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
-
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
-
-```
-$ polymer serve build/bundled
-```
-
-## Running Tests
-
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+Local build of the application are fairly simple to put in place. They can be of great help with the development of new recipes, or whilst developing new features. In order to get a full description of how to set up for deployment, please consult the *INSTALL.md* file.
