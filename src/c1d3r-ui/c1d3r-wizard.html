@@ -85,11 +85,15 @@
       },
 
       navNext() {
+        if (!this._isPageValid())
+          return;
+
         if (this.selected === 3) {
-          this.set('selected', this.selected + 1);
+          this.set('selected', 0);
           this.fire('home');
           return;
         }
+
         this.set('selected', this.selected + 1);
       },
 
@@ -101,6 +105,15 @@
       onBlur() {},
       onFocus() { this.selected = 0; },
 
+      _isPageValid() {
+        let pages = this.$$('iron-pages').children;
+        // if no selected space, or no validation, defaults to valid
+        return this.selected == null ||
+          pages[this.selected] == null ||
+          pages[this.selected].isValid == null ||
+          pages[this.selected].isValid();
+      },
+
       _nextOrFinishStep(selected) {
         return selected === 3 ? 'Finish' : 'Next';
       },
@@ -108,7 +121,7 @@
       _pageChanged(newPage, oldPage) {
         let pages = this.$$('iron-pages').children;
         if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)
-          pages[oldPage].onBlur();
+          pages[oldPage].onBlur()
         if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null)
           pages[newPage].onFocus();
       }

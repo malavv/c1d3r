@@ -45,6 +45,7 @@
         <paper-input
             auto-validate
             required
+            invalid="{{invalid}}"
             placeholder="[[entryItem.placeholder]]"
             value="{{entryItem.value}}"
             validator$="[[entryItem.id]]"
@@ -70,7 +71,19 @@
         entryItem: {
           type: Object,
           notify: true
+        },
+        invalid: {
+          type: Boolean,
+          notify: true
         }
+      },
+
+      observers: [
+        '_isInputValid(users.splices)'
+      ],
+
+      validate() {
+        (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
       },
 
       reset() {
@@ -87,10 +100,15 @@
         evt.stopPropagation();
         this.fire('show-details', { index: this.number, model: this.entryItem });
       },
+
       _onBlur(evt) {
         evt.stopPropagation();
         this.fire('hide-details');
       },
+
+      _isInputValid() {
+
+      }
     });
   </script>
 </dom-module>

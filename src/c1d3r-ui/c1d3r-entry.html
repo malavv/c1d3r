@@ -160,6 +160,11 @@
         return entry.group === 'adjust' ? 'Personalization' : 'Ingredient';
       },
 
+      isValid() {
+        let inputs = Polymer.dom(this.root).querySelectorAll('c1d3r-input');
+        inputs.forEach(i => i.validate());
+        return !inputs.some(i => i.invalid === true);
+      },
       onBlur() {},
       onFocus() {
         Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.reset())
