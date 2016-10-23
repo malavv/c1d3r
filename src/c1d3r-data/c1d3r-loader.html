@@ -6,9 +6,8 @@
   <template>
     <style></style>
 
-    <template is="dom-repeat" items="{{urls}}" as="url"><iron-ajax auto url="[[_toURL(url)]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
-
-      <link rel="import" href="[[_toElemURL(url)]]">
+    <template is="dom-repeat" items="{{urls}}" as="url">
+      <iron-ajax auto url="[[_toURL(url)]]" handle-as="json" on-response="handleRecipeData"></iron-ajax>
     </template>
 
   </template>

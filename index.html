@@ -1,34 +1,38 @@
 <!doctype html>
-
 <html lang="en">
-  <head>
-    <title>c1d3r</title>
-    <meta charset="utf-8">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>c1d3r</title>
 
-    <link rel="manifest" href="manifest.webmanifest">
+  <link rel="shortcut icon" sizes="32x32" href="/images/barrel32.png">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
+  <meta name="theme-color" content="#f07818">
+  <link rel="manifest" href="manifest.json">
 
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script>
+    window.performance && performance.mark && performance.mark('index.html');
+    window.Polymer = {lazyRegister: true, dom: 'shadow'};
+  </script>
+  <link rel="import" href="/src/c1d3r-app/c1d3r-app.html">
 
-    <script>
-      /* this script must run before Polymer is imported */
-      window.Polymer = {
-        dom: 'shadow',
-        lazyRegister: true
-      };
-    </script>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
 
-    <link rel="import" href="src/c1d3r-app/c1d3r-app.html">
-    <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+  <c1d3r-app unresolved>
+    <!-- Future Way of registering recipes? -->
+    <!-- <c1d3r-recipe img-url="" data=""></c1d3r-recipe> -->
+  </c1d3r-app>
 
-    <style include="iron-positioning"></style>
-    <link rel="import" href="src/c1d3r-app/global-styles.html">
-  </head>
-  <body class="fullbleed" unresolved>
-    <c1d3r-app class="fit layout vertical"></c1d3r-app>
-  </body>
+</body>
 </html>

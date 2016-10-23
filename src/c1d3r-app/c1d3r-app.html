@@ -1,47 +1,47 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
-<link rel="import" href="../c1d3r-ui/c1d3r-footer.html">
+
 <link rel="import" href="../c1d3r-data/c1d3r-loader.html">
+<link rel="import" href="../c1d3r-ui/c1d3r-footer.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-splash.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-tutorial.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-wizard.html">
 
 <dom-module id="c1d3r-app">
   <template>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
 
+    <style include="iron-flex"></style>
     <style>
       :host {
-        @apply(--layout-vertical);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        --main-bg-color: rgb(242, 242, 242);
+        --main-title-font: 'Open Sans Condensed', sans-serif;
       }
 
       iron-pages {
-        @apply(--layout-vertical);
-        @apply(--layout-flex);
         overflow-y: auto;
-      }
-
-      iron-pages > * {
-        @apply(--layout-flex);
       }
     </style>
 
-    <iron-pages selected="[[selected]]">
-      <c1d3r-splash recipes="[[recipes]]" on-selected="_selectRecipe"></c1d3r-splash>
-      <c1d3r-tutorial on-next="_navRecipe" on-home="_navHome"></c1d3r-tutorial>
-      <c1d3r-wizard recipe="[[recipe]]" on-home="_navHome"></c1d3r-wizard>
+    <iron-pages selected="[[selected]]" class="layout vertical flex">
+      <c1d3r-splash recipes="[[recipes]]" on-selected="_selectRecipe" class="flex"></c1d3r-splash>
+      <c1d3r-tutorial on-next="_navRecipe" on-home="_navHome" class="flex"></c1d3r-tutorial>
+      <c1d3r-wizard recipe="[[recipe]]" on-home="_navHome" class="flex"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Loads the application manifest -->
-    <iron-ajax auto
-        url="../../manifest.webmanifest"
-        handle-as="json"
-        on-response="_handleManifest"></iron-ajax>
+    <iron-ajax auto url="../../manifest.json" handle-as="json" on-response="_handleManifest"></iron-ajax>
+
     <!--Load All Possible Recipe (need to also load in c1d3r-steps-->
     <c1d3r-loader
         urls='["../../data/recipes/dryHardCider"]'

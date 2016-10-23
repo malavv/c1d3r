@@ -1,9 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-styles/classes/shadow.html">
-<link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
 <dom-module id="c1d3r-splash">
   <template>
@@ -11,7 +9,8 @@
 
     <style>
       :host {
-        @apply(--layout-horizontal);
+        display: flex;
+        flex-direction: row;
 
         background: url(../../data/img/splash_brown.jpg) right center no-repeat;
         background-size: cover;
@@ -45,7 +44,10 @@
       div.recipe.enabled {
         cursor: pointer;
         background-color: rgba(10, 10, 10, 0.6);
-        @apply(--shadow-elevation-6dp);
+        /* --shadow-elevation-6dp */
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 18px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 5px -1px rgba(0, 0, 0, 0.4);
       }
       div.recipe.disabled {
         cursor: auto;

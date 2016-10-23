@@ -1,6 +1,6 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
 <dom-module id="c1d3r-dryHardCider">
   <template>
@@ -362,10 +362,12 @@
        * @return Yield in milli-points of gravity per kg per L.
        */
       _sugarYieldPtsKgL(sugarPpg) {
-        let yield = _fromString(sugarPpg);
-        console.assert(yield == null || yield > 30 && yield < 50, 'Invalid PPG value (30 < x < 50)');
+        let yd = _fromString(sugarPpg);
+
+        console.assert(yd == null || yd > 30 && yd < 50, "Invalid PPG value (30 < x < 50)");
+
         // No toReal since this is not meant to be shown.
-        this.set('data.sugarYieldPtsKgL', yield == null ? null : yield * poundsInKg * litresInGal);
+        this.set('data.sugarYieldPtsKgL', yd == null ? null : yd * poundsInKg * litresInGal);
       },
       _addedVolumeOfSugarAddInL(juiceGravity, chaptizationSugarAddKg, volumeInL, tg) {
         let
