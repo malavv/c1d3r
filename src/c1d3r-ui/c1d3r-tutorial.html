@@ -2,6 +2,7 @@
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 
 <link rel="import" href="c1d3r-progress.html">
 
@@ -85,58 +86,63 @@
     <iron-localstorage name="c1d3r-app-storage" value="{{storage}}" on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
   </template>
 
-  <script>
-    Polymer({
-      is: 'c1d3r-tutorial',
+  <script>'use strict';
 
-      hostAttributes: {},
+Polymer({
+  is: 'c1d3r-tutorial',
 
-      properties: {
-        skip: {
-          type: Boolean,
-          observer: '_skipChanged'
-        },
-        cancelHandle: Number,
-        blinkPeriod: {
-          type: Number,
-          value: 2500
-        },
-        storage: Object
-      },
+  hostAttributes: {},
 
+  properties: {
+    skip: {
+      type: Boolean,
+      observer: '_skipChanged'
+    },
+    cancelHandle: Number,
+    blinkPeriod: {
+      type: Number,
+      value: 2500
+    },
+    storage: Object
+  },
 
-      onBlur() { this.cancelAsync(this.cancelHandle); },
+  onBlur: function onBlur() {
+    this.cancelAsync(this.cancelHandle);
+  },
+  onFocus: function onFocus() {
+    var _this = this;
 
-      onFocus() {
-        if (this.storage.skipTutorial)
-          this.fire('next');
-        this.$$('c1d3r-progress').step = 0;
-        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
-      },
+    if (this.storage.skipTutorial) this.fire('next');
+    this.$$('c1d3r-progress').step = 0;
+    this.cancelHandle = this.async(function () {
+      return _this._blink();
+    }, this.blinkPeriod);
+  },
+  _blink: function _blink() {
+    var _this2 = this;
 
-      _blink() {
-        let progressBar = this.$$('c1d3r-progress');
-        progressBar.set('step', (progressBar.step + 1) % 4);
-        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
-      },
-
-      _skipChanged(wantsSkip) {
-        if (!wantsSkip)
-          return;
-        console.info('now skipping tutorial.');
-        this.set('storage.skipTutorial', true);
-      },
-
-      _initStorage() {
-        this.storage = {
-          skipTutorial: false
-        };
-      },
-
-      _navBack() { this.fire('home'); },
-
-      _navNext() { this.fire('next'); }
-    });
-  </script>
+    var progressBar = this.$$('c1d3r-progress');
+    progressBar.set('step', (progressBar.step + 1) % 4);
+    this.cancelHandle = this.async(function () {
+      return _this2._blink();
+    }, this.blinkPeriod);
+  },
+  _skipChanged: function _skipChanged(wantsSkip) {
+    if (!wantsSkip) return;
+    console.info('now skipping tutorial.');
+    this.set('storage.skipTutorial', true);
+  },
+  _initStorage: function _initStorage() {
+    this.storage = {
+      skipTutorial: false
+    };
+  },
+  _navBack: function _navBack() {
+    this.fire('home');
+  },
+  _navNext: function _navNext() {
+    this.fire('next');
+  }
+});</script>
 </dom-module>
 </body></html>

@@ -5,47 +5,47 @@
     <style></style>
   </template>
 
-  <script>
-    Polymer({
+  <script>'use strict';
 
-      is: 'c1d3r-juice',
+Polymer({
 
-      hostAttributes: {
-        hidden: true
-      },
+  is: 'c1d3r-juice',
 
-      properties: {
+  hostAttributes: {
+    hidden: true
+  },
 
-        data: {
-          type: Object,
-          notify: true,
-          value: function() { return {}; }
-        },
-        isLogging: {
-          type: Boolean,
-          value: false
-        },
-        recipe: Object
-      },
+  properties: {
 
-      observers: [
-          '_newRecipe(recipe)',
-          '_attributeChanged(data.*)'
-      ],
-
-      _newRecipe(recipe) {
-        if (recipe == null)
-          return;
-        recipe.data
-            .filter(d => d.group === 'preset')
-            .forEach(d => this.set('data.' + d.id, d.value));
-      },
-
-      _attributeChanged(values) {
-        if (this.isLogging)
-          console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));
+    data: {
+      type: Object,
+      notify: true,
+      value: function value() {
+        return {};
       }
+    },
+    isLogging: {
+      type: Boolean,
+      value: false
+    },
+    recipe: Object
+  },
+
+  observers: ['_newRecipe(recipe)', '_attributeChanged(data.*)'],
+
+  _newRecipe: function _newRecipe(recipe) {
+    var _this = this;
+
+    if (recipe == null) return;
+    recipe.data.filter(function (d) {
+      return d.group === 'preset';
+    }).forEach(function (d) {
+      return _this.set('data.' + d.id, d.value);
     });
-  </script>
+  },
+  _attributeChanged: function _attributeChanged(values) {
+    if (this.isLogging) console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));
+  }
+});</script>
 </dom-module>
 </body></html>

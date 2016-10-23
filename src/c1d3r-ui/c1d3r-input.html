@@ -39,7 +39,7 @@
       </template>
       <template is="dom-if" if="[[entryItem.isNumber]]">
         <c1d3r-validator item="{{entryItem}}" error-message="{{entryItem.errorMessage}}" validator-name="[[entryItem.id]]"></c1d3r-validator>
-        <paper-input auto-validate="" required="" placeholder="[[entryItem.placeholder]]" value="{{entryItem.value}}" validator$="[[entryItem.id]]" error-message="{{entryItem.errorMessage}}"></paper-input>
+        <paper-input auto-validate="" required="" invalid="{{invalid}}" placeholder="[[entryItem.placeholder]]" value="{{entryItem.value}}" validator$="[[entryItem.id]]" error-message="{{entryItem.errorMessage}}"></paper-input>
       </template>
     </div>
     <div>
@@ -47,39 +47,46 @@
     </div>
   </template>
 
-  <script>
-    Polymer({
-      is: 'c1d3r-input',
+  <script>'use strict';
 
-      hostAttributes: {},
+Polymer({
+  is: 'c1d3r-input',
 
-      properties: {
-        number: Number,
-        entryItem: {
-          type: Object,
-          notify: true
-        }
-      },
+  hostAttributes: {},
 
-      reset() {
-        let pi = this.$$('paper-input');
-        if (pi != null)
-          pi.invalid = false;
+  properties: {
+    number: Number,
+    entryItem: {
+      type: Object,
+      notify: true
+    },
+    invalid: {
+      type: Boolean,
+      notify: true
+    }
+  },
 
-        let pc = this.$$('paper-checkbox');
-        if (pc != null)
-          pc.active = false;
-      },
+  observers: ['_isInputValid(users.splices)'],
 
-      _onFocus(evt) {
-        evt.stopPropagation();
-        this.fire('show-details', { index: this.number, model: this.entryItem });
-      },
-      _onBlur(evt) {
-        evt.stopPropagation();
-        this.fire('hide-details');
-      },
-    });
-  </script>
+  validate: function validate() {
+    (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
+  },
+  reset: function reset() {
+    var pi = this.$$('paper-input');
+    if (pi != null) pi.invalid = false;
+
+    var pc = this.$$('paper-checkbox');
+    if (pc != null) pc.active = false;
+  },
+  _onFocus: function _onFocus(evt) {
+    evt.stopPropagation();
+    this.fire('show-details', { index: this.number, model: this.entryItem });
+  },
+  _onBlur: function _onBlur(evt) {
+    evt.stopPropagation();
+    this.fire('hide-details');
+  },
+  _isInputValid: function _isInputValid() {}
+});</script>
 </dom-module>
 </body></html>

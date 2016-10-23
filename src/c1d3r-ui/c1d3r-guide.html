@@ -1,0 +1,414 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
+
+</head><body><dom-module id="c1d3r-dryHardCider">
+  <template>
+    <style>
+      div.content {
+        @apply(--layout-vertical);
+      }
+      div.head {
+        @apply(--layout-horizontal);
+        color: #333;
+        padding-top: 30px;
+        padding-bottom: 10px;
+      }
+      div.step {
+        @apply(--layout-horizontal);
+        @apply(--shadow-elevation-2dp);
+        margin-top: 1px;
+        padding: 10px;
+        background-color: white;
+      }
+    </style>
+
+    <div class="content">
+      <!--Initial Prep-->
+      <div class="content-block">
+        <div class="head">0 Configuring Juice Properties</div>
+        <div class="step" hidden$="{{_isLower(data.juicePh, data.finalPh)}}">0.0 Add {{data.acidAddInG}} g of ascorbic acid.</div>
+        <div class="step" hidden$="{{!_isLower(data.juicePh, data.finalPh)}}">0.0 The juice is already more acidic than the {{data.finalPh}} pH recipe target.</div>
+        <div class="step">0.1 Add {{data.potassMetaAddInG}} g of potassium metabisulfite.</div>
+        <div class="step">0.2 Add {{data.tanninAddInG}} g of wine tannin.</div>
+        <div class="step" hidden$="{{!data.isCloudy}}">0.3 Add {{data.pectinaseAddInG}} g of pectic enzyme (pectinase).</div>
+      </div>
+      <!--Sanitization-->
+      <div class="content-block">
+        <div class="head">1 Sanitization</div>
+        <div class="step">1.0 Let liquid rest for 3 hours. (Under appropriate cover and in a cleaned space)</div>
+      </div>
+      <!--Yeast Preparation-->
+      <div class="content-block">
+        <div class="head">2 Yeast Prep</div>
+        <div class="step">2.0 Add {{data.nutrientAddInG}} g of Yeast Nutrient.</div>
+        <div class="step">2.1 Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04. A fruity white yeast can also be used to a fruitier finish (Wyeast 4242 Chablis).</div>
+        <div class="step">2.2 Mix-in {{data.chaptizationSugarAddKg}} kg of table sugar thoroughly.</div>
+        <div class="step">2.3 Stir liquid thoroughly for at least 2 minutes.</div>
+        <div class="step">2.4 Be warned that due to the sugar addition, the final volume will increase from {{data.volumeInL}} to {{data.addedVolumeOfSugarAddInL}} L.</div>
+      </div>
+      <!--First Fermentation-->
+      <div class="content-block">
+        <div class="head">3 First Fermentation</div>
+        <div class="step">3.0 Ferment in an air-locked fermentor for 5 days or until 1.010.</div>
+        <div class="step">3.1 Make sure the room of the fermentor is at a temperature between 18 and 21 °C. Hotter than this and the yeast might contribute unwanted "yeasty" or "bready" taste.</div>
+      </div>
+      <!--Second Fermentation-->
+      <div class="content-block">
+        <div class="head">4 Second Fermentation</div>
+        <div class="step">4.0 Transfer and ferment in secondary fermentor for 2 weeks or until desired dryness.</div>
+      </div>
+      <!-- Packaging and Bottling -->
+      <div class="content-block">
+        <div class="head">5 Packaging</div>
+        <div class="step">5.0 Transfer to bottling bucket.</div>
+        <div class="step">5.1 Mix-in {{data.primingSugarAddKg}} kg of priming sugar (table sugar) thoroughly.</div>
+        <div class="step">5.2 Package in bottles.</div>
+      </div>
+    </div>
+  </template>
+
+  <script>'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RecipeComputationException = function RecipeComputationException(msg) {
+  _classCallCheck(this, RecipeComputationException);
+
+  this.message = msg;
+  this.name = "RecipeComputationException";
+};
+
+/**
+ * Computes the molarity of hydronium from a solution PH.
+ *
+ * @param ph The PH of the solution
+ * @return The concentration fo hydronium in moles per liters.
+ */
+
+
+function phToH30(ph) {
+  return Math.pow(10, -ph);
+}
+function toReal(real) {
+  if (real % 1 == 0) return real;
+
+  if (real < 0) return Number(real.toString().slice(0, 6));
+  return Number(real.toString().slice(0, 5));
+}
+function _fromString(val) {
+  if (val == null) return val;
+  if (typeof val === 'number') return val;
+  console.assert(typeof val === 'string', 'Invalid value type. Should be a String.');
+  if (val.trim().length === 0) return null;
+  return Number(val);
+}
+
+var poundsInKg = 2.20462;
+var litresInGal = 3.78541;
+var metabisulfiteToSulfDioxEfficiency = 0.57;
+var ppmToG = 1 / 1000;
+var maxTanninPerLInGram = 0.160;
+var maxScale = 10;
+// Northern Brewer recommendation.
+var pectinaseInGPerL = 0.4362;
+
+Polymer({
+  is: 'c1d3r-dryHardCider',
+
+  properties: {
+    recipe: Object,
+    data: {
+      type: Object,
+      notify: true
+    },
+    isLogging: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  observers: ['_dataAttrChanged(data.*)',
+  // attr
+  '_acidAddInG(data.juicePh, data.finalPh, data.volumeInL, data.acidPka, data.acidMolarMass)', '_potassMetaAddInG(data.juicePh, data.finalPh, data.volumeInL)', '_tanninAddInG(data.origTanninLvl ,data.desiredTanninLvl ,data.volumeInL)', '_pectinaseAddInG(data.volumeInL)', '_nutrientAddInG(data.volumeInL)', '_chaptizationSugarAddKg(data.degreeAlcool, data.yeastEfficiency, data.og, data.sugarYieldPtsKgL, data.volumeInL)', '_primingSugarAddKg(data.sugarPpg, data.volumeInL)', '_tg(data.og, data.sugarYieldPtsKgL, data.chaptizationSugarAddKg, data.volumeInL)', '_addedVolumeOfSugarAddInL(data.og, data.chaptizationSugarAddKg, data.volumeInL, data.tg)', '_sugarYieldPtsKgL(data.sugarPpg)'],
+
+  /**
+   * Logging data attribute changes.
+   */
+  _dataAttrChanged: function _dataAttrChanged(evt) {
+    if (this.isLogging) console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
+  },
+
+
+  // ------------- Recipe Component Computations  ------------------
+
+  /**
+   * Computes a PH correction based on ascorbic acid.
+   *
+   * Make sure the arguments are exactly in the same order as the helper function.
+   * @see https://github.com/malavv/c1d3r/wiki/PH-Correction
+   *
+   * @param oPh Original PH of the solution.
+   * @param fPh Final PH of the solution.
+   * @param volumeL Solution volume in liters.
+   * @param pka Chosen Acid Pka
+   * @param molarMass Molar mass of the chosen acid.
+   * @return Mass of the acid to add to achieve the final PH.
+   */
+  _getAcidAddInG: function _getAcidAddInG(oPh, fPh, volumeL, pka, molarMass) {
+    var
+    // Required change in hydronium concentration.
+    deltaMol = phToH30(fPh) - phToH30(oPh),
+        acidAddInMol = deltaMol * deltaMol / phToH30(pka) + deltaMol;
+    return acidAddInMol * volumeL * molarMass;
+  },
+
+  /**
+   * Computes the recommended addition of pectic enzime (pectinase).
+   *
+   * This is a fixed amount per Liter in G. This was mesured with my precise
+   * balanced using loose pectinase (do not pack).
+   * @see https://github.com/malavv/c1d3r/wiki/Pectic-Enzyme
+   *
+   * @param volumeL Solution volume in liters.
+   * @return Mass of pectinase to add.
+   */
+  _getPectinaseAddInG: function _getPectinaseAddInG(volumeL) {
+    return pectinaseInGPerL * volumeL;
+  },
+
+  /**
+   * Computes the addition of potassium metabisulfite in grams.
+   *
+   * Make sure the arguments are exactly in the same order as the helper function.
+   * @see https://github.com/malavv/c1d3r/wiki/Potassium-Metabisulfite
+   *
+   * @param fPh Final PH of the solution.
+   * @param volumeL Solution volume in liters.
+   * @return Mass of potassium metabisulfite to add.
+   */
+  _getPotassMetaAddInG: function _getPotassMetaAddInG(oPh, fPh, volumeL) {
+    var juicePh = _fromString(oPh);
+    var phToSO2Ppm = function phToSO2Ppm(ph) {
+      return 52.7 * (ph * ph * ph) - 459 * (ph * ph) + 1352.6 * ph - 1338.6;
+    };
+
+    return phToSO2Ppm(Math.min(juicePh, fPh), volumeL) * ppmToG * (1 / metabisulfiteToSulfDioxEfficiency) * volumeL;
+  },
+
+  /**
+   * Computes the addition of wine tannin in grams.
+   *
+   * Make sure the arguments are exactly in the same order as the helper function.
+   * @see https://github.com/malavv/c1d3r/wiki/Tannin
+   *
+   *
+   * @param oTannin Juice tannin levels assessed subjectively from 0 (min) to 10 (max).
+   * @param fTannin Desired tanning levels from 0 (min) to 10 (max).
+   * @param volumeL Solution volume in liters.
+   * @return Mass of wine tannin to add.
+   */
+  _getTanninAddInG: function _getTanninAddInG(oTannin, fTannin, volumeL) {
+    var normalizedDiff = (fTannin - oTannin) / maxScale;
+    return normalizedDiff * maxTanninPerLInGram * volumeL;
+  },
+
+
+  // ------------- Polymer Change Wrappers  ------------------
+
+  /** Acid computation wrapper. */
+  _acidAddInG: function _acidAddInG(juicePh, finalPh, volumeInL, acidPka, acidMolarMass) {
+    // Convert raw to numbers
+    var args = [].concat(Array.prototype.slice.call(arguments)).map(function (arg) {
+      return _fromString(arg);
+    });
+
+    // Short Circuit if found nulls
+    if (args.some(function (arg) {
+      return arg == null;
+    })) {
+      this.set('data.acidAddInG', null);
+      return;
+    }
+
+    // Check for assumptions
+    if (args[0] < args[1])
+      // Unable to lower PH
+      this.set('data.acidAddInG', null);
+    if (args[2] < 0) throw new RecipeComputationException("Invalid Negative Volume.");
+
+    // Set new value
+    this.set('data.acidAddInG', toReal(this._getAcidAddInG.apply(this, args)));
+  },
+
+  /** Pectinase wrapper. */
+  _pectinaseAddInG: function _pectinaseAddInG(volumeInL) {
+    // Convert raw to numbers
+    var args = [].concat(Array.prototype.slice.call(arguments)).map(function (arg) {
+      return _fromString(arg);
+    });
+
+    // Short Circuit if found nulls
+    if (args.some(function (arg) {
+      return arg == null;
+    })) {
+      this.set('data.pectinaseAddInG', null);
+      return;
+    }
+
+    // Check for assumptions
+    if (args[0] < 0) throw new RecipeComputationException("Invalid Negative Volume.");
+
+    // Set new value
+    this.set('data.pectinaseAddInG', toReal(this._getPectinaseAddInG.apply(this, args)));
+  },
+
+  /** Potassium metabisulfite wrapper. */
+  _potassMetaAddInG: function _potassMetaAddInG(finalPh, volumeInL) {
+    // Convert raw to numbers
+    var args = [].concat(Array.prototype.slice.call(arguments)).map(function (arg) {
+      return _fromString(arg);
+    });
+
+    // Short Circuit if found nulls
+    if (args.some(function (arg) {
+      return arg == null;
+    })) {
+      this.set('data.potassMetaAddInG', null);
+      return;
+    }
+
+    // Check for assumptions
+    if (args[1] < 0) throw new RecipeComputationException("Invalid Negative Volume.");
+
+    // Set new value
+    this.set('data.potassMetaAddInG', toReal(this._getPotassMetaAddInG.apply(this, args)));
+  },
+
+  /** Tannin wrapper. */
+  _tanninAddInG: function _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
+    // Convert raw to numbers
+    var args = [].concat(Array.prototype.slice.call(arguments)).map(function (arg) {
+      return _fromString(arg);
+    });
+
+    // Short Circuit if found nulls
+    if (args.some(function (arg) {
+      return arg == null;
+    })) {
+      this.set('data.tanninAddInG', null);
+      return;
+    }
+
+    // Check for assumptions
+    if (args[0] < 0 || args[0] > 10) throw new RecipeComputationException('Original tannin level out of scale.');
+    if (args[1] < 0 || args[1] > 10) throw new RecipeComputationException('Desired tannin level out of scale.');
+    if (args[0] > args[1]) throw new RecipeComputationException('Desired tannin must be lower than initial.');
+
+    // Set new value
+    this.set('data.tanninAddInG', toReal(this._getTanninAddInG.apply(this, args)));
+  },
+  _nutrientAddInG: function _nutrientAddInG(volumeInL) {
+    var value = 217.94 * volumeInL / 1000;
+    this.set('data.nutrientAddInG', toReal(value));
+  },
+  _chaptizationSugarAddKg: function _chaptizationSugarAddKg(degreeAlcool, yeastEfficiency, juiceGravity, sugarYieldPtsKgL, volumeInL) {
+    var abv = _fromString(degreeAlcool),
+        yeast = _fromString(yeastEfficiency),
+        og = _fromString(juiceGravity),
+        volume = _fromString(volumeInL);
+
+    if (abv == null || yeast == null || og == null || volume == null || sugarYieldPtsKgL == null) this.set('data.chaptizationSugarAddKg', null);
+
+    console.assert(abv >= 3 && abv <= 8, 'ABV out of recipe bounds');
+    console.assert(yeast >= 0.0 && yeast <= 1.0, 'Yeast efficiency between 0 and 1');
+    console.assert(og >= 1.000 && og <= 1.100, 'Invalid Original Gravity in SG');
+    console.assert(volume >= 0, 'Volume must be positive');
+
+    var value = (4 * abv / (525 * yeast) - og + 1) * 1000 / sugarYieldPtsKgL * volume;
+    console.assert(value >= 0, 'ABV too low with respect to juice gravity, get more than ' + abv);
+    this.set('data.chaptizationSugarAddKg', value < 0 ? 0 : toReal(value));
+  },
+  _primingSugarAddKg: function _primingSugarAddKg(sugarPpg, volumeInL) {
+    // Assuming 2.5 Volumes of CO2 at 20C and Table Sugar.
+    // This is not a technical formula, just a bug fix before cider
+    // season. This is coming from
+    // http://www.brewersfriend.com/beer-priming-calculator/
+    this.set('data.primingSugarAddKg', toReal(6.55 * volumeInL / 1000));
+  },
+
+  /**
+   * Total Gravity
+   *
+   * @param og Original Gravity in specific Gravity
+   * @param sugarPpg Potency of the sugar in Pts per pound per gallon.
+   * @param volumeInL Volume in Litre
+   */
+  _tg: function _tg(juiceGravity, sugarYieldPtsPerKgPerL, chaptizationSugarAddKg, volumeInL) {
+    var og = _fromString(juiceGravity),
+        volume = _fromString(volumeInL);
+
+    if (og == null || sugarYieldPtsPerKgPerL == null || chaptizationSugarAddKg == null || volumeInL == null) this.set('data.tg', null);
+
+    console.assert(og >= 1.000 && og <= 1.100, 'Invalid Original Gravity in SG');
+    console.assert(chaptizationSugarAddKg >= 0, 'Cannot have negative sugar addition');
+    console.assert(volume >= 0, 'Cannot have negative volume');
+    this.set('data.tg', og + chaptizationSugarAddKg / volume * sugarYieldPtsPerKgPerL / 1000);
+  },
+
+  /**
+   * Converts Imperial Sugar Yield to Metric.
+   *
+   * We normally demand the input directly in metric, but since all standard
+   * table provide the ppg value, we accept it as is and than convert it
+   * manually.
+   *
+   * @param sugarPpg Sugar Yield of Milli-Gravity points per pond per gal.
+   * @return Yield in milli-points of gravity per kg per L.
+   */
+  _sugarYieldPtsKgL: function _sugarYieldPtsKgL(sugarPpg) {
+    var yd = _fromString(sugarPpg);
+
+    console.assert(yd == null || yd > 30 && yd < 50, "Invalid PPG value (30 < x < 50)");
+
+    // No toReal since this is not meant to be shown.
+    this.set('data.sugarYieldPtsKgL', yd == null ? null : yd * poundsInKg * litresInGal);
+  },
+  _addedVolumeOfSugarAddInL: function _addedVolumeOfSugarAddInL(juiceGravity, chaptizationSugarAddKg, volumeInL, tg) {
+    var og = _fromString(juiceGravity),
+        volume = _fromString(volumeInL);
+
+    if (og == null || tg == null || chaptizationSugarAddKg == null || volume == null) this.set('data.tg', null);
+
+    console.assert(og >= 1.000 && og <= 1.100, 'Invalid Original Gravity in SG');
+    console.assert(chaptizationSugarAddKg >= 0, 'Cannot have negative sugar addition');
+    console.assert(volume >= 0, 'Cannot have negative volume');
+
+    var mass = og * volume + chaptizationSugarAddKg;
+    this.set('data.addedVolumeOfSugarAddInL', toReal(mass / tg));
+  },
+  _isLower: function _isLower(lhs, rhs) {
+    return _fromString(lhs) < _fromString(rhs);
+  },
+  listSteps: function listSteps() {
+    var instructions = Array.from(Polymer.dom(this.root).querySelectorAll('.content-block'));
+    var extract = function extract(steps) {
+      return {
+        text: steps[0].innerText,
+        steps: steps.slice(1).filter(function (s) {
+          return !s.hidden;
+        }).map(function (s) {
+          return s.innerText;
+        })
+      };
+    };
+
+    return instructions.map(function (block) {
+      return Array.from(block.children);
+    }).map(function (steps) {
+      return extract(steps);
+    });
+  }
+});</script>
+</dom-module>
+</body></html>

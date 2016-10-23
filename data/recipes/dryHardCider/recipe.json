@@ -52,7 +52,7 @@
       "id": "origTanninLvl",
       "datatype": "number",
       "group": "ingredient",
-      "label": "Original Tannin Levels (0-low, to 10-high)",
+      "label": "Original Tanning Levels (0-low, to 10-high)",
       "details": "Tannins levels influence the body and character of the final product.",
       "placeholder": 1,
       "min": 0,
@@ -72,7 +72,7 @@
       "id": "desiredTanninLvl",
       "datatype": "number",
       "group": "adjust",
-      "label": "Desired Tannin Levels (0-low, to 10-high)",
+      "label": "Desired Tanning Levels (0-low, to 10-high)",
       "details": "This makes the link from the level of tannin your juice currently has, and the desired level. Must be above original level. (and on the same scale)",
       "placeholder": 3,
       "min": 0,
@@ -92,13 +92,25 @@
       "id": "yeastEfficiency",
       "datatype": "number",
       "group": "preset",
-      "value": 0.75
+      "value": 0.85
     },
     {
       "id": "sugarPpg",
       "datatype": "number",
       "group": "preset",
       "value": 46
+    },
+    {
+      "id": "acidPka",
+      "datatype": "number",
+      "group": "preset",
+      "value": 4.10
+    },
+    {
+      "id": "acidMolarMass",
+      "datatype": "number",
+      "group": "preset",
+      "value": 176.12
     },
     {
       "id": "finalPh",

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "c1d3r",
+  "version": "2.1.1",
+
+  "default_locale": "en",
+  "description": "",
+
+  "icons": {
+    "16": "images/barrel16.png",
+    "48": "images/barrel48.png",
+    "128": "images/barrel128.png"
+  },
+
+  "author": "Maxime Lavigne (malavv)",
+
+  "start_url": "/",
+  "background_color": "#f2f2f2",
+  "display": "standalone"
+}

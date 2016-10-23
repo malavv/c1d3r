@@ -82,79 +82,89 @@
     </div>
   </template>
 
-  <script>
-    let txt = 'Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.';
-    Polymer({
-      is: 'c1d3r-entry',
+  <script>'use strict';
 
-      hostAttributes: {},
+var txt = 'Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.';
+Polymer({
+  is: 'c1d3r-entry',
 
-      properties: {
-        recipe: {
-          type: Object,
-          notify: true,
-          observer: 'onRecipeChanged'
-        },
-        data: {
-          type: Object,
-          notify: true
-        },
-        ingEntries: {
-          type: Array
-        }
-      },
+  hostAttributes: {},
 
-      // Lifecycle
-      attached() {
-        this.setDetails('Instructions', txt);
-      },
+  properties: {
+    recipe: {
+      type: Object,
+      notify: true,
+      observer: 'onRecipeChanged'
+    },
+    data: {
+      type: Object,
+      notify: true
+    },
+    ingEntries: {
+      type: Array
+    }
+  },
 
-      // Property Changed
-      onRecipeChanged(newRecipe) {
-        if (newRecipe == null)
-          return;
-        this.set(
-          'ingEntries',
-          newRecipe.data
-            .filter(data => data.group === 'ingredient')
-            .map(data => document.createElement('c1d3r-dataentry')
-                .initWithData(data)
-                .dataMap((key, val) => this.set('data.' + key, val))
-            )
-        );
-        this.set(
-            'adjustEntries',
-            newRecipe.data
-                .filter(data => data.group === 'adjust')
-                .map(data => document.createElement('c1d3r-dataentry')
-                    .initWithData(data)
-                    .dataMap((key, val) => this.set('data.' + key, val))
-                )
-        );
-      },
+  // Lifecycle
+  attached: function attached() {
+    this.setDetails('Instructions', txt);
+  },
 
-      // public methods
-      setDetails(title, content) {
-        this.$$('div.sidebar div.detail').innerHTML = '<div>' + title + '</div><div>' + content + '</div>';
-      },
 
-      // private
-      _onShowDetails(evt) {
-        let entry = evt.detail.model;
-        this.setDetails(this._getCategory(entry) + ' ' + evt.detail.index, entry.details);
-      },
-      _onHideDetails() {
-        this.setDetails('Instructions', txt);
-      },
-      _getCategory(entry) {
-        return entry.group === 'adjust' ? 'Personalization' : 'Ingredient';
-      },
+  // Property Changed
+  onRecipeChanged: function onRecipeChanged(newRecipe) {
+    var _this = this;
 
-      onBlur() {},
-      onFocus() {
-        Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.reset())
-      }
+    if (newRecipe == null) return;
+    this.set('ingEntries', newRecipe.data.filter(function (data) {
+      return data.group === 'ingredient';
+    }).map(function (data) {
+      return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
+        return _this.set('data.' + key, val);
+      });
+    }));
+    this.set('adjustEntries', newRecipe.data.filter(function (data) {
+      return data.group === 'adjust';
+    }).map(function (data) {
+      return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
+        return _this.set('data.' + key, val);
+      });
+    }));
+  },
+
+
+  // public methods
+  setDetails: function setDetails(title, content) {
+    this.$$('div.sidebar div.detail').innerHTML = '<div>' + title + '</div><div>' + content + '</div>';
+  },
+
+
+  // private
+  _onShowDetails: function _onShowDetails(evt) {
+    var entry = evt.detail.model;
+    this.setDetails(this._getCategory(entry) + ' ' + evt.detail.index, entry.details);
+  },
+  _onHideDetails: function _onHideDetails() {
+    this.setDetails('Instructions', txt);
+  },
+  _getCategory: function _getCategory(entry) {
+    return entry.group === 'adjust' ? 'Personalization' : 'Ingredient';
+  },
+  isValid: function isValid() {
+    var inputs = Polymer.dom(this.root).querySelectorAll('c1d3r-input');
+    inputs.forEach(function (i) {
+      return i.validate();
     });
-  </script>
+    return !inputs.some(function (i) {
+      return i.invalid === true;
+    });
+  },
+  onBlur: function onBlur() {},
+  onFocus: function onFocus() {
+    Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(function (i) {
+      return i.reset();
+    });
+  }
+});</script>
 </dom-module>
 </body></html>

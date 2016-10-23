@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 
 
-<link rel="import" href="../../data/recipes/dryHardCider/guide.html">
+<link rel="import" href="c1d3r-guide.html">
 
 </head><body><dom-module id="c1d3r-steps">
   <template>
@@ -30,29 +30,30 @@
 
   </template>
 
-  <script>
-    Polymer({
-      is: 'c1d3r-steps',
+  <script>'use strict';
 
-      hostAttributes: {},
+Polymer({
+  is: 'c1d3r-steps',
 
-      properties: {
-        recipe: Object,
-        data: {
-          type: Object,
-          notify: true
-        },
-        guide: {
-          type: Array,
-          notify: true
-        }
-      },
+  hostAttributes: {},
 
-      onBlur() {
-        this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
-      },
-      onFocus() {}
-    });
-  </script>
+  properties: {
+    recipe: Object,
+    data: {
+      type: Object,
+      notify: true
+    },
+    guide: {
+      type: Array,
+      notify: true
+    }
+  },
+
+  onBlur: function onBlur() {
+    this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
+    return false;
+  },
+  onFocus: function onFocus() {}
+});</script>
 </dom-module>
 </body></html>

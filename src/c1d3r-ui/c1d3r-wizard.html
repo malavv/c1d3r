@@ -48,71 +48,75 @@
       <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
     </div>
 
-    
+    <!-- Data -->
     <c1d3r-juice recipe="[[recipe]]" data="{{data}}"></c1d3r-juice>
   </template>
 
-  <script>
-    Polymer({
-      is: 'c1d3r-wizard',
+  <script>'use strict';
 
-      hostAttributes: {},
+Polymer({
+  is: 'c1d3r-wizard',
 
-      properties: {
-        selected: {
-          type: Number,
-          value: 0,
-          observer: '_pageChanged'
-        },
-        recipe: {
-          type: Object,
-          notify: true
-        },
-        juice: {
-          type: Object,
-          notify: true
-        }
-      },
+  hostAttributes: {},
 
-      navHome() { this.fire('home'); },
+  properties: {
+    selected: {
+      type: Number,
+      value: 0,
+      observer: '_pageChanged'
+    },
+    recipe: {
+      type: Object,
+      notify: true
+    },
+    juice: {
+      type: Object,
+      notify: true
+    }
+  },
 
-      navBack() {
-        if (this.selected === 0) {
-          this.fire('home');
-          return;
-        }
-        this.set('selected', this.selected - 1);
-      },
+  navHome: function navHome() {
+    this.fire('home');
+  },
+  navBack: function navBack() {
+    if (this.selected === 0) {
+      this.fire('home');
+      return;
+    }
+    this.set('selected', this.selected - 1);
+  },
+  navNext: function navNext() {
+    if (!this._isPageValid()) return;
 
-      navNext() {
-        if (this.selected === 3) {
-          this.set('selected', this.selected + 1);
-          this.fire('home');
-          return;
-        }
-        this.set('selected', this.selected + 1);
-      },
+    if (this.selected === 3) {
+      this.set('selected', 0);
+      this.fire('home');
+      return;
+    }
 
-      reset() {
-        this.set('selected', 0);
-        this.set('juice', {});
-      },
-
-      onBlur() {},
-      onFocus() { this.selected = 0; },
-
-      _nextOrFinishStep(selected) {
-        return selected === 3 ? 'Finish' : 'Next';
-      },
-
-      _pageChanged(newPage, oldPage) {
-        let pages = this.$$('iron-pages').children;
-        if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)
-          pages[oldPage].onBlur();
-        if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null)
-          pages[newPage].onFocus();
-      }
-    });
-  </script>
+    this.set('selected', this.selected + 1);
+  },
+  reset: function reset() {
+    this.set('selected', 0);
+    this.set('juice', {});
+  },
+  onBlur: function onBlur() {},
+  onFocus: function onFocus() {
+    this.selected = 0;
+  },
+  _isPageValid: function _isPageValid() {
+    var pages = this.$$('iron-pages').children;
+    // if no selected space, or no validation, defaults to valid
+    return this.selected == null || pages[this.selected] == null || pages[this.selected].isValid == null || pages[this.selected].isValid();
+  },
+  _nextOrFinishStep: function _nextOrFinishStep(selected) {
+    return selected === 3 ? 'Finish' : 'Next';
+  },
+  _pageChanged: function _pageChanged(newPage, oldPage) {
+    var pages = this.$$('iron-pages').children;
+    if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null) pages[oldPage].onBlur();
+    if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null) pages[newPage].onFocus();
+  }
+});</script>
 </dom-module>
 </body></html>

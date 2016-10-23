@@ -5,7 +5,9 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "iron-elements": "PolymerElements/iron-elements#^1.0.10",
-    "paper-elements": "PolymerElements/paper-elements#^1.0.7"
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
+    "downloadjs": "^1.4.6",
+    "d3": "^4.2.8"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.5",

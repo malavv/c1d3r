@@ -1,9 +1,7 @@
 <html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-styles/classes/shadow.html">
-<link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
 </head><body><dom-module id="c1d3r-splash">
   <template>
@@ -11,7 +9,8 @@
 
     <style>
       :host {
-        @apply(--layout-horizontal);
+        display: flex;
+        flex-direction: row;
 
         background: url(../../data/img/splash_brown.jpg) right center no-repeat;
         background-size: cover;
@@ -45,7 +44,10 @@
       div.recipe.enabled {
         cursor: pointer;
         background-color: rgba(10, 10, 10, 0.6);
-        @apply(--shadow-elevation-6dp);
+        /* --shadow-elevation-6dp */
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 18px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 5px -1px rgba(0, 0, 0, 0.4);
       }
       div.recipe.disabled {
         cursor: auto;
@@ -54,7 +56,7 @@
       }
     </style>
 
-    
+    <!--background space on the left-->
     <div class="flex-4"></div>
 
     <div class="container">
@@ -65,7 +67,7 @@
         <p>This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.</p>
       </div>
 
-      
+      <!--Recipe Selector-->
       <div class="layout horizontal wrap">
         <template is="dom-repeat" items="[[recipes]]">
           <div class="recipe enabled" on-tap="_selectRecipe">{{item.name}}</div>
@@ -78,51 +80,51 @@
 
     </div>
 
-    
+    <!--background space on the right-->
     <div class="flex-1"></div>
 
   </template>
 
-  <script>
-    Polymer({
+  <script>'use strict';
 
-      is: 'c1d3r-splash',
+Polymer({
 
-      hostAttributes: {},
+  is: 'c1d3r-splash',
 
-      properties: {
-        recipes: Array
-      },
+  hostAttributes: {},
 
-      onBlur() { /* ignored */ },
-      onFocus() { /* ignored */ },
+  properties: {
+    recipes: Array
+  },
 
-      selectRecipe(recipe) {
-        this.fire('selected', recipe)
-      },
+  onBlur: function onBlur() {/* ignored */},
+  onFocus: function onFocus() {/* ignored */},
+  selectRecipe: function selectRecipe(recipe) {
+    this.fire('selected', recipe);
+  },
 
-      /**
-       * Sets the recipe from a tap event.
-       * @param evt Event from the template element.
-       * @returns {*}
-       * @private
-       */
-      _selectRecipe(evt) {
-        if (evt.currentTarget.classList.contains("disabled"))
-          return;
-        this.selectRecipe(this._tmplItemFromEvent(evt));
-      },
 
-      /**
-       * Get's the "item" model given an event from a dom-template.
-       * @param evt Event from the template element.
-       * @returns {*}
-       * @private
-       */
-      _tmplItemFromEvent(evt) {
-        return evt.model.__data__.item;
-      }
-    });
-  </script>
+  /**
+   * Sets the recipe from a tap event.
+   * @param evt Event from the template element.
+   * @returns {*}
+   * @private
+   */
+  _selectRecipe: function _selectRecipe(evt) {
+    if (evt.currentTarget.classList.contains("disabled")) return;
+    this.selectRecipe(this._tmplItemFromEvent(evt));
+  },
+
+
+  /**
+   * Get's the "item" model given an event from a dom-template.
+   * @param evt Event from the template element.
+   * @returns {*}
+   * @private
+   */
+  _tmplItemFromEvent: function _tmplItemFromEvent(evt) {
+    return evt.model.__data__.item;
+  }
+});</script>
 </dom-module>
 </body></html>
