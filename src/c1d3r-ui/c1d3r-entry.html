@@ -125,7 +125,7 @@
           return;
         this.set(
           'ingEntries',
-          newRecipe.data
+          newRecipe.data.data
             .filter(data => data.group === 'ingredient')
             .map(data => document.createElement('c1d3r-dataentry')
                 .initWithData(data)
@@ -134,7 +134,7 @@
         );
         this.set(
             'adjustEntries',
-            newRecipe.data
+            newRecipe.data.data
                 .filter(data => data.group === 'adjust')
                 .map(data => document.createElement('c1d3r-dataentry')
                     .initWithData(data)

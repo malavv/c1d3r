@@ -1,17 +1,15 @@
 {
   "id": "dhc",
-
-  "img": "image.png",
   "name": "dhc.name",
   "synopsis": "dhc.synopsis",
   "history": "dhc.history",
   "details": "",
-
   "characteristics": [
     "dhc.characteristics.1",
     "dhc.characteristics.2",
     "dhc.characteristics.3"
   ],
+  "img": "dryHardCider.png",
 
   "data": [
     {
@@ -35,7 +33,7 @@
       "datatype": "number",
       "group": "ingredient",
       "label": "dhc.data.og.label",
-      "details": " ",
+      "details": "dhc.data.og.details",
       "placeholder": 1.042,
       "min": 1.000,
       "max": 1.100

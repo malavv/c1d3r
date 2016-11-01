@@ -13,25 +13,44 @@
 
   <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <script>
-    window.performance && performance.mark && performance.mark('index.html');
-    window.Polymer = {lazyRegister: true, dom: 'shadow'};
+    window.ajaxTimeout = 2000;
+    window.strings = {};
+    window.Polymer = {
+      lazyRegister: true,
+      dom: 'shadow'
+    };
+
+    document.addEventListener('translate-strings', evt => {
+      let s = evt.detail;
+      if (window.strings[s['locale']] == null)
+        window.strings[s['locale']] = {};
+      Object.keys(s).forEach(key => window.strings[s['locale']][key] = s[key]);
+    });
+
+    window.t = (key) => {
+      return (window.strings["en"] || {})[key] || "n/a";
+    }
   </script>
+
   <link rel="import" href="/src/c1d3r-app/c1d3r-app.html">
+  <link rel="import" href="/src/c1d3r-data/c1d3r-recipe.html">
 
   <style>
     body {
+      --main-font: 'Roboto', 'Noto', sans-serif;
       margin: 0;
       height: 100vh;
-      font-family: 'Roboto', 'Noto', sans-serif;
-      line-height: 1.5;
+      font-family: var(--main-font);
     }
   </style>
 </head>
 <body>
 
   <c1d3r-app unresolved>
-    <!-- Future Way of registering recipes? -->
-    <!-- <c1d3r-recipe img-url="" data=""></c1d3r-recipe> -->
+    <c1d3r-recipe path="data/recipes/" id="dhc" locale='["en"]'></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="wine" locale='["en"]'></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="com" locale='["en"]'></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="tbd" locale='["en"]'></c1d3r-recipe>
   </c1d3r-app>
 
 </body>

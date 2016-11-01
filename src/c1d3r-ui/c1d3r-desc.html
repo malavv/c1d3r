@@ -43,20 +43,20 @@
 
     <div class="container shadow-elevation-2dp">
       <iron-image
-          src="{{recipe.img}}"
+          src="[[img(recipe.data.img)]]"
           sizing="contain"></iron-image>
 
       <div class="desc">
-        <div class="name">{{recipe.name}}</div>
-        <div class="detail">{{recipe.synopsis}}</div>
-        <div class="detail">{{recipe.history}}</div>
-        <div class="detail">{{recipe.details}}</div>
+        <div class="name">[[t(recipe.data.name)]]</div>
+        <div class="detail">[[t(recipe.data.synopsis)]]</div>
+        <div class="detail">[[t(recipe.data.history)]]</div>
+        <div class="detail">[[t(recipe.data.details)]]</div>
       </div>
 
       <div class="charac">
         <ul>
-          <template is="dom-repeat" items="{{recipe.characteristics}}">
-            <li>{{item}}</li>
+          <template is="dom-repeat" items="[[recipe.data.characteristics]]">
+            <li>[[t(item)]]</li>
           </template>
         </ul>
       </div>
@@ -75,6 +75,14 @@
           type: Object,
           notify: true
         }
+      },
+
+      t(key) {
+        return t(key); /* Switch to a Polymer Behaviour */
+      },
+
+      img(img) {
+        return this.recipe.path + this.recipe.id + '/' + this.recipe.data.img;
       },
 
       onBlur() {},

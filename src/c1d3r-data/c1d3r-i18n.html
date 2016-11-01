@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+
+<dom-module id="c1d3r-i18n">
+  <template>
+    <span id="txt"></span>
+    <iron-signals on-iron-signal-locale="_test"></iron-signals>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'c1d3r-i18n',
+
+      properties: {
+        key: String
+      },
+
+      attached() {
+        this.$.txt.innerText = t(this.key);
+      },
+      _test() {
+        debugger;
+      }
+    });
+  </script>
+</dom-module>

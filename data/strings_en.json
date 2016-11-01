@@ -1,0 +1,6 @@
+{
+  "locale": "en",
+
+  "splash.detail.1": "C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.",
+  "splash.detail.2": "This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes."
+}

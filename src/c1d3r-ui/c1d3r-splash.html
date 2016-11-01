@@ -1,7 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-styles/classes/shadow.html">
+
+<link rel="import" href="../c1d3r-data/c1d3r-i18n.html">
 
 <dom-module id="c1d3r-splash">
   <template>
@@ -63,18 +66,19 @@
       <div class="title">C1D3R</div>
 
       <div class="details">
-        <p>C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.</p>
-        <p>This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.</p>
+        <p><c1d3r-i18n key="splash.detail.1"></c1d3r-i18n></p>
+        <p><c1d3r-i18n key="splash.detail.2"></c1d3r-i18n></p>
       </div>
 
       <!--Recipe Selector-->
       <div class="layout horizontal wrap">
-        <template is="dom-repeat" items="[[recipes]]">
-          <div class="recipe enabled" on-tap="_selectRecipe">{{item.name}}</div>
-          <div class="recipe disabled" on-tap="_selectRecipe" title="Not yet ready.">⚠ Apple Wine</div>
-          <div class="recipe disabled" on-tap="_selectRecipe" title="Not yet ready.">⚠ Mainstream Hard Cider</div>
-          <div class="recipe disabled" on-tap="_selectRecipe" title="Not yet ready.">⚠ TBD</div>
-        </template>
+        <iron-selector attr-for-selected="recipe">
+          <template is="dom-repeat" items="[[recipes]]">
+            <div class="recipe enabled" recipe$="[[item.data.id]]">
+              <c1d3r-i18n key$="[[item.data.name]]"></c1d3r-i18n>
+            </div>
+          </template>
+        </iron-selector>
         <div class="flex"></div>
       </div>
 
@@ -84,7 +88,6 @@
     <div class="flex-1"></div>
 
   </template>
-
   <script>
     Polymer({
 
@@ -99,6 +102,8 @@
       onBlur() { /* ignored */ },
       onFocus() { /* ignored */ },
 
+      _t(key) { return t(key); },
+
       selectRecipe(recipe) {
         this.fire('selected', recipe)
       },
@@ -110,8 +115,6 @@
        * @private
        */
       _selectRecipe(evt) {
-        if (evt.currentTarget.classList.contains("disabled"))
-          return;
         this.selectRecipe(this._tmplItemFromEvent(evt));
       },
 

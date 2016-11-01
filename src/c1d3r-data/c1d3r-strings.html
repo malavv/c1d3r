@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="c1d3r-strings">
+  <template>
+    <iron-ajax auto timeout=[[timeout]] url="[[url]]" handle-as="json" on-response="_handle"></iron-ajax>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'c1d3r-strings',
+
+      hostAttributes: { hidden: true },
+
+      properties: {
+        locale: String,
+        timeout: { type: Number, value: () => window.ajaxTimeout },
+        url: String
+      },
+
+      _handle(evt) {
+        this.fire('translate-strings', evt.detail.response);
+      }
+    });
+  </script>
+</dom-module>

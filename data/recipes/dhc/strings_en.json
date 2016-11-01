@@ -1,0 +1,30 @@
+{
+  "locale": "en",
+  "dhc.name": "Dry Hard Cider",
+  "dhc.synopsis" : "A refreshing clear sparkling alcoholic cider of light straw color. With low residual sugars and medium alcohol content, it fits most situations and is better served cold.",
+  "dhc.history" : "There are documented references of the Romans encountering hard cider in Britain two thousand years ago. Dry Hard Cider is a classical alcoholic beverage of great tradition.",
+  "dhc.characteristics.1": "Highly Refreshing",
+  "dhc.characteristics.2": "Low alcohol Content",
+  "dhc.characteristics.3": "Low to Medium Apple Taste",
+
+  "dhc.data.isCloudy.label": "Is the juice cloudy?",
+  "dhc.data.isCloudy.details": "A cloudy (vs transparent) juice means the juice contains pectin protein that contributes to the gelification of the final product. This is usually undesirable and must be taken into account.",
+
+  "dhc.data.volumeInL.label": "How much liquid? (in Liters)",
+  "dhc.data.volumeInL.details": "The volume of the original juice will greatly affect many aspect of the recipe.",
+
+  "dhc.data.og.label": "Measure the original gravity of the juice. (In Specific Gravity, SG)",
+  "dhc.data.og.details": "The original gravity is an indicator of the quantity of sugar present in the apples.",
+
+  "dhc.data.degreeAlcool.label": "What is your desired ABV? (+0.5% see details)",
+  "dhc.data.degreeAlcool.details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement. The sugar used for priming will be converted in a 0.5% addition to the requested ABV.",
+
+  "dhc.data.origTanninLvl.label": "Original Tanning Levels (0-low, to 10-high)",
+  "dhc.data.origTanninLvl.details": "Tannins levels influence the body and character of the final product.",
+
+  "dhc.data.juicePh.label": "What is the PH of the juice?",
+  "dhc.data.juicePh.details": "The PH influences the balance, tanginess, preservations, sulfite levels, and others.",
+
+  "dhc.data.desiredTanninLvl.label": "Desired Tanning Levels (0-low, to 10-high)",
+  "dhc.data.desiredTanninLvl.details": "This makes the link from the level of tannin your juice currently has, and the desired level. Must be above original level. (and on the same scale)"
+}

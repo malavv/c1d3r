@@ -6,6 +6,7 @@
 
 
 <link rel="import" href="../c1d3r-data/c1d3r-loader.html">
+<link rel="import" href="../c1d3r-data/c1d3r-strings.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-footer.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-splash.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-tutorial.html">
@@ -31,21 +32,19 @@
       }
     </style>
 
-    <iron-pages selected="[[selected]]" class="layout vertical flex">
-      <c1d3r-splash recipes="[[recipes]]" on-selected="_selectRecipe" class="flex"></c1d3r-splash>
-      <c1d3r-tutorial on-next="_navRecipe" on-home="_navHome" class="flex"></c1d3r-tutorial>
-      <c1d3r-wizard recipe="[[recipe]]" on-home="_navHome" class="flex"></c1d3r-wizard>
+    <iron-pages class="layout vertical flex" selected="[[selected]]">
+      <c1d3r-splash class="flex" recipes="[[recipes]]" on-selected="_selectRecipe"></c1d3r-splash>
+      <c1d3r-tutorial class="flex" on-next="_navRecipe" on-home="_navHome"></c1d3r-tutorial>
+      <c1d3r-wizard class="flex" recipe="[[recipe]]" on-home="_navHome"></c1d3r-wizard>
     </iron-pages>
 
     <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
 
     <!-- Loads the application manifest -->
-    <iron-ajax auto url="../../manifest.json" handle-as="json" on-response="_handleManifest"></iron-ajax>
+    <iron-ajax auto url="/manifest.json" handle-as="json" on-response="_handleManifest"></iron-ajax>
 
-    <!--Load All Possible Recipe (need to also load in c1d3r-steps-->
-    <c1d3r-loader
-        urls='["../../data/recipes/dryHardCider"]'
-        recipes="{{recipes}}"></c1d3r-loader>
+    <!--Load Locale -->
+    <c1d3r-strings locale="en" url="/data/strings_en.json"></c1d3r-strings>
   </template>
 
   <script>
@@ -70,11 +69,8 @@
         }
       },
 
-      /**
-       * On component Ready (part of component life-cycle)
-       */
-      ready() {
-        this.set('recipes', Polymer.dom(this.root).querySelectorAll('c1d3r-recipe'));
+      attached() {
+        this.set('recipes', Polymer.dom(this).children);
       },
 
       /**
@@ -89,6 +85,7 @@
        */
       _localeChanged(newLangCode, oldLangCode) {
         console.info('locale changed from ' + oldLangCode + ' to ' + newLangCode);
+        this.fire('iron-signal', {name: 'locale', data: newLangCode});
       },
       /**
        * Navigate to the Home (splash page)

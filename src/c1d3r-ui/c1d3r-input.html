@@ -32,7 +32,7 @@
     </style>
 
     <div class="index">{{number}}</div>
-    <div class="title flex">{{entryItem.title}}</div>
+    <div class="title flex">[[t(entryItem.title)]]</div>
     <div class="data">
       <template is="dom-if" if="[[entryItem.isBool]]">
         <paper-checkbox checked="{{entryItem.value}}"></paper-checkbox>
@@ -95,7 +95,9 @@
         if (pc != null)
           pc.active = false;
       },
-
+      t(key) {
+        return t(key); /* Switch to a Polymer Behaviour */
+      },
       _onFocus(evt) {
         evt.stopPropagation();
         this.fire('show-details', { index: this.number, model: this.entryItem });
