@@ -24,13 +24,9 @@ The key will be used when referring in string translation files.
         /**
          * Key for the localized resource. (Alphanumeric string plus '.')
          */
-        key: String,
-        /**
-         * I18nBehavior properties for translatable keys.
-         */
-        localizedKeys: {
-          type: Object,
-          computed: '_makeHandler(key)'
+        key: {
+          type: String,
+          observer: 'keyChanged'
         },
         /**
          * Translated Text.
@@ -43,16 +39,9 @@ The key will be used when referring in string translation files.
        */
       behaviors: [I18nBehavior],
 
-      /**
-       * Generate the translation handle for the translation behaviour.
-       * @param key Key for the translation
-       * @returns {{}}
-       * @private
-       */
-      _makeHandler(key) {
-        let keys = {};
-        keys[key] = s => this.text = s;
-        return keys;
+      keyChanged(newKey, oldKey) {
+        console.assert(oldKey == null, 'Only valid when old value was undefined.');
+        this.registerKey(newKey, s => this.text = s)
       }
     });
   </script>

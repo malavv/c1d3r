@@ -7,10 +7,15 @@
       translations = new Map([[currentLocale, new Map()]]);
 
     return {
+      registerKey(key, handler) {
+        this._addHandler(key, handler)
+      },
       ready() {
-        let map = this.localizedKeys;
-        if (map == null) return;
-        Object.keys(map).forEach(key => this._addHandler(key, map[key]));
+//        if (this.is == 'c1d3r-localized' && this.key == null)
+//          debugger;
+        //let map = this.localizedKeys;
+        //if (map == null) return;
+        //Object.keys(map).forEach(key => this._addHandler(key, map[key]));
       },
       loadDictionary(dict) {
         Object.keys(dict)
@@ -25,6 +30,7 @@
        */
       _addHandler(key, handle) {
         console.assert(key != null, 'Must be a valid key, not ' + key);
+
         handlers.set(key, (handlers.get(key) || []).concat(handle));
 
         // Translate if already available.

@@ -10,6 +10,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-validator.html">
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 <link rel="import" href="c1d3r-input.html">
 
 <dom-module id="c1d3r-entry">
@@ -56,16 +57,17 @@
 
     <div class="sidebar">
       <div class="warning">
-        Watch out for juice that contains preservatives; sorbates, or sorbitol
-        as it will interfere with the fermentation process and might/will lead to
-        unwanted results.
+        <c1d3r-localized key="entry.warning"></c1d3r-localized>
       </div>
-      <div class="detail"></div>
+      <div class="detail">
+        <div><c1d3r-localized id="detailTitle"></c1d3r-localized></div>
+        <div><c1d3r-localized id="detailContent"></c1d3r-localized></div>
+      </div>
     </div>
 
     <div class="content flex">
       <div class="content-block">
-        <div class="head">Ingredients</div>
+        <div class="head"><c1d3r-localized key="entry.ingredient.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[ingEntries]]">
           <div class="step">
             <c1d3r-input
@@ -77,7 +79,7 @@
           </div>
         </template>
 
-        <div class="head">Personalization</div>
+        <div class="head"><c1d3r-localized key="entry.personalization.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[adjustEntries]]">
           <div class="step">
             <c1d3r-input
@@ -93,7 +95,6 @@
   </template>
 
   <script>
-    let txt = 'Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.';
     Polymer({
       is: 'c1d3r-entry',
 
@@ -116,7 +117,7 @@
 
       // Lifecycle
       attached() {
-        this.setDetails('Instructions', txt);
+        this.setDetails('entry.detail.instruction', 'entry.detail.explanation');
       },
 
       // Property Changed
@@ -145,19 +146,20 @@
 
       // public methods
       setDetails(title, content) {
-        this.$$('div.sidebar div.detail').innerHTML = '<div>' + title + '</div><div>' + content + '</div>';
+        this.$.detailTitle.key = title;
+        this.$.detailContent.key = content;
       },
 
       // private
       _onShowDetails(evt) {
         let entry = evt.detail.model;
-        this.setDetails(this._getCategory(entry) + ' ' + evt.detail.index, entry.details);
+        this.setDetails(this._getCategory(entry), entry.details);
       },
       _onHideDetails() {
-        this.setDetails('Instructions', txt);
+        this.setDetails("entry.detail.instruction", 'entry.detail.explanation');
       },
       _getCategory(entry) {
-        return entry.group === 'adjust' ? 'Personalization' : 'Ingredient';
+        return entry.group === 'adjust' ? 'entry.personalization.detail' : 'entry.ingredient.detail';
       },
 
       isValid() {

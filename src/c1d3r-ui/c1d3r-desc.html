@@ -4,6 +4,8 @@
 <link rel="import" href="../../bower_components/paper-styles/paper-styles-classes.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
+
 <dom-module id="c1d3r-desc">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -43,20 +45,20 @@
 
     <div class="container shadow-elevation-2dp">
       <iron-image
-          src="[[img(recipe.data.img)]]"
+          src="[[imgUrl]]"
           sizing="contain"></iron-image>
 
       <div class="desc">
-        <div class="name">[[t(recipe.data.name)]]</div>
-        <div class="detail">[[t(recipe.data.synopsis)]]</div>
-        <div class="detail">[[t(recipe.data.history)]]</div>
-        <div class="detail">[[t(recipe.data.details)]]</div>
+        <div class="name"><c1d3r-localized key$="[[recipe.id]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.synopsis]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.history]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.details]]"></c1d3r-localized></div>
       </div>
 
       <div class="charac">
         <ul>
           <template is="dom-repeat" items="[[recipe.data.characteristics]]">
-            <li>[[t(item)]]</li>
+            <li><c1d3r-localized key$="[[item]]"></c1d3r-localized></li>
           </template>
         </ul>
       </div>
@@ -74,15 +76,15 @@
         recipe: {
           type: Object,
           notify: true
+        },
+        imgUrl: {
+          type: String,
+          computed: '_getImgUrl(recipe)'
         }
       },
 
-      t(key) {
-        return t(key); /* Switch to a Polymer Behaviour */
-      },
-
-      img(img) {
-        return this.recipe.path + this.recipe.id + '/' + this.recipe.data.img;
+      _getImgUrl(recipe) {
+        return recipe.path + recipe.id + '/' + recipe.data.img;
       },
 
       onBlur() {},

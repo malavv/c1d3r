@@ -71,7 +71,11 @@
       </div>
 
       <!--Recipe Selector-->
-      <iron-selector attr-for-selected="recipe" class="layout horizontal wrap">
+      <iron-selector
+          attr-for-selected="recipe"
+          selected-item="{{chosen}}"
+          selectable="div.recipe.enabled"
+          class="layout horizontal wrap">
         <template is="dom-repeat" items="[[recipes]]">
           <div class$="[[_recipeClass(item)]]" recipe$="[[item.id]]">
             <c1d3r-localized key$="[[item.id]]"></c1d3r-localized>
@@ -93,36 +97,20 @@
       hostAttributes: {},
 
       properties: {
-        recipes: Array
+        recipes: Array,
+        chosen: {
+          type: Object,
+          observer: 'chosenChanged'
+        }
       },
 
       onBlur() { /* ignored */ },
       onFocus() { /* ignored */ },
 
-      _t(key) { return t(key); },
-
-      selectRecipe(recipe) {
-        this.fire('selected', recipe)
-      },
-
-      /**
-       * Sets the recipe from a tap event.
-       * @param evt Event from the template element.
-       * @returns {*}
-       * @private
-       */
-      _selectRecipe(evt) {
-        this.selectRecipe(this._tmplItemFromEvent(evt));
-      },
-
-      /**
-       * Get's the "item" model given an event from a dom-template.
-       * @param evt Event from the template element.
-       * @returns {*}
-       * @private
-       */
-      _tmplItemFromEvent(evt) {
-        return evt.model.__data__.item;
+      chosenChanged(chosen) {
+        let recipe = this.recipes.filter(r => r.id == chosen.getAttribute('recipe'));
+        if (recipe[0] != null)
+          this.fire('selected', recipe[0])
       },
 
       _recipeClass(recipe) {

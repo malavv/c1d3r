@@ -10,6 +10,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-validator.html">
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 <dom-module id="c1d3r-input">
   <template>
@@ -32,7 +33,7 @@
     </style>
 
     <div class="index">{{number}}</div>
-    <div class="title flex">[[t(entryItem.title)]]</div>
+    <div class="title flex"><c1d3r-localized key$="[[entryItem.title]]"></c1d3r-localized></div>
     <div class="data">
       <template is="dom-if" if="[[entryItem.isBool]]">
         <paper-checkbox checked="{{entryItem.value}}"></paper-checkbox>

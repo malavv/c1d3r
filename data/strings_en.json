@@ -2,5 +2,26 @@
   "locale": "en",
 
   "splash.detail.1": "C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.",
-  "splash.detail.2": "This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes."
+  "splash.detail.2": "This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.",
+
+  "tutorial.title": "How does it works?",
+  "tutorial.desc.1": "In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.",
+  "tutorial.progress": "This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.",
+  "tutorial.skip": "Do not show the tutorial again.",
+  "tutorial.step.1": "Stage 1 being an introductory page that will describe the style and type of the recipe.",
+  "tutorial.step.2": "Stage 2 allows the user to describe the apple juice and adjustable ingredients that will serve as the base of the hard cider.",
+  "tutorial.step.3": "Stage 3 dictates the steps that were generated to best fit the initial ingredients that were proposed.",
+  "tutorial.step.4": "Stage 4 proposes way to save and archive the initial conditions and steps for future references.",
+
+  "entry.warning": "Watch out for juice that contains preservatives; sorbates, or sorbitol as it will interfere with the fermentation process and might/will lead to unwanted results.",
+  "entry.ingredient.title": "Ingredients",
+  "entry.personalization.title": "Personalization",
+  "entry.detail.explanation": "Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.",
+  "entry.detail.instruction": "Instructions",
+  "entry.ingredient.detail": "Ingredient",
+  "entry.personalization.detail": "Personalization",
+
+  "wizard.back": "Go Back",
+  "wizard.finish": "Finish",
+  "wizard.next": "Next"
 }

@@ -10,6 +10,7 @@
 <link rel="import" href="c1d3r-steps.html">
 
 <link rel="import" href="../c1d3r-data/c1d3r-juice.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 <dom-module id="c1d3r-wizard">
   <template>
@@ -44,8 +45,10 @@
 
     <div class="nav layout horizontal">
       <div class="flex"></div>
-      <paper-button on-tap="navBack">Go Back</paper-button>
-      <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
+      <paper-button on-tap="navBack"><c1d3r-localized key="wizard.back"></c1d3r-localized></paper-button>
+      <paper-button on-tap="navNext">
+        <c1d3r-localized key$="[[_nextOrFinishStep(selected)]]"></c1d3r-localized>
+      </paper-button>
     </div>
 
     <!-- Data -->
@@ -115,13 +118,13 @@
       },
 
       _nextOrFinishStep(selected) {
-        return selected === 3 ? 'Finish' : 'Next';
+        return selected === 3 ? 'wizard.finish' : 'wizard.next';
       },
 
       _pageChanged(newPage, oldPage) {
         let pages = this.$$('iron-pages').children;
         if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)
-          pages[oldPage].onBlur()
+          pages[oldPage].onBlur();
         if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null)
           pages[newPage].onFocus();
       }
