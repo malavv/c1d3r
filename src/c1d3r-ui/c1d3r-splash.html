@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-styles/classes/shadow.html">
 
-<link rel="import" href="../c1d3r-data/c1d3r-i18n.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 <dom-module id="c1d3r-splash">
   <template>
@@ -66,22 +66,19 @@
       <div class="title">C1D3R</div>
 
       <div class="details">
-        <p><c1d3r-i18n key="splash.detail.1"></c1d3r-i18n></p>
-        <p><c1d3r-i18n key="splash.detail.2"></c1d3r-i18n></p>
+        <p><c1d3r-localized key="splash.detail.1"></c1d3r-localized></p>
+        <p><c1d3r-localized key="splash.detail.2"></c1d3r-localized></p>
       </div>
 
       <!--Recipe Selector-->
-      <div class="layout horizontal wrap">
-        <iron-selector attr-for-selected="recipe">
-          <template is="dom-repeat" items="[[recipes]]">
-            <div class="recipe enabled" recipe$="[[item.data.id]]">
-              <c1d3r-i18n key$="[[item.data.name]]"></c1d3r-i18n>
-            </div>
-          </template>
-        </iron-selector>
+      <iron-selector attr-for-selected="recipe" class="layout horizontal wrap">
+        <template is="dom-repeat" items="[[recipes]]">
+          <div class$="[[_recipeClass(item)]]" recipe$="[[item.id]]">
+            <c1d3r-localized key$="[[item.id]]"></c1d3r-localized>
+          </div>
+        </template>
         <div class="flex"></div>
-      </div>
-
+      </iron-selector>
     </div>
 
     <!--background space on the right-->
@@ -126,6 +123,10 @@
        */
       _tmplItemFromEvent(evt) {
         return evt.model.__data__.item;
+      },
+
+      _recipeClass(recipe) {
+        return "recipe " + (recipe.disabled ? "disabled" : "enabled");
       }
     });
   </script>

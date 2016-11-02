@@ -1,9 +1,16 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
+<link rel="import" href="i18n-behavior.html">
+
 <dom-module id="c1d3r-strings">
   <template>
-    <iron-ajax auto timeout=[[timeout]] url="[[url]]" handle-as="json" on-response="_handle"></iron-ajax>
+    <iron-ajax
+        auto
+        url="[[url]]"
+        handle-as="json"
+        timeout=[[timeout]]
+        on-response="_handle"></iron-ajax>
   </template>
 
   <script>
@@ -13,6 +20,8 @@
 
       hostAttributes: { hidden: true },
 
+      behaviors: [ I18nBehavior ],
+
       properties: {
         locale: String,
         timeout: { type: Number, value: () => window.ajaxTimeout },
@@ -20,7 +29,7 @@
       },
 
       _handle(evt) {
-        this.fire('translate-strings', evt.detail.response);
+        this.loadDictionary(evt.detail.response);
       }
     });
   </script>

@@ -20,15 +20,8 @@
       dom: 'shadow'
     };
 
-    document.addEventListener('translate-strings', evt => {
-      let s = evt.detail;
-      if (window.strings[s['locale']] == null)
-        window.strings[s['locale']] = {};
-      Object.keys(s).forEach(key => window.strings[s['locale']][key] = s[key]);
-    });
-
     window.t = (key) => {
-      return (window.strings["en"] || {})[key] || "n/a";
+      return "";
     }
   </script>
 
@@ -47,10 +40,10 @@
 <body>
 
   <c1d3r-app unresolved>
-    <c1d3r-recipe path="data/recipes/" id="dhc" locale='["en"]'></c1d3r-recipe>
-    <c1d3r-recipe path="data/recipes/" id="wine" locale='["en"]'></c1d3r-recipe>
-    <c1d3r-recipe path="data/recipes/" id="com" locale='["en"]'></c1d3r-recipe>
-    <c1d3r-recipe path="data/recipes/" id="tbd" locale='["en"]'></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="dhc"  locale='["en"]'></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="wine" locale='["en"]' disabled></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="com"  locale='["en"]' disabled></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="tbd"  locale='["en"]' disabled></c1d3r-recipe>
   </c1d3r-app>
 
 </body>
