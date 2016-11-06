@@ -1,0 +1,131 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
+
+<dom-module id="c1d3r-g">
+  <template>
+    <style>
+      div.content {
+        @apply(--layout-vertical);
+      }
+      div.head {
+        @apply(--layout-horizontal);
+        color: #333;
+        padding-top: 30px;
+        padding-bottom: 10px;
+      }
+      div.step {
+        @apply(--layout-horizontal);
+        @apply(--shadow-elevation-2dp);
+        margin-top: 1px;
+        padding: 10px;
+        background-color: white;
+      }
+    </style>
+
+    <div class="content">
+      <!--Initial Prep-->
+      <div class="content-block">
+        <div class="head">0 Configuring Juice Properties</div>
+      </div>
+      <!--Sanitization-->
+      <div class="content-block">
+        <div class="head">1 Sanitization</div>
+        <div class="step">1.0 Let liquid rest for 3 hours. (Under appropriate cover and in a cleaned space)</div>
+      </div>
+      <!--Yeast Preparation-->
+      <div class="content-block">
+        <div class="head">2 Yeast Prep</div>
+        <div class="step">2.1 Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04. A fruity white yeast can also be used to a fruitier finish (Wyeast 4242 Chablis).</div>
+        <div class="step">2.3 Stir liquid thoroughly for at least 2 minutes.</div>
+      </div>
+      <!--First Fermentation-->
+      <div class="content-block">
+        <div class="head">3 First Fermentation</div>
+        <div class="step">3.1 Make sure the room of the fermentor is at a temperature between 18 and 21 °C. Hotter than this and the yeast might contribute unwanted "yeasty" or "bready" taste.</div>
+      </div>
+      <!--Second Fermentation-->
+      <div class="content-block">
+        <div class="head">4 Second Fermentation</div>
+        <div class="step">4.0 Transfer and ferment in secondary fermentor for 2 weeks or until desired dryness.</div>
+      </div>
+      <!-- Packaging and Bottling -->
+      <div class="content-block">
+        <div class="head">5 Packaging</div>
+        <div class="step">5.0 Transfer to bottling bucket.</div>
+        <div class="step">5.2 Package in bottles.</div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+
+
+
+
+
+
+
+
+    Polymer({
+      is: 'c1d3r-g',
+
+      properties: {
+        recipe: {
+          type: Object,
+          observer: 'recipeChanged'
+        },
+        data: {
+          type: Object,
+          notify: true
+        },
+        isLogging: {
+          type: Boolean,
+          value: true
+        }
+      },
+
+      observers: [
+        '_dataAttrChanged(data.*)'
+      ],
+
+      /**
+       * Logging data attribute changes.
+       */
+      _dataAttrChanged(evt) {
+        if (this.isLogging)
+          console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
+      },
+
+      recipeChanged(recipe) {
+        console.log('on-recipe-changed', recipe.data.observers);
+
+        let functions = Object.values(recipe.data.observers).map((a, idx) => '_func' + idx + '(' + a.join(', ') + ')');
+
+        functions.forEach(f => { this._addComplexObserverEffect(f); });
+      },
+
+      _func0(){ console.log("_func", arguments); },
+      _func1(){ console.log("_func", arguments); },
+      _func2(){ console.log("_func", arguments); },
+      _func3(){ console.log("_func", arguments); },
+      _func4(){ console.log("_func", arguments); },
+      _func5(){ console.log("_func", arguments); },
+      _func6(){ console.log("_func", arguments); },
+      _func7(){ console.log("_func", arguments); },
+      _func8(){ console.log("_func", arguments); },
+      _func9(){ console.log("_func", arguments); },
+
+      listSteps() {
+        return Array.from(Polymer.dom(this.root).querySelectorAll('.content-block'))
+            .map(block => Array.from(block.children))
+            .map(steps => {
+              return {
+                text: steps[0].innerText,
+                steps: steps.slice(1).filter(s => !s.hidden).map(s => s.innerText)
+              };
+            });
+      }
+    });
+  </script>
+</dom-module>

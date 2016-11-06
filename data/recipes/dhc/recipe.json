@@ -8,7 +8,7 @@
     "dhc.characteristics.2",
     "dhc.characteristics.3"
   ],
-  "img": "dryHardCider.png",
+  "img": "image.png",
 
   "data": [
     {
@@ -38,11 +38,11 @@
       "max": 1.100
     },
     {
-      "id": "degreeAlcool",
+      "id": "Alcohol",
       "datatype": "number",
       "group": "adjust",
-      "label": "dhc.data.degreeAlcool.label",
-      "details": "dhc.data.degreeAlcool.details",
+      "label": "dhc.data.degreeAlcohol.label",
+      "details": "dhc.data.degreeAlcohol.details",
       "placeholder": 4.5,
       "min": 3.0,
       "max": 8.0
@@ -132,5 +132,18 @@
       "datatype": "number",
       "group": "computed"
     }
-  ]
+  ],
+
+  "observers": {
+    "data.acidAddInG": ["data.juicePh", "data.finalPh", "data.volumeInL", "data.acidPka", "data.acidMolarMass"],
+    "data.addedVolumeOfSugarAddInL": ["data.og", "data.chaptizationSugarAddKg", "data.volumeInL", "data.tg"],
+    "data.chaptizationSugarAddKg": ["data.degreeAlcohol", "data.yeastEfficiency", "data.og", "data.sugarYieldPtsKgL", "data.volumeInL"],
+    "data.nutrientAddInG": ["data.volumeInL"],
+    "data.pectinaseAddInG": ["data.volumeInL"],
+    "data.potassiumMetaAddInG": ["data.juicePh", "data.finalPh", "data.volumeInL"],
+    "data.primingSugarAddKg": ["data.sugarPpg", "data.volumeInL"],
+    "data.sugarYieldPtsKgL": ["data.sugarPpg"],
+    "data.tanninAddInG": ["data.origTanninLvl", "data.desiredTanninLvl", "data.volumeInL"],
+    "data.tg": ["data.og", "data.sugarYieldPtsKgL", "data.chaptizationSugarAddKg", "data.volumeInL"]
+  }
 }

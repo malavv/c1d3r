@@ -5,6 +5,7 @@
 
 
 <link rel="import" href="c1d3r-guide.html">
+<link rel="import" href="c1d3r-g.html">
 
 <dom-module id="c1d3r-steps">
   <template>
@@ -24,9 +25,18 @@
       <h2>Guide</h2>
     </div>
 
-    <iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">
-      <c1d3r-dryHardCider recipe-id="dryHardCider" class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-dryHardCider>
-    </iron-pages>
+    <c1d3r-g class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-g>
+
+    <!--<iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">-->
+
+      <!--
+      <c1d3r-dryHardCider
+          class="flex"
+          recipe-id="dhc"
+          recipe="{{recipe}}"
+          data="{{data}}"></c1d3r-dryHardCider>
+      -->
+    <!--</iron-pages>-->
 
   </template>
 
@@ -37,7 +47,7 @@
       hostAttributes: {},
 
       properties: {
-        recipe: Object,
+        recipe: { type: Object },
         data: {
           type: Object,
           notify: true
@@ -49,7 +59,8 @@
       },
 
       onBlur() {
-        this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
+        //this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
+        this.set('guide', this.$$('c1d3r-g').listSteps());
         return false;
       },
       onFocus() {}
