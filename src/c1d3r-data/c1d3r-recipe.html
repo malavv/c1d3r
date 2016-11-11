@@ -5,7 +5,11 @@
 
 <dom-module id="c1d3r-recipe">
   <template>
-    <iron-ajax auto timeout=[[timeout]] url="[[dataUrl]]" handle-as="json" last-response="{{data}}"></iron-ajax>
+    <iron-ajax auto
+        timeout=[[timeout]]
+        url="[[dataUrl]]"
+        handle-as="json"
+        last-response="{{data}}"></iron-ajax>
 
     <template is="dom-repeat" items="[[locale]]">
       <c1d3r-strings locale="[[item]]" url="[[_getStrings(item)]]"></c1d3r-strings>

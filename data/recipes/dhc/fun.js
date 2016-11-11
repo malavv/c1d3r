@@ -14,30 +14,36 @@
   // Others
   const maxScale = 10;
 
-  // -----------------------------------------------  Listeners  -------------------------------------------------------
-  function _nutrientAddInG(volumeInL) {
-    console.log('recipe received _nutrientAddInG', volumeInL);
-  }
-
-
-  /**
-   * Computes a PH correction based on ascorbic acid.
-   *
-   * Make sure the arguments are exactly in the same order as the helper function.
-   * @see https://github.com/malavv/c1d3r/wiki/PH-Correction
-   *
-   * @param oPh Original PH of the solution.
-   * @param fPh Final PH of the solution.
-   * @param volumeL Solution volume in liters.
-   * @param pka Chosen Acid Pka
-   * @param molarMass Molar mass of the chosen acid.
-   * @return Mass of the acid to add to achieve the final PH.
-   */
-  function _getAcidAddInG(oPh, fPh, volumeL, pka, molarMass) {
-    let
-        // Required change in hydronium concentration.
-        deltaMol = phToH30(fPh) - phToH30(oPh),
-        acidAddInMol = (deltaMol * deltaMol) / phToH30(pka) + deltaMol;
-    return acidAddInMol * volumeL * molarMass;
+  return {
+    _acidAddInG(juicePh, finalPh, volumeInL, acidPka, acidMolarMass) {
+      console.info('_acidAddInG', arguments);
+    },
+    _addedVolumeOfSugarAddInL(og, chaptizationSugarAddKg, volumeInL, tg) {
+      console.info('_addedVolumeOfSugarAddInL', arguments);
+    },
+    _chaptizationSugarAddKg(degreeAlcohol, yeastEfficiency, og, sugarYieldPtsKgL, volumeInL) {
+      console.info('_chaptizationSugarAddKg', arguments);
+    },
+    _nutrientAddInG(volumeInL) {
+      console.info('_nutrientAddInG', arguments);
+    },
+    _pectinaseAddInG(volumeInL) {
+      console.info('_pectinaseAddInG', arguments);
+    },
+    _potassiumMetaAddInG(juicePh, finalPh, volumeInL) {
+      console.info('_potassiumMetaAddInG', arguments);
+    },
+    _primingSugarAddKg(sugarPpg, volumeInL) {
+      console.info('_primingSugarAddKg', arguments);
+    },
+    _sugarYieldPtsKgL(sugarPpg) {
+      console.info('_sugarYieldPtsKgL', arguments);
+    },
+    _tanninAddInG(origTanninLvl, desiredTanninLvl, volumeInL) {
+      console.info('_tanninAddInG', arguments);
+    },
+    _tg(og, sugarYieldPtsKgL, chaptizationSugarAddKg, volumeInL) {
+      console.info('og', arguments);
+    }
   }
 })();

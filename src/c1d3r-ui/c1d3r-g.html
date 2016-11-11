@@ -60,12 +60,16 @@
 
   <script>
 
-
-
-
-
-
-
+    function _fromString(val) {
+      if (val == null)
+        return val;
+      if (typeof val === 'number')
+        return val;
+      console.assert(typeof val === 'string', 'Invalid value type. Should be a String.');
+      if (val.trim().length === 0)
+        return null;
+      return Number(val);
+    }
 
     Polymer({
       is: 'c1d3r-g',
@@ -89,6 +93,9 @@
         '_dataAttrChanged(data.*)'
       ],
 
+      _test() {
+        return this.recipe.path + this.recipe.id + '/' + this.recipe.func;
+      },
       /**
        * Logging data attribute changes.
        */
@@ -97,24 +104,40 @@
           console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
       },
 
+      _funscriptChanged(s0, s1) {
+        console.log(s0, s1);
+      },
+
+
+
       recipeChanged(recipe) {
         console.log('on-recipe-changed', recipe.data.observers);
 
-        let functions = Object.values(recipe.data.observers).map((a, idx) => '_func' + idx + '(' + a.join(', ') + ')');
+        fetch(recipe.path + recipe.id + '/' + recipe.data.func)
+          .then(response => response.text())
+          .then(script => eval(script))
+          .then(fun => {
 
-        functions.forEach(f => { this._addComplexObserverEffect(f); });
+            Object.keys(recipe.data.observers)
+              .map((key, idx) => {
+                let parameters = recipe.data.observers[key];
+                let funcName = '_func' + idx;
+                let funcSignature = funcName + '(' + parameters.join(', ') + ')';
+
+                this[funcName] = function() {
+                  // Convert raw to numbers
+                  let args = [...arguments].map(arg => _fromString(arg));
+
+                  // Function to call
+                  let callback = fun[key.replace('data.', '_')];
+
+                  callback.apply(null, args);
+                }
+
+                this._addComplexObserverEffect(funcSignature);
+              });
+          })
       },
-
-      _func0(){ console.log("_func", arguments); },
-      _func1(){ console.log("_func", arguments); },
-      _func2(){ console.log("_func", arguments); },
-      _func3(){ console.log("_func", arguments); },
-      _func4(){ console.log("_func", arguments); },
-      _func5(){ console.log("_func", arguments); },
-      _func6(){ console.log("_func", arguments); },
-      _func7(){ console.log("_func", arguments); },
-      _func8(){ console.log("_func", arguments); },
-      _func9(){ console.log("_func", arguments); },
 
       listSteps() {
         return Array.from(Polymer.dom(this.root).querySelectorAll('.content-block'))
