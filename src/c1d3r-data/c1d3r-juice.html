@@ -36,9 +36,6 @@
       _newRecipe(recipe) {
         if (recipe == null)
           return;
-        recipe.data.data
-            .filter(d => d.group === 'preset')
-            .forEach(d => this.set('data.' + d.id, d.value));
       },
 
       _attributeChanged(values) {

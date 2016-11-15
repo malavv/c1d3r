@@ -16,8 +16,8 @@
   "dhc.data.og.label": "Measure the original gravity of the juice. (In Specific Gravity, SG)",
   "dhc.data.og.details": "The original gravity is an indicator of the quantity of sugar present in the apples.",
 
-  "dhc.data.degreeAlcool.label": "What is your desired ABV? (+0.5% see details)",
-  "dhc.data.degreeAlcool.details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement. The sugar used for priming will be converted in a 0.5% addition to the requested ABV.",
+  "dhc.data.degreeAlcohol.label": "What is your desired ABV? (+0.5% see details)",
+  "dhc.data.degreeAlcohol.details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement. The sugar used for priming will be converted in a 0.5% addition to the requested ABV.",
 
   "dhc.data.origTanninLvl.label": "Original Tanning Levels (0-low, to 10-high)",
   "dhc.data.origTanninLvl.details": "Tannins levels influence the body and character of the final product.",

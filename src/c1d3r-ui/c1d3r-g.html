@@ -85,7 +85,7 @@
         },
         isLogging: {
           type: Boolean,
-          value: true
+          value: false
         }
       },
 
@@ -93,9 +93,6 @@
         '_dataAttrChanged(data.*)'
       ],
 
-      _test() {
-        return this.recipe.path + this.recipe.id + '/' + this.recipe.func;
-      },
       /**
        * Logging data attribute changes.
        */
@@ -103,11 +100,6 @@
         if (this.isLogging)
           console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
       },
-
-      _funscriptChanged(s0, s1) {
-        console.log(s0, s1);
-      },
-
 
 
       recipeChanged(recipe) {
@@ -119,23 +111,27 @@
           .then(fun => {
 
             Object.keys(recipe.data.observers)
-              .map((key, idx) => {
-                let parameters = recipe.data.observers[key];
-                let funcName = '_func' + idx;
-                let funcSignature = funcName + '(' + parameters.join(', ') + ')';
+                .map((key, idx) => {
+                  let parameters = recipe.data.observers[key];
+                  let funcName = '_func' + idx;
+                  let funcSignature = funcName + '(' + parameters.join(', ') + ')';
 
-                this[funcName] = function() {
-                  // Convert raw to numbers
-                  let args = [...arguments].map(arg => _fromString(arg));
+                  this[funcName] = function() {
+                    // Convert raw to numbers
+                    let args = [...arguments].map(arg => _fromString(arg));
 
-                  // Function to call
-                  let callback = fun[key.replace('data.', '_')];
+                    // will call "function _{id}(arguments...){}" and use the result of as the attribute's new value.
+                    let callback = fun[key.replace('data.', '_')];
+                    let attrNewValue = callback.apply(null, args);
+                    this.set(key, attrNewValue);
+                  };
 
-                  callback.apply(null, args);
-                }
+                  this._addComplexObserverEffect(funcSignature);
+                });
 
-                this._addComplexObserverEffect(funcSignature);
-              });
+            recipe.data.data
+                .filter(d => d.group === 'preset')
+                .forEach(d => this.set('data.' + d.id, d.value));
           })
       },
 

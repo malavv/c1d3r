@@ -26,18 +26,6 @@
     </div>
 
     <c1d3r-g class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-g>
-
-    <!--<iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">-->
-
-      <!--
-      <c1d3r-dryHardCider
-          class="flex"
-          recipe-id="dhc"
-          recipe="{{recipe}}"
-          data="{{data}}"></c1d3r-dryHardCider>
-      -->
-    <!--</iron-pages>-->
-
   </template>
 
   <script>
@@ -59,7 +47,6 @@
       },
 
       onBlur() {
-        //this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
         this.set('guide', this.$$('c1d3r-g').listSteps());
         return false;
       },
