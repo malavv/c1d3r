@@ -25,7 +25,7 @@
 
     <div class="content">
       <!--Initial Prep-->
-      <div class="content-block">
+      <div class="content-block" id="stepGroup0">
         <div class="head">0 Configuring Juice Properties</div>
       </div>
       <!--Sanitization-->
@@ -99,10 +99,54 @@
       _dataAttrChanged(evt) {
         if (this.isLogging)
           console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
+
+        // Steps to update concatenates steps from all groups with id = path of updated data element.
+        if (this.recipe == null)
+          return;
+
+        for (let group of this.recipe.data.steps) {
+          for (let step of group.filter(s => s.quantities.some(q => q.id == evt.path))) {
+            this._updateStep(this.$$('#step-ascorbic'), step);
+          }
+        }
+      },
+
+      _updateStep(el, step) {
+        let content = step.tmpl;
+        let elements = step.quantities.map(qty => this.get(qty.id).toPrecision(3) + ' ' + qty.sym);
+
+        for (let i = 0; i < elements.length; i++) {
+          content = content.replace('{' + i + '}', '<span style="font-weight: bold;padding: 0 5px;">' + elements[i] + '</span>');
+        }
+
+        el.innerHTML = content;
+      },
+
+      _makeStep(id, content) {
+        let div = document.createElement('div');
+        div.classList.add('step');
+        div.id = id;
+        div.appendChild(document.createTextNode(content));
+        return div;
+      },
+
+      _setInSteps() {
+        let stepGroups = [this.$.stepGroup0];
+        for (let i = 0; i < this.recipe.data.steps.length; i++) {
+          let group = stepGroups[i];
+          let steps = this.recipe.data.steps[i];
+          if (group == null || steps == null)
+            continue;
+          for (let step of steps) {
+            group.appendChild(this._makeStep('step-' + step.id, step.tmpl));
+          }
+        }
       },
 
       recipeChanged(recipe) {
         console.log('on-recipe-changed', recipe.data.observers);
+
+        this._setInSteps();
 
         fetch(recipe.path + recipe.id + '/' + recipe.data.func)
           .then(response => response.text())
