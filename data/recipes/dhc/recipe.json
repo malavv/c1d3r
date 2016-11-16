@@ -146,5 +146,20 @@
     "data.sugarYieldPtsKgL": ["data.sugarPpg"],
     "data.tanninAddInG": ["data.origTanninLvl", "data.desiredTanninLvl", "data.volumeInL"],
     "data.tg": ["data.og", "data.sugarYieldPtsKgL", "data.chaptizationSugarAddKg", "data.volumeInL"]
-  }
+  },
+
+  "steps": [
+    [
+      {
+        "id": "ascorbic",
+        "tmpl": "Add {0} of ascorbic acid.",
+        "quantities": [
+          {
+            "id": "data.acidAddInG",
+            "sym": "g"
+          }
+        ]
+      }
+    ]
+  ]
 }
