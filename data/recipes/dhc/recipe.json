@@ -141,8 +141,8 @@
     "data.chaptizationSugarAddKg": ["data.degreeAlcohol", "data.yeastEfficiency", "data.og", "data.sugarYieldPtsKgL", "data.volumeInL"],
     "data.nutrientAddInG": ["data.volumeInL"],
     "data.pectinaseAddInG": ["data.volumeInL"],
-    "data.potassiumMetaAddInG": ["data.juicePh", "data.finalPh", "data.volumeInL"],
-    "data.primingSugarAddKg": ["data.sugarPpg", "data.volumeInL"],
+    "data.potassiumMetaAddInG": ["data.finalPh", "data.volumeInL"],
+    "data.primingSugarAddKg": ["data.volumeInL"],
     "data.sugarYieldPtsKgL": ["data.sugarPpg"],
     "data.tanninAddInG": ["data.origTanninLvl", "data.desiredTanninLvl", "data.volumeInL"],
     "data.tg": ["data.og", "data.sugarYieldPtsKgL", "data.chaptizationSugarAddKg", "data.volumeInL"]
