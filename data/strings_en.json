@@ -1,8 +1,8 @@
 {
   "locale": "en",
 
-  "splash.detail.1": "C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.",
-  "splash.detail.2": "This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.",
+  "splash.detail.1": "C1D3R is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1D3R allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.",
+  "splash.detail.2": "This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1D3R is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.",
 
   "tutorial.title": "How does it works?",
   "tutorial.desc.1": "In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.",
