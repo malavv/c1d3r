@@ -25,7 +25,7 @@
 
       properties: {
         // Constants
-        timeout: { type: Number, value: () => window.ajaxTimeout },
+        timeout: { type: Number, value: () => window.cfg.ajaxLoadTimeoutInMs },
 
         // Configuration
         id: String,

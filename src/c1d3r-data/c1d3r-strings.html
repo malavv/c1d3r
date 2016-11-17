@@ -24,7 +24,7 @@
 
       properties: {
         locale: String,
-        timeout: { type: Number, value: () => window.ajaxTimeout },
+        timeout: { type: Number, value: () => window.cfg.ajaxLoadTimeoutInMs },
         url: String
       },
 
