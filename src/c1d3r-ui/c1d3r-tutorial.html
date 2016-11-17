@@ -2,7 +2,6 @@
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 
 <link rel="import" href="c1d3r-progress.html">
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
@@ -67,7 +66,7 @@
           </ul>
 
           <div class="skip">
-            <paper-checkbox checked="{{storage.skipTutorial}}"></paper-checkbox>
+            <paper-checkbox checked="{{skipTutorial}}"></paper-checkbox>
             <c1d3r-localized key="tutorial.skip"></c1d3r-localized>
           </div>
         </div>
@@ -84,58 +83,40 @@
       <paper-button on-tap="_navNext"><c1d3r-localized key="wizard.next"></c1d3r-localized></paper-button>
     </div>
 
-    <iron-localstorage
-        name="c1d3r-app-storage"
-        value="{{storage}}"
-        on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
   </template>
 
   <script>
+    const blinkPeriodInMs = 2500;
+
     Polymer({
       is: 'c1d3r-tutorial',
 
       hostAttributes: {},
 
       properties: {
-        skip: {
-          type: Boolean,
-          observer: '_skipChanged'
-        },
         cancelHandle: Number,
-        blinkPeriod: {
-          type: Number,
-          value: 2500
-        },
-        storage: Object
+        skipTutorial: {
+          type: Boolean,
+          notify: true
+        }
       },
 
 
-      onBlur() { this.cancelAsync(this.cancelHandle); },
+      onBlur() { window.clearInterval(this.cancelHandle) },
 
       onFocus() {
-        if (this.storage.skipTutorial)
+        if (this.skipTutorial)
           this.fire('next');
-        this.$$('c1d3r-progress').step = 0;
-        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
+
+        this._startProgressAnimation();
       },
 
-      _blink() {
-        let progressBar = this.$$('c1d3r-progress');
-        progressBar.set('step', (progressBar.step + 1) % 4);
-        this.cancelHandle = this.async(() => this._blink(), this.blinkPeriod);
-      },
+      _startProgressAnimation() {
+        let progressEl = this.$$('c1d3r-progress');
 
-      _skipChanged(wantsSkip) {
-        if (!wantsSkip)
-          return;
-        console.info('now skipping tutorial.');
-        this.set('storage.skipTutorial', true);
-      },
+        progressEl.step = 0;
 
-      _initStorage() {
-        this.storage = {
-          skipTutorial: false
-        };
+        this.cancelHandle = window.setInterval(() => progressEl.set('step', (progressEl.step + 1) % 4), blinkPeriodInMs);
       },
 
       _navBack() { this.fire('home'); },

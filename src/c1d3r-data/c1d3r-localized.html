@@ -40,6 +40,8 @@ The key will be used when referring in string translation files.
       behaviors: [I18nBehavior],
 
       keyChanged(newKey, oldKey) {
+        if (newKey == null)
+          return;
         //console.assert(oldKey == null, 'Only valid when old value was undefined.');
         this.registerKey(newKey, s => this.text = s)
       }

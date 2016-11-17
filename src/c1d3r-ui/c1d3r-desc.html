@@ -84,6 +84,8 @@
       },
 
       _getImgUrl(recipe) {
+        if (recipe == null)
+          return null;
         return recipe.path + recipe.id + '/' + recipe.data.img;
       },
 

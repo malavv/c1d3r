@@ -2,8 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 
 <link rel="import" href="../c1d3r-data/c1d3r-loader.html">
 <link rel="import" href="../c1d3r-data/c1d3r-strings.html">
@@ -11,7 +10,6 @@
 <link rel="import" href="../c1d3r-ui/c1d3r-splash.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-tutorial.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-wizard.html">
-
 
 <!--
 `c1d3r-app` is the main element controlling the flow of the brewing guide.
@@ -48,27 +46,44 @@ Given a set of recipe it will manage the visual and data aspects of the guide.
       }
     </style>
 
-    <iron-pages class="layout vertical flex" selected="[[selected]]">
-      <c1d3r-splash class="flex" recipes="[[recipes]]" on-selected="_selectRecipe"></c1d3r-splash>
-      <c1d3r-tutorial class="flex" on-next="_navRecipe" on-home="_navHome"></c1d3r-tutorial>
-      <c1d3r-wizard class="flex" recipe="[[recipe]]" on-home="_navHome"></c1d3r-wizard>
+    <iron-pages id="appPages" class="layout vertical flex" selected="[[selected]]">
+      <!-- Application Splash Page with the Recipe Options -->
+      <c1d3r-splash id="splash" class="flex" recipes="[[recipes]]" on-recipe-selected="_onRecipeSelected"></c1d3r-splash>
+      <!-- Tutorial page about of this guide works. -->
+      <c1d3r-tutorial
+          class="flex"
+          on-home="_navToHome"
+          on-next="_navToGuide"
+          skip-tutorial="{{cfg.skipTutorial}}"></c1d3r-tutorial>
+      <!-- The actual guide -->
+      <c1d3r-wizard id="guide" class="flex" recipe="[[recipe]]" on-home="_navToHome"></c1d3r-wizard>
     </iron-pages>
 
-    <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
+    <c1d3r-footer id="footer" locale="{{locale}}"></c1d3r-footer>
 
-    <!-- Loads the application manifest -->
-    <iron-ajax auto url="/manifest.json" handle-as="json" on-response="_handleManifest"></iron-ajax>
-
-    <!--Load Locale -->
+    <!-- Load Locale Specific Application Strings -->
     <c1d3r-strings locale="en" url="/data/strings_en.json"></c1d3r-strings>
+
+    <!-- App Persistent Configuration -->
+    <iron-localstorage name="cfg" value="{{cfg}}" on-iron-localstorage-load-empty="_initCfg"></iron-localstorage>
   </template>
 
   <script>
+    const Page = {
+      Home: 0,
+      Tutorial: 1,
+      Guide: 2
+    };
+
     Polymer({
 
       is: 'c1d3r-app',
 
       properties: {
+        cfg: {
+          type: Object,
+          notify: true
+        },
         locale: {
           value: 'en',
           observer: '_localeChanged'
@@ -82,47 +97,31 @@ Given a set of recipe it will manage the visual and data aspects of the guide.
           type: Number,
           value: 0,
           observer: '_pageChanged'
+        },
+        version: {
+          type: Number,
+          value: "2.1.1"
         }
       },
 
+      // ----------------------------------- LifeCycles ----------------------------------------------------------------
+      /**
+       * Just after the component is inserted in the DOM. (Before it is shown.)
+       */
       attached() {
+        // Loads in the recipes that are inside its content.
         this.set('recipes', Polymer.dom(this).children);
+        this.$.footer.setVersion(this.version);
       },
 
+      // ----------------------------------- On Change Listeners -------------------------------------------------------
       /**
-       * Processes Application Manifest.
-       */
-      _handleManifest(evt) {
-        window.app = evt.detail.response;
-        this.$$('c1d3r-footer').setVersion(window.app.version);
-      },
-      /**
-       * On user switched locale
+       * Called when a user changed the locale of the application.
+       * @private
        */
       _localeChanged(newLangCode, oldLangCode) {
         console.info('locale changed from ' + oldLangCode + ' to ' + newLangCode);
         this.fire('iron-signal', {name: 'locale', data: newLangCode});
-      },
-      /**
-       * Navigate to the Home (splash page)
-       */
-      _navHome() {
-        this.set('recipe', undefined);
-        this.$$('c1d3r-wizard').reset();
-        this.$$('iron-pages').selectIndex(0);
-      },
-      /**
-       * Navigate to the app with a recipe selected.
-       */
-      _navRecipe() {
-        this.set('selected', 2);
-      },
-      /**
-       * Select a specific recipe.
-       */
-      _selectRecipe(evt) {
-        this.set('selected', 1);
-        this.set('recipe', evt.detail);
       },
       /**
        * Manages calling onFocus and onBlur during page switching.
@@ -131,11 +130,49 @@ Given a set of recipe it will manage the visual and data aspects of the guide.
        * @private
        */
       _pageChanged(newPage, oldPage) {
-        let pages = this.$$('iron-pages').children;
+        let pages = this.$.appPages.children;
         if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)
           pages[oldPage].onBlur();
         if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null)
           pages[newPage].onFocus();
+      },
+
+      // ----------------------------------- Private Methods  ----------------------------------------------------------
+      /**
+       * Navigate to the Home (splash page)
+       * @private
+       */
+      _navToHome() {
+        this.set('selected', Page.Home);
+        this.set('recipe', null);
+        this.$.guide.reset();
+        this.$.splash.reset();
+      },
+      /**
+       * Navigate to the app with a recipe selected.
+       * @private
+       */
+      _navToGuide() {
+        this.set('selected', Page.Guide);
+      },
+      /**
+       * Called when a recipe was selected by the user.
+       * @param {Event} evt Event containing the selected recipe.
+       * @private
+       */
+      _onRecipeSelected(evt) {
+        this.set('selected', this.cfg.skipTutorial ? Page.Guide : Page.Tutorial);
+        this.set('recipe', evt.detail);
+      },
+      /**
+       * Creates a default app configuration if none exists.
+       * @private
+       */
+      _initCfg() {
+        this.cfg = {
+          version: this.version,
+          skipTutorial: false
+        };
       }
     });
   </script>

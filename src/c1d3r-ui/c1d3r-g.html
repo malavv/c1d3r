@@ -151,6 +151,8 @@
       },
 
       recipeChanged(recipe) {
+        if (recipe == null)
+          return;
         console.log('on-recipe-changed', recipe.data.observers);
 
         this._setInSteps();

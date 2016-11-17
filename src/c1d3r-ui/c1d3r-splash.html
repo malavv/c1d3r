@@ -107,10 +107,16 @@
       onBlur() { /* ignored */ },
       onFocus() { /* ignored */ },
 
+      reset() {
+        this.$$('iron-selector').select(null);
+      },
+
       chosenChanged(chosen) {
+        if (chosen == null)
+          return;
         let recipe = this.recipes.filter(r => r.id == chosen.getAttribute('recipe'));
         if (recipe[0] != null)
-          this.fire('selected', recipe[0])
+          this.fire('recipe-selected', recipe[0])
       },
 
       _recipeClass(recipe) {
