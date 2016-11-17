@@ -1,5 +1,6 @@
 <script>
   I18nBehavior = (function() {
+    'use strict';
 
     let
       currentLocale = 'en',
@@ -7,19 +8,14 @@
       translations = new Map([[currentLocale, new Map()]]);
 
     return {
-      registerKey(key, handler) {
-        this._addHandler(key, handler)
+      translate(key) {
+        return translations.get(currentLocale).get(key);
       },
-      ready() {
-//        if (this.is == 'c1d3r-localized' && this.key == null)
-//          debugger;
-        //let map = this.localizedKeys;
-        //if (map == null) return;
-        //Object.keys(map).forEach(key => this._addHandler(key, map[key]));
+      registerKey(key, handler) {
+        this._addHandler(key, handler);
       },
       loadDictionary(dict) {
-        Object.keys(dict)
-            .filter(k => k !== 'locale')
+        Object.keys(dict).filter(k => k !== 'locale')
             .forEach(key => this._addTranslation(dict['locale'], key, dict[key]));
       },
       /**

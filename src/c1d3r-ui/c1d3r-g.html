@@ -2,6 +2,9 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
+<link rel="import" href="../c1d3r-data/i18n-behavior.html">
+
 <dom-module id="c1d3r-g">
   <template>
     <style>
@@ -14,6 +17,7 @@
         padding-top: 30px;
         padding-bottom: 10px;
       }
+      /* Do not remove, steps are dynamically added. */
       div.step {
         @apply(--layout-horizontal);
         @apply(--shadow-elevation-2dp);
@@ -26,27 +30,27 @@
     <div class="content">
       <!--Initial Prep-->
       <div class="content-block" id="stepGroup0">
-        <div class="head">0 Configuring Juice Properties</div>
+        <div class="head"><c1d3r-localized key="guide.group.0"></c1d3r-localized></div>
       </div>
       <!--Sanitization-->
       <div class="content-block" id="stepGroup1">
-        <div class="head">1 Sanitization</div>
+        <div class="head"><c1d3r-localized key="guide.group.1"></c1d3r-localized></div>
       </div>
       <!--Yeast Preparation-->
       <div class="content-block" id="stepGroup2">
-        <div class="head">2 Yeast Prep</div>
+        <div class="head"><c1d3r-localized key="guide.group.2"></c1d3r-localized></div>
       </div>
       <!--First Fermentation-->
       <div class="content-block" id="stepGroup3">
-        <div class="head">3 First Fermentation</div>
+        <div class="head"><c1d3r-localized key="guide.group.3"></c1d3r-localized></div>
       </div>
       <!--Second Fermentation-->
       <div class="content-block" id="stepGroup4">
-        <div class="head">4 Second Fermentation</div>
+        <div class="head"><c1d3r-localized key="guide.group.4"></c1d3r-localized></div>
       </div>
       <!-- Packaging and Bottling -->
       <div class="content-block" id="stepGroup5">
-        <div class="head">5 Packaging</div>
+        <div class="head"><c1d3r-localized key="guide.group.5"></c1d3r-localized></div>
       </div>
     </div>
   </template>
@@ -86,6 +90,8 @@
         '_dataAttrChanged(data.*)'
       ],
 
+      behaviors: [ I18nBehavior ],
+
       /**
        * Logging data attribute changes.
        */
@@ -105,7 +111,7 @@
       },
 
       _updateStep(el, step) {
-        let content = step.tmpl;
+        let content = this.translate(step.tmpl);
         let elements = step.quantities.map(qty => Number(this.get(qty.id)).toPrecision(3) + ' ' + qty.sym);
 
         for (let i = 0; i < elements.length; i++) {
@@ -139,7 +145,7 @@
           if (group == null || steps == null)
             continue;
           for (let step of steps) {
-            group.appendChild(this._makeStep('step-' + step.id, step.tmpl));
+            group.appendChild(this._makeStep('step-' + step.id, this.translate(step.tmpl)));
           }
         }
       },

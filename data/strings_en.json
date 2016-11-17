@@ -21,6 +21,17 @@
   "entry.ingredient.detail": "Ingredient",
   "entry.personalization.detail": "Personalization",
 
+  "guide.title" : "Guide",
+  "guide.group.0" : "0 Configuring Juice Properties",
+  "guide.group.1" : "1 Sanitization",
+  "guide.group.2" : "2 Yeast Prep",
+  "guide.group.3" : "3 First Fermentation",
+  "guide.group.4" : "4 Second Fermentation",
+  "guide.group.5" : "5 Packaging",
+
+  "final.title": "Final",
+  "final.download": "Enjoy your recipe, and please save the following information for further years.",
+
   "wizard.back": "Go Back",
   "wizard.finish": "Finish",
   "wizard.next": "Next"

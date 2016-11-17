@@ -6,6 +6,7 @@
 
 <link rel="import" href="c1d3r-guide.html">
 <link rel="import" href="c1d3r-g.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 <dom-module id="c1d3r-steps">
   <template>
@@ -22,7 +23,7 @@
     </style>
 
     <div class="sidebar">
-      <h2>Guide</h2>
+      <h2><c1d3r-localized key="guide.title"></c1d3r-localized></h2>
     </div>
 
     <c1d3r-g class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-g>

@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <script src='../../bower_components/downloadjs/download.js'></script>
 
-<!--download("hello world", "dlText.json", "application/json");-->
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 <dom-module id="c1d3r-final">
   <template>
@@ -17,9 +17,8 @@
       }
     </style>
 
-    <h2>Final</h2>
-
-    Enjoy your recipe, and please save the following information for futher years.
+    <h2><c1d3r-localized key="final.title"></c1d3r-localized></h2>
+    <c1d3r-localized key="final.download"></c1d3r-localized>
 
     <paper-icon-button icon="icons:archive" on-tap="_onArchive">Raised button</paper-icon-button>
   </template>
