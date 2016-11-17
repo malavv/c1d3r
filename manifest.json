@@ -4,7 +4,7 @@
   "version": "2.1.1",
 
   "default_locale": "en",
-  "description": "",
+  "description": "C1d3r is an interactive *hard* cider brewing guide.",
 
   "icons": {
     "16": "images/barrel16.png",

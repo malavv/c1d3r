@@ -1,4 +1,4 @@
-# c1d3r
+# C1D3R
 C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.
 
 This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.
@@ -13,9 +13,10 @@ Advanced users and programmers alike, might want to personalize their guide, and
 Contributions to this project are very welcome. This being an open source project, it is only as strong as the people who caries it and volunteer their time for the benefit of the overall community. This being said, all work must comply with the project vision's of a simple, easy to use, and focused interactive guide. Here is a couple of way you may help :
 
 1. Using it! And reporting errors and bugs in the [Github issue manager](https://github.com/malavv/c1d3r/issues).
-2. Helping with the user experience and styling. *HTML | JS | Polymer*
-3. Tacking a reported bug, and fixing it.
-4. Contributing recipes, see the [wiki page](https://github.com/malavv/c1d3r/wiki/Contributing-Recipes) for more details.
+1. Helping with the user experience and styling. *HTML | JS | Polymer*
+1. Tacking a reported bug, and fixing it.
+1. Find a TODO in the code and resolve it.
+1. Contributing recipes, see the [wiki page](https://github.com/malavv/c1d3r/wiki/Contributing-Recipes) for more details.
 
 This is the lovely people to thank for this guide:
 ```

@@ -2,6 +2,7 @@
   "name": "c1d3r",
   "description": "C1d3r is an interactive *hard* cider brewing guide.",
   "main": "index.html",
+
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "iron-elements": "PolymerElements/iron-elements#^1.0.10",
