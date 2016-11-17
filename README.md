@@ -1,11 +1,11 @@
 # C1D3R
-C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.
+`C1d3r` is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.
 
-This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.
+This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. `C1d3r` is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.
 
 ## Technology
 
-The C1d3r guide leverages the latest web technologies to provide an easy to follow and stylistic interactive experience. The latest version of the application is continuously built and deployed to https://malavv.github.io/c1d3r/. This should handle most use cases, and efforts are made to keep this deployment reliable, free of regressions, and backward compatible through the years. This link is meant to be bookmarked and consulted annually.
+The C1d3r guide leverages the latest web technologies to provide an easy to follow and stylistic interactive experience. The latest version of the application is continuously built and deployed to [https://malavv.github.io/c1d3r/](https://malavv.github.io/c1d3r/). This should handle most use cases, and efforts are made to keep this deployment reliable, free of regressions, and backward compatible through the years. This link is meant to be bookmarked and consulted annually.
 
 Advanced users and programmers alike, might want to personalize their guide, and the use of web technologies makes that simple and hassle free. Although it is strongly suggested that any useful development be pushed back for the benefit of the community, local deployment can be made to run any alternate code without any issues.
 
@@ -25,4 +25,4 @@ Maxime Lavigne (malavv)
 ```
 ## Building the application
 
-Local build of the application are fairly simple to put in place. They can be of great help with the development of new recipes, or whilst developing new features. In order to get a full description of how to set up for deployment, please consult the *INSTALL.md* file.
+Local build of the application are fairly simple to put in place. They can be of great help with the development of new recipes, or whilst developing new features. In order to get a full description of how to set up for deployment, please consult the [`INSTALL.md`](INSTALL.md) file.

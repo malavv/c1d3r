@@ -1,10 +1,10 @@
 # Introduction
-The C1d3r guide is built using the [Polymer](https://www.polymer-project.org/) application framework. This framework makes it easy to use the latest web technologies in a way that is portable and actually enjoyable to code.
+The `c1d3r` guide is built using the [Polymer](https://www.polymer-project.org/) application framework. This framework makes it easy to use the latest web technologies in a way that is portable and actually enjoyable to code.
 
 This project relatively small size and clear focus makes it an excellent introduction to the Polymer framework. You should be up and running in no time.
 
 # Prerequisite
-Here are the tools and technologies needed to locally deploy C1d3r. Be aware that the commands will be run from a command line utility.
+Here are the tools and technologies needed to locally deploy `c1d3r`. Be aware that the commands will be run from a command line utility.
 
 1. Install [Git](https://git-scm.com/downloads)
 1. Install [Node.js](https://nodejs.org/en/download/) LTS version.
@@ -22,7 +22,7 @@ Each time the guide is deployed, it's library should first be updated. The comma
 
 ### Serving C1d3r
 
-The C1d3r guide is now fully deployed using the Polymer CLI tools. It means that ``polymer serve`` is the only command needed for most situations. The command will output the full URL which can be used to access the application running locally.
+The `c1d3r` guide is now fully deployed using the Polymer CLI tools. It means that ``polymer serve`` is the only command needed for most situations. The command will output the full URL which can be used to access the application running locally.
 
 ## Running Tests
 
@@ -30,6 +30,6 @@ At this point, our regression testing suite is just a placeholder, but please do
 
 ## Building and Deploying
 
-Publishing the C1D3R application is a two step process. We first use the Polymer-cli project to analyse and minify our sources and dependencies using : ``gulp build``.
+Publishing the `c1d3r` application is a two step process. We first use the Polymer-cli project to analyse and minify our sources and dependencies using : ``gulp build``.
 
 Then we can deploy our project on the web, by pushing these changes to the **gh-pages** branch of the repository. By doing so, we are making GitHub update our project page which is hosting the web accessible version of the application. This is done using : ``gulp deploy``.

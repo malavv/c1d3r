@@ -12,6 +12,22 @@
 <link rel="import" href="../c1d3r-ui/c1d3r-tutorial.html">
 <link rel="import" href="../c1d3r-ui/c1d3r-wizard.html">
 
+
+<!--
+`c1d3r-app` is the main element controlling the flow of the brewing guide.
+
+Examples:
+
+    <c1d3r-app>
+      <c1d3r-recipe path="data/recipes/" id="dhc"  locale='["en"]'></c1d3r-recipe>
+      <c1d3r-recipe path="data/recipes/" id="wine" locale='["en"]' disabled></c1d3r-recipe>
+      ...
+    </c1d3r-app>
+
+Given a set of recipe it will manage the visual and data aspects of the guide.
+
+@element c1d3r-app
+-->
 <dom-module id="c1d3r-app">
   <template>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
