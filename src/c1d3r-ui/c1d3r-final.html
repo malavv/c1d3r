@@ -47,7 +47,7 @@
 
         download(JSON.stringify({
           version: window.app.version,
-          recipe: this.recipe,
+          recipe: this.recipe.data,
           data: this.juice,
           guide: this.guide
         }), this.recipe.id + "_" + now + ".json", "application/json");

@@ -186,13 +186,18 @@
       },
       {
         "id": "ignored",
+        "tmpl": "Sprinkle the yeast in minimum 10 times its weight of sterile water or wort at 27°C ± 3°C (80°F ± 6°F). Leave to rest 15 to 30 minutes.",
+        "quantities": []
+      },
+      {
+        "id": "ignored",
         "tmpl": "Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04. A fruity white yeast can also be used to a fruitier finish (Wyeast 4242 Chablis).",
         "quantities": []
       },
       {
-        "id": "primingSugarAddKg",
+        "id": "chaptizationSugarAddKg",
         "tmpl": "Mix-in {0} of table sugar thoroughly.",
-        "quantities": [{"id": "data.primingSugarAddKg", "sym": "kg"}]
+        "quantities": [{"id": "data.chaptizationSugarAddKg", "sym": "kg"}]
       },
       {
         "id": "ignored",
@@ -216,7 +221,7 @@
       },
       {
         "id": "ignored",
-        "tmpl": "Make sure the room of the fermentor is at a temperature between 18 and 21 °C. Hotter than this and the yeast might contribute unwanted \"yeasty\" or \"bready\" taste.",
+        "tmpl": "Make sure the room of the fermentor is at a temperature between 15 and 21 °C. Hotter than this and the yeast might contribute unwanted \"yeasty\" or \"bready\" taste. Lower and the fermentation might get stuck.",
         "quantities": []
       }
     ],
