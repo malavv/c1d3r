@@ -95,7 +95,7 @@
       if (chaptizationSugarAddKg < 0)  throw new IllegalArgumentError('Cannot have negative sugar addition');
       if (volumeInL < 0) throw new IllegalArgumentError('Cannot have negative volume');
 
-      return og * volumeInL + chaptizationSugarAddKg / tg;
+      return (og * volumeInL + chaptizationSugarAddKg) / tg;
     },
     /**
      * Calculate how much sugar is needed to achieve the requested ABV level.
