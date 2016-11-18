@@ -77,11 +77,16 @@
         }
       },
 
-      navHome() { this.fire('home'); },
+
+
+      navHome() {
+        this.fire('home');
+        this.$$('c1d3r-entry').reset();
+      },
 
       navBack() {
         if (this.selected === 0) {
-          this.fire('home');
+          this.navHome();
           return;
         }
         this.set('selected', this.selected - 1);
@@ -93,7 +98,7 @@
 
         if (this.selected === 3) {
           this.set('selected', 0);
-          this.fire('home');
+          this.navHome();
           return;
         }
 

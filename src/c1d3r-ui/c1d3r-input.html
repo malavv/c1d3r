@@ -43,9 +43,7 @@
             item="{{entryItem}}"
             error-message="{{entryItem.errorMessage}}"
             validator-name="[[entryItem.id]]"></c1d3r-validator>
-        <paper-input
-            auto-validate
-            required
+        <paper-input auto-validate required
             invalid="{{invalid}}"
             placeholder="[[entryItem.placeholder]]"
             value="{{entryItem.value}}"
@@ -54,10 +52,7 @@
       </template>
     </div>
     <div>
-      <iron-icon
-          icon="icons:help"
-          on-mouseover="_onFocus"
-          on-mouseout="_onBlur"></iron-icon>
+      <iron-icon icon="icons:help" on-mouseover="_onFocus" on-mouseout="_onBlur"></iron-icon>
     </div>
   </template>
 
@@ -79,38 +74,33 @@
         }
       },
 
-      observers: [
-        '_isInputValid(users.splices)'
-      ],
-
       validate() {
         (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
       },
 
-      reset() {
+      removeInvalid() {
         let pi = this.$$('paper-input');
         if (pi != null)
           pi.invalid = false;
+      },
+      reset() {
+        let pi = this.$$('paper-input');
+        if (pi != null) {
+          pi.value = "";
+          pi.invalid = false;
+        }
 
         let pc = this.$$('paper-checkbox');
         if (pc != null)
           pc.active = false;
       },
-      t(key) {
-        return t(key); /* Switch to a Polymer Behaviour */
-      },
       _onFocus(evt) {
         evt.stopPropagation();
         this.fire('show-details', { index: this.number, model: this.entryItem });
       },
-
       _onBlur(evt) {
         evt.stopPropagation();
         this.fire('hide-details');
-      },
-
-      _isInputValid() {
-
       }
     });
   </script>

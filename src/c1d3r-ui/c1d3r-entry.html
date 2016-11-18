@@ -172,7 +172,12 @@
       },
       onBlur() {},
       onFocus() {
-        Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.reset())
+        Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.removeInvalid());
+      },
+      reset() {
+        this.async(() => {
+          Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.reset());
+        });
       }
     });
   </script>
