@@ -59,7 +59,7 @@ Given a set of recipe it will manage the visual and data aspects of the guide.
       <c1d3r-wizard id="guide" class="flex" recipe="[[recipe]]" on-home="_navToHome"></c1d3r-wizard>
     </iron-pages>
 
-    <c1d3r-footer id="footer" locale="{{locale}}"></c1d3r-footer>
+    <c1d3r-footer id="footer"></c1d3r-footer>
 
     <!-- Load Locale Specific Application Strings -->
     <c1d3r-strings locale="en" url="/data/strings_en.json"></c1d3r-strings>
@@ -83,10 +83,6 @@ Given a set of recipe it will manage the visual and data aspects of the guide.
         cfg: {
           type: Object,
           notify: true
-        },
-        locale: {
-          value: 'en',
-          observer: '_localeChanged'
         },
         recipe: {
           type: Object,
@@ -115,14 +111,6 @@ Given a set of recipe it will manage the visual and data aspects of the guide.
       },
 
       // ----------------------------------- On Change Listeners -------------------------------------------------------
-      /**
-       * Called when a user changed the locale of the application.
-       * @private
-       */
-      _localeChanged(newLangCode, oldLangCode) {
-        console.info('locale changed from ' + oldLangCode + ' to ' + newLangCode);
-        this.fire('iron-signal', {name: 'locale', data: newLangCode});
-      },
       /**
        * Manages calling onFocus and onBlur during page switching.
        * @param newPage Page moving to

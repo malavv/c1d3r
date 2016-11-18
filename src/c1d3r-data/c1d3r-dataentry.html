@@ -13,7 +13,7 @@
         isBool: Boolean,
         isLogging: {
           type: Boolean,
-          value: true
+          value: function() { return window.cfg.logging.dataEntryChanged; }
         },
         isNumber: Boolean,
         placeholder: String,

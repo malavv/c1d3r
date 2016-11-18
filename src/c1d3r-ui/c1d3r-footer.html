@@ -3,6 +3,8 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
+<link rel="import" href="../c1d3r-data/i18n-behavior.html">
+
 <dom-module id="c1d3r-footer">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -61,6 +63,7 @@
       <paper-dropdown-menu class="custom" vertical-align="bottom" no-label-float="true">
         <paper-listbox class="dropdown-content" selected="{{locale}}" attr-for-selected="code">
           <paper-item code="en">English</paper-item>
+          <paper-item code="fr">Français</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
     </div>
@@ -76,10 +79,13 @@
       properties: {
         locale: {
           type: String,
-          notify: true
+          observer: 'localeChanged',
+          value: 'en'
         },
         version: String
       },
+
+      behaviors: [I18nBehavior],
 
       setVersion(version) {
         this.set('version', version);

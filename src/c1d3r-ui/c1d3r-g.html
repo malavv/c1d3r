@@ -83,7 +83,7 @@
         },
         isLogging: {
           type: Boolean,
-          value: true
+          value: function() { return window.cfg.logging.stepDependencyChanged; }
         }
       },
 
@@ -154,7 +154,6 @@
       recipeChanged(recipe) {
         if (recipe == null)
           return;
-        console.log('on-recipe-changed', recipe.data.observers);
 
         this._setInSteps();
 

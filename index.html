@@ -16,7 +16,11 @@
     // This configuration must take place between loading web components and loading the first component.
     window.cfg = {
       /** Maximum waiting time before considering a request missing. */
-      ajaxLoadTimeoutInMs : 2000
+      ajaxLoadTimeoutInMs : 2000,
+      logging: {
+        dataEntryChanged: false,
+        stepDependencyChanged: false
+      }
     };
     window.Polymer = {
       /** Components are created on first call. */

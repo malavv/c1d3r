@@ -1,4 +1,8 @@
 <script>
+  /**
+   * Behaviour inherited by all the components managing i18n functionality.
+   * @type {{translate, registerKey, loadDictionary, _addHandler, _addTranslation}}
+   */
   I18nBehavior = (function() {
     'use strict';
 
@@ -8,6 +12,17 @@
       translations = new Map([[currentLocale, new Map()]]);
 
     return {
+      localeChanged(newLocale, oldLocale) {
+        console.info("Locale changed from " + oldLocale + " to " + newLocale);
+
+        if (!translations.has(newLocale)) {
+          console.log('No translation dictionary known for locale ' + newLocale);
+          return;
+        }
+
+        for (let [key, handlerList] of handlers)
+          handlerList.forEach(h => h(translations.get(newLocale).get(key)));
+      },
       translate(key) {
         return translations.get(currentLocale).get(key);
       },
