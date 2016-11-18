@@ -33,6 +33,7 @@
   "dhc.steps.tanninAddInG": "Add {0} of wine tannin.",
   "dhc.steps.pectinaseAddInG": "Add {0} of pectic enzyme (pectinase).",
   "dhc.steps.metaRest": "Let liquid rest for 3 hours. (Under appropriate cover and in a cleaned space)",
+  "dhc.steps.tempRest": "Juice is often obtained refrigerated, but the next step will require the juice to have a temperature of at least 20°C. If it is not the case, keep resting under cover.",
   "dhc.steps.nutrientAddInG": "Add {0} of Yeast Nutrient.",
   "dhc.steps.rehydration": "If your yeast is dry, sprinkle the yeast in minimum 10 times its weight of sterile water or wort at 27°C ± 3°C (80°F ± 6°F). Leave to rest 15 to 30 minutes.",
   "dhc.steps.yeastChoice": "Add the content of a Yeast packet from your favorite manufacturer; White Labs WLP007, or Wyeast 1098, or Safale S-04. A fruity white yeast can also be used to a fruitier finish (Wyeast 4242 Chablis).",
