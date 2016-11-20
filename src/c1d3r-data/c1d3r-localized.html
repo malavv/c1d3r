@@ -1,0 +1,53 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+
+<link rel="import" href="i18n-behavior.html">
+
+
+<!--
+The `c1d3r-localized` element allows the translation of some text.
+
+    <c1d3r-localized
+        key="splash.detail.1"></c1d3r-localized>
+
+The key will be used when referring in string translation files.
+-->
+</head><body><dom-module id="c1d3r-localized">
+  <template>[[text]]</template>
+
+  <script>'use strict';
+
+Polymer({
+  is: 'c1d3r-localized',
+
+  properties: {
+    /**
+     * Key for the localized resource. (Alphanumeric string plus '.')
+     */
+    key: {
+      type: String,
+      observer: 'keyChanged'
+    },
+    /**
+     * Translated Text.
+     */
+    text: String
+  },
+
+  /**
+   * Register the translation behaviour.
+   */
+  behaviors: [I18nBehavior],
+
+  keyChanged: function keyChanged(newKey) {
+    var _this = this;
+
+    if (newKey == null) return;
+    this.registerKey(newKey, function (s) {
+      return _this.text = s;
+    });
+  }
+});</script>
+</dom-module>
+</body></html>

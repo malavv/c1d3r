@@ -1,0 +1,54 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="c1d3r-strings.html">
+
+</head><body><dom-module id="c1d3r-recipe">
+  <template>
+    <iron-ajax auto="" timeout="[[timeout]]" url="[[dataUrl]]" handle-as="json" last-response="{{data}}"></iron-ajax>
+
+    <template is="dom-repeat" items="[[locale]]">
+      <c1d3r-strings locale="[[item]]" url="[[_getStrings(item)]]"></c1d3r-strings>
+    </template>
+
+  </template>
+  <script>'use strict';
+
+Polymer({
+
+  is: 'c1d3r-recipe',
+
+  hostAttributes: { hidden: true },
+
+  properties: {
+    // Constants
+    timeout: { type: Number, value: function value() {
+        return window.cfg.ajaxLoadTimeoutInMs;
+      } },
+
+    // Configuration
+    id: String,
+    disabled: Boolean,
+    locale: Array,
+    path: String,
+
+    dataUrl: {
+      type: String,
+      computed: '_getDataUrl(path, id)'
+    },
+
+    data: {
+      type: Object,
+      notify: true
+    }
+  },
+
+  _getDataUrl: function _getDataUrl(path, id) {
+    return path + id + '/recipe.json';
+  },
+  _getStrings: function _getStrings(locale) {
+    return this.path + this.id + '/strings_' + locale + '.json';
+  }
+});</script>
+</dom-module>
+</body></html>

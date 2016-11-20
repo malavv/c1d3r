@@ -10,6 +10,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-validator.html">
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 </head><body><dom-module id="c1d3r-input">
   <template>
@@ -32,7 +33,7 @@
     </style>
 
     <div class="index">{{number}}</div>
-    <div class="title flex">{{entryItem.title}}</div>
+    <div class="title flex"><c1d3r-localized key$="[[entryItem.title]]"></c1d3r-localized></div>
     <div class="data">
       <template is="dom-if" if="[[entryItem.isBool]]">
         <paper-checkbox checked="{{entryItem.value}}"></paper-checkbox>
@@ -66,14 +67,19 @@ Polymer({
     }
   },
 
-  observers: ['_isInputValid(users.splices)'],
-
   validate: function validate() {
     (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
   },
-  reset: function reset() {
+  removeInvalid: function removeInvalid() {
     var pi = this.$$('paper-input');
     if (pi != null) pi.invalid = false;
+  },
+  reset: function reset() {
+    var pi = this.$$('paper-input');
+    if (pi != null) {
+      pi.value = "";
+      pi.invalid = false;
+    }
 
     var pc = this.$$('paper-checkbox');
     if (pc != null) pc.active = false;
@@ -85,8 +91,7 @@ Polymer({
   _onBlur: function _onBlur(evt) {
     evt.stopPropagation();
     this.fire('hide-details');
-  },
-  _isInputValid: function _isInputValid() {}
+  }
 });</script>
 </dom-module>
 </body></html>

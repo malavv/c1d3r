@@ -1,0 +1,258 @@
+{
+  "id": "dhc",
+  "synopsis": "dhc.synopsis",
+  "history": "dhc.history",
+  "details": "",
+  "characteristics": [
+    "dhc.characteristics.1",
+    "dhc.characteristics.2",
+    "dhc.characteristics.3"
+  ],
+  "img": "image.png",
+  "func": "fun.js",
+
+  "data": [
+    {
+      "id": "isCloudy",
+      "datatype": "boolean",
+      "group": "ingredient",
+      "label": "dhc.data.isCloudy.label",
+      "details": "dhc.data.isCloudy.details"
+    },
+    {
+      "id": "volumeInL",
+      "datatype": "number",
+      "group": "ingredient",
+      "label": "dhc.data.volumeInL.label",
+      "details": "dhc.data.volumeInL.details",
+      "placeholder": 0.0,
+      "min": 0.0
+    },
+    {
+      "id": "og",
+      "datatype": "number",
+      "group": "ingredient",
+      "label": "dhc.data.og.label",
+      "details": "dhc.data.og.details",
+      "placeholder": 1.042,
+      "min": 1.000,
+      "max": 1.100
+    },
+    {
+      "id": "degreeAlcohol",
+      "datatype": "number",
+      "group": "adjust",
+      "label": "dhc.data.degreeAlcohol.label",
+      "details": "dhc.data.degreeAlcohol.details",
+      "placeholder": 5,
+      "min": 3.0,
+      "max": 8.0
+    },
+    {
+      "id": "origTanninLvl",
+      "datatype": "number",
+      "group": "ingredient",
+      "label": "dhc.data.origTanninLvl.label",
+      "details": "dhc.data.origTanninLvl.details",
+      "placeholder": 1,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "juicePh",
+      "datatype": "number",
+      "group": "ingredient",
+      "label": "dhc.data.juicePh.label",
+      "details": "dhc.data.juicePh.details",
+      "placeholder": 4.0,
+      "min": 1.0,
+      "max": 6.0
+    },
+    {
+      "id": "desiredTanninLvl",
+      "datatype": "number",
+      "group": "adjust",
+      "label": "dhc.data.desiredTanninLvl.label",
+      "details": "dhc.data.desiredTanninLvl.details",
+      "placeholder": 3,
+      "min": 0,
+      "max": 10
+    },
+    {
+      "id": "primingSugarAddKg",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "addedVolumeOfSugarAddInL",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "yeastEfficiency",
+      "datatype": "number",
+      "group": "preset",
+      "value": 0.85
+    },
+    {
+      "id": "sugarPpg",
+      "datatype": "number",
+      "group": "preset",
+      "value": 46
+    },
+    {
+      "id": "acidPka",
+      "datatype": "number",
+      "group": "preset",
+      "value": 4.10
+    },
+    {
+      "id": "acidMolarMass",
+      "datatype": "number",
+      "group": "preset",
+      "value": 176.12
+    },
+    {
+      "id": "finalPh",
+      "datatype": "number",
+      "group": "preset",
+      "value": 3.4
+    },
+    {
+      "id": "acidAddInG",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "tg",
+      "datatype": "number",
+      "group": "computed"
+    },
+    {
+      "id": "sugarYieldPtsKgL",
+      "datatype": "number",
+      "group": "computed"
+    }
+  ],
+
+  "observers": {
+    "data.acidAddInG": ["data.juicePh", "data.finalPh", "data.volumeInL", "data.acidPka", "data.acidMolarMass"],
+    "data.addedVolumeOfSugarAddInL": ["data.og", "data.chaptizationSugarAddKg", "data.volumeInL", "data.tg"],
+    "data.chaptizationSugarAddKg": ["data.degreeAlcohol", "data.yeastEfficiency", "data.og", "data.sugarYieldPtsKgL", "data.volumeInL"],
+    "data.nutrientAddInG": ["data.volumeInL"],
+    "data.pectinaseAddInG": ["data.volumeInL"],
+    "data.potassiumMetaAddInG": ["data.finalPh", "data.volumeInL"],
+    "data.primingSugarAddKg": ["data.volumeInL"],
+    "data.sugarYieldPtsKgL": ["data.sugarPpg"],
+    "data.tanninAddInG": ["data.origTanninLvl", "data.desiredTanninLvl", "data.volumeInL"],
+    "data.tg": ["data.og", "data.sugarYieldPtsKgL", "data.chaptizationSugarAddKg", "data.volumeInL"]
+  },
+
+  "steps": [
+    [
+      {
+        "id": "ascorbic",
+        "tmpl": "dhc.steps.ascorbic",
+        "quantities": [{"id": "data.acidAddInG", "sym": "g"}]
+      },
+      {
+        "id": "potassiumMetaAddInG",
+        "tmpl": "dhc.steps.potassiumMetaAddInG",
+        "quantities": [{"id": "data.potassiumMetaAddInG", "sym": "g"}]
+      },
+      {
+        "id": "tanninAddInG",
+        "tmpl": "dhc.steps.tanninAddInG",
+        "quantities": [{"id": "data.tanninAddInG", "sym": "g"}]
+      },
+      {
+        "id": "pectinaseAddInG",
+        "tmpl": "dhc.steps.pectinaseAddInG",
+        "quantities": [{"id": "data.pectinaseAddInG", "sym": "g"}]
+      }
+    ],
+    [
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.metaRest",
+        "quantities": []
+      },
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.tempRest",
+        "quantities": []
+      }
+    ],
+    [
+      {
+        "id": "nutrientAddInG",
+        "tmpl": "dhc.steps.potassiumMetaAddInG",
+        "quantities": [{"id": "data.nutrientAddInG", "sym": "g"}]
+      },
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.rehydration",
+        "quantities": []
+      },
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.yeastChoice",
+        "quantities": []
+      },
+      {
+        "id": "chaptizationSugarAddKg",
+        "tmpl": "dhc.steps.chaptizationSugarAddKg",
+        "quantities": [{"id": "data.chaptizationSugarAddKg", "sym": "kg"}]
+      },
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.stirring",
+        "quantities": []
+      },
+      {
+        "id": "addedVolumeOfSugarAddInL",
+        "tmpl": "dhc.steps.addedVolumeOfSugarAddInL",
+        "quantities": [
+          {"id": "data.volumeInL", "sym": "L"},
+          {"id": "data.addedVolumeOfSugarAddInL", "sym": "L"}
+        ]
+      }
+    ],
+    [
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.firstFerment",
+        "quantities": []
+      },
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.yeastTemp",
+        "quantities": []
+      }
+    ],
+    [
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.secondFerment",
+        "quantities": []
+      }
+    ],
+    [
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.bottling",
+        "quantities": []
+      },
+      {
+        "id": "primingSugarAddKg",
+        "tmpl": "dhc.steps.priming",
+        "quantities": [{"id": "data.primingSugarAddKg", "sym": "kg"}]
+      },
+      {
+        "id": "ignored",
+        "tmpl": "dhc.steps.bottles",
+        "quantities": []
+      }
+    ]
+  ]
+}

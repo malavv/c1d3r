@@ -10,6 +10,7 @@
 <link rel="import" href="c1d3r-steps.html">
 
 <link rel="import" href="../c1d3r-data/c1d3r-juice.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 </head><body><dom-module id="c1d3r-wizard">
   <template>
@@ -44,8 +45,10 @@
 
     <div class="nav layout horizontal">
       <div class="flex"></div>
-      <paper-button on-tap="navBack">Go Back</paper-button>
-      <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
+      <paper-button on-tap="navBack"><c1d3r-localized key="wizard.back"></c1d3r-localized></paper-button>
+      <paper-button on-tap="navNext">
+        <c1d3r-localized key$="[[_nextOrFinishStep(selected)]]"></c1d3r-localized>
+      </paper-button>
     </div>
 
     <!-- Data -->
@@ -77,10 +80,11 @@ Polymer({
 
   navHome: function navHome() {
     this.fire('home');
+    this.$$('c1d3r-entry').reset();
   },
   navBack: function navBack() {
     if (this.selected === 0) {
-      this.fire('home');
+      this.navHome();
       return;
     }
     this.set('selected', this.selected - 1);
@@ -90,7 +94,7 @@ Polymer({
 
     if (this.selected === 3) {
       this.set('selected', 0);
-      this.fire('home');
+      this.navHome();
       return;
     }
 
@@ -110,7 +114,7 @@ Polymer({
     return this.selected == null || pages[this.selected] == null || pages[this.selected].isValid == null || pages[this.selected].isValid();
   },
   _nextOrFinishStep: function _nextOrFinishStep(selected) {
-    return selected === 3 ? 'Finish' : 'Next';
+    return selected === 3 ? 'wizard.finish' : 'wizard.next';
   },
   _pageChanged: function _pageChanged(newPage, oldPage) {
     var pages = this.$$('iron-pages').children;

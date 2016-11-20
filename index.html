@@ -4,34 +4,49 @@
 
   <title>c1d3r</title>
 
-  <link rel="shortcut icon" sizes="32x32" href="images/barrel32.png">
+  <link rel="shortcut icon" sizes="32x32" href="/images/barrel32.png">
 
   <meta name="theme-color" content="#f07818">
   <link rel="manifest" href="manifest.json">
 
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <script>'use strict';
 
-window.performance && performance.mark && performance.mark('index.html');
-window.Polymer = { lazyRegister: true, dom: 'shadow' };</script>
-  <link rel="import" href="src/c1d3r-app/c1d3r-app.html">
+// This configuration must take place between loading web components and loading the first component.
+window.cfg = {
+  /** Maximum waiting time before considering a request missing. */
+  ajaxLoadTimeoutInMs: 2000,
+  logging: {
+    dataEntryChanged: false,
+    stepDependencyChanged: false
+  }
+};
+window.Polymer = {
+  /** Components are created on first call. */
+  lazyRegister: true,
+  /** Real shadow dom if browser supports it. Experimental in most browser but will fallback if missing. */
+  dom: 'shadow'
+};</script>
+
+  <link rel="import" href="/src/c1d3r-app/c1d3r-app.html">
+  <link rel="import" href="/src/c1d3r-data/c1d3r-recipe.html">
 
   <style>
+    /* Styling for this page only + global font. */
     body {
       margin: 0;
       height: 100vh;
       font-family: 'Roboto', 'Noto', sans-serif;
-      line-height: 1.5;
     }
   </style>
 </head>
 <body>
-
-  <c1d3r-app unresolved="">
-    <!-- Future Way of registering recipes? -->
-    <!-- <c1d3r-recipe img-url="" data=""></c1d3r-recipe> -->
+  <c1d3r-app>
+    <c1d3r-recipe path="data/recipes/" id="dhc" locale="[&quot;en&quot;, &quot;fr&quot;]"></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="wine" locale="[&quot;en&quot;, &quot;fr&quot;]" disabled=""></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="com" locale="[&quot;en&quot;, &quot;fr&quot;]" disabled=""></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="tbd" locale="[&quot;en&quot;, &quot;fr&quot;]" disabled=""></c1d3r-recipe>
   </c1d3r-app>
-
 
 
 </body></html>

@@ -1,0 +1,38 @@
+{
+  "locale": "fr",
+
+  "splash.detail.1":"C1D3R est un guide interactif du brassage de cidre *dur*. Son but est d'offrir des instructions simples et faciles à suivre, tant pour les débutants que les vétérans de la fabrication de cidre. Contrairement à un simple tutoriel, C1D3R tiens compte de paramètres souvent oubliés qui auront un impact sur la marche à suivre et les quantitées des ingrédients.",
+  "splash.detail.2": "Ce projet ce veut simple et direct.  Il offre une certaine flexibilité tout en suivant des recettes strictes. C1D3R ne se veut pas un outil de design de recette ni un simlateur de brassage. L'essence de l'application est un ensemble de recettes strucuré.",
+
+  "tutorial.title": "Comment ça fonctionne?",
+  "tutorial.desc.1": "Nous vous guiderons à travers les étapes requises pour créer le cidre dur que vous voulez à partir du jus de pomme que vous avez. Il est important de comprendre que les caractéristiques du jus de pomme aurant un impact significatif sur le produit final. Plusieurs livres ne vous présententeront qu'une seule recette fixe, ne tenant pas compte des variations de ces caractéristiques d'un jus à l'autre. Nous vous offrons donc un produit qui vous aidera à atteindre des résultats constants en s'occupant des calculs à votre place. Votre progrès à travers les étapes sera représenté par un indicateur visuel de progrès.",
+  "tutorial.progress": "Cette barre de progression sert d'indicateur de votre progrès. Vous y verrez combien d'étapes il vous reste ainsi que l'étape précédente où vous pouvez retourner.",
+  "tutorial.skip": "Ne plus montrer ces explications à l'avenir.",
+  "tutorial.step.1": "L'étape 1 sera une introduction décrivant le style et les particularité de la recette.",
+  "tutorial.step.2": "L'étape 2 permettra à l'utilisateur de décrir les caractéristiques de son jus de pomme et ajuster les ingrédients formant la base du cidre dur.",
+  "tutorial.step.3": "L'étape 3 énonce les étapes générées en fonction des ingrédients proposés.",
+  "tutorial.step.4": "L'étape 4 offre des options de sauvegarde des conditions initiales pour référence future.",
+
+  "entry.warning": "Évitez les jus contenant des agents de conservations; sorbates ou sorbitol, comme ils sont suceptibles d'interférer avec le processus de fermentation et vous pouriez avoir des complications.",
+  "entry.ingredient.title": "Ingrédients",
+  "entry.personalization.title": "Personnalisation",
+  "entry.detail.explanation": "Spécifiez ici différents détails au sujet des ingrédients initiaux. Vous pouvez également apportez certains ajustements selon la recette.",
+  "entry.detail.instruction": "Instructions",
+  "entry.ingredient.detail": "Ingrédient",
+  "entry.personalization.detail": "Personnalisation",
+
+  "guide.title" : "Guide",
+  "guide.group.0" : "0 Configuration des caractéristiques du jus",
+  "guide.group.1" : "1 Désinfection",
+  "guide.group.2" : "2 Préparation de la levure",
+  "guide.group.3" : "3 Première fermentation",
+  "guide.group.4" : "4 Seconde fermentation",
+  "guide.group.5" : "5 Embouteillage",
+
+  "final.title": "Conclusion",
+  "final.download": "Nous espérons que votre recette vous plaira. Prenez le temps de sauvegarder les informations suivantes pour les années à venir.",
+
+  "wizard.back": "Retour",
+  "wizard.finish": "Fin",
+  "wizard.next": "Suite"
+}

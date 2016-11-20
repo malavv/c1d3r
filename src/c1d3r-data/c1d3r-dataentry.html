@@ -14,7 +14,9 @@ Polymer({
     isBool: Boolean,
     isLogging: {
       type: Boolean,
-      value: false
+      value: function value() {
+        return window.cfg.logging.dataEntryChanged;
+      }
     },
     isNumber: Boolean,
     placeholder: String,

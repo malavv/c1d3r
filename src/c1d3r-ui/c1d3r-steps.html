@@ -5,6 +5,8 @@
 
 
 <link rel="import" href="c1d3r-guide.html">
+<link rel="import" href="c1d3r-g.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 </head><body><dom-module id="c1d3r-steps">
   <template>
@@ -21,13 +23,10 @@
     </style>
 
     <div class="sidebar">
-      <h2>Guide</h2>
+      <h2><c1d3r-localized key="guide.title"></c1d3r-localized></h2>
     </div>
 
-    <iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">
-      <c1d3r-dryhardcider recipe-id="dryHardCider" class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-dryhardcider>
-    </iron-pages>
-
+    <c1d3r-g class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-g>
   </template>
 
   <script>'use strict';
@@ -38,7 +37,7 @@ Polymer({
   hostAttributes: {},
 
   properties: {
-    recipe: Object,
+    recipe: { type: Object },
     data: {
       type: Object,
       notify: true
@@ -50,7 +49,7 @@ Polymer({
   },
 
   onBlur: function onBlur() {
-    this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
+    this.set('guide', this.$$('c1d3r-g').listSteps());
     return false;
   },
   onFocus: function onFocus() {}

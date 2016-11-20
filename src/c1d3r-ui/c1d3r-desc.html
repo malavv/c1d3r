@@ -4,6 +4,8 @@
 <link rel="import" href="../../bower_components/paper-styles/paper-styles-classes.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
+
 </head><body><dom-module id="c1d3r-desc">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -12,8 +14,6 @@
       :host {
         @apply(--layout);
         @apply(--layout-center-center);
-
-        font-family: var(--main-title-font);
       }
 
       div.container {
@@ -31,29 +31,33 @@
 
       div.desc {
         max-width: 450px;
+        line-height: 1.5;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        text-align: justify;
       }
       div.name {
         font-size: 24px;
       }
       div.charac ul li {
-        font-family: 'Open Sans', sans-serif;
+        line-height: 1.5;
+        font-family: 'Roboto', 'Noto', sans-serif;
       }
     </style>
 
     <div class="container shadow-elevation-2dp">
-      <iron-image src="{{recipe.img}}" sizing="contain"></iron-image>
+      <iron-image src="[[imgUrl]]" sizing="contain"></iron-image>
 
       <div class="desc">
-        <div class="name">{{recipe.name}}</div>
-        <div class="detail">{{recipe.synopsis}}</div>
-        <div class="detail">{{recipe.history}}</div>
-        <div class="detail">{{recipe.details}}</div>
+        <div class="name"><c1d3r-localized key$="[[recipe.id]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.synopsis]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.history]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.details]]"></c1d3r-localized></div>
       </div>
 
       <div class="charac">
         <ul>
-          <template is="dom-repeat" items="{{recipe.characteristics}}">
-            <li>{{item}}</li>
+          <template is="dom-repeat" items="[[recipe.data.characteristics]]">
+            <li><c1d3r-localized key$="[[item]]"></c1d3r-localized></li>
           </template>
         </ul>
       </div>
@@ -72,9 +76,17 @@ Polymer({
     recipe: {
       type: Object,
       notify: true
+    },
+    imgUrl: {
+      type: String,
+      computed: '_getImgUrl(recipe)'
     }
   },
 
+  _getImgUrl: function _getImgUrl(recipe) {
+    if (recipe == null) return null;
+    return recipe.path + recipe.id + '/' + recipe.data.img;
+  },
   onBlur: function onBlur() {},
   onFocus: function onFocus() {}
 });</script>

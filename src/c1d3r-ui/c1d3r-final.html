@@ -2,9 +2,10 @@
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <script src="../../bower_components/downloadjs/download.js"></script>
 
-<!--download("hello world", "dlText.json", "application/json");-->
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 </head><body><dom-module id="c1d3r-final">
   <template>
@@ -17,10 +18,9 @@
       }
     </style>
 
-    <h2>Final</h2>
-
-    Enjoy your recipe, and please save the following information for futher years.
-
+    <h2><c1d3r-localized key="final.title"></c1d3r-localized></h2>
+    <c1d3r-localized key="final.download"></c1d3r-localized>
+    <iron-localstorage name="cfg" value="{{cfg}}"></iron-localstorage>
     <paper-icon-button icon="icons:archive" on-tap="_onArchive">Raised button</paper-icon-button>
   </template>
 
@@ -48,8 +48,8 @@ Polymer({
     var now = new Date().toISOString().slice(0, 10);
 
     download(JSON.stringify({
-      version: window.app.version,
-      recipe: this.recipe,
+      version: this.cfg.version,
+      recipe: this.recipe.data,
       data: this.juice,
       guide: this.guide
     }), this.recipe.id + "_" + now + ".json", "application/json");

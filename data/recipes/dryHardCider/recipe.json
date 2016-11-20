@@ -1,30 +1,32 @@
 {
-  "id": "dryHardCider",
-  "name": "Dry Hard Cider",
-  "synopsis": "A refreshing clear sparkling alcoholic cider of light straw color. With low residual sugars and medium alcohol content, it fits most situations and is better served cold.",
-  "history": "There are documented references of the Romans encountering hard cider in Britain two thousand years ago. Dry Hard Cider is a classical alcoholic beverage of great tradition.",
+  "id": "dhc",
+
+  "img": "image.png",
+  "name": "dhc.name",
+  "synopsis": "dhc.synopsis",
+  "history": "dhc.history",
   "details": "",
+
   "characteristics": [
-    "Highly Refreshing",
-    "Low alcohol Content",
-    "Low to Medium Apple Taste"
+    "dhc.characteristics.1",
+    "dhc.characteristics.2",
+    "dhc.characteristics.3"
   ],
-  "img": "dryHardCider.png",
 
   "data": [
     {
       "id": "isCloudy",
       "datatype": "boolean",
       "group": "ingredient",
-      "label": "Is the juice cloudy?",
-      "details": "A cloudy (vs transparent) juice means the juice contains pectin protein that contributes to the gelification of the final product. This is usually undesirable and must be taken into account."
+      "label": "dhc.data.isCloudy.label",
+      "details": "dhc.data.isCloudy.details"
     },
     {
       "id": "volumeInL",
       "datatype": "number",
       "group": "ingredient",
-      "label": "How much liquid? (in Liters)",
-      "details": "The volume of the original juice will greatly affect many aspect of the recipe.",
+      "label": "dhc.data.volumeInL.label",
+      "details": "dhc.data.volumeInL.details",
       "placeholder": 0.0,
       "min": 0.0
     },
@@ -32,8 +34,8 @@
       "id": "og",
       "datatype": "number",
       "group": "ingredient",
-      "label": "Measure the original gravity of the juice. (In Specific Gravity, SG)",
-      "details": "The original gravity is an indicator of the quantity of sugar present in the apples.",
+      "label": "dhc.data.og.label",
+      "details": " ",
       "placeholder": 1.042,
       "min": 1.000,
       "max": 1.100
@@ -42,8 +44,8 @@
       "id": "degreeAlcool",
       "datatype": "number",
       "group": "adjust",
-      "label": "What is your desired ABV? (+0.5% see details)",
-      "details": "ABV or Alcohol by volume is a measure of the alcohol content of a beverage. Higher ABV are associated with better conservation and improvement. The sugar used for priming will be converted in a 0.5% addition to the requested ABV.",
+      "label": "dhc.data.degreeAlcool.label",
+      "details": "dhc.data.degreeAlcool.details",
       "placeholder": 4.5,
       "min": 3.0,
       "max": 8.0
@@ -52,8 +54,8 @@
       "id": "origTanninLvl",
       "datatype": "number",
       "group": "ingredient",
-      "label": "Original Tanning Levels (0-low, to 10-high)",
-      "details": "Tannins levels influence the body and character of the final product.",
+      "label": "dhc.data.origTanninLvl.label",
+      "details": "dhc.data.origTanninLvl.details",
       "placeholder": 1,
       "min": 0,
       "max": 10
@@ -62,8 +64,8 @@
       "id": "juicePh",
       "datatype": "number",
       "group": "ingredient",
-      "label": "What is the PH of the juice?",
-      "details": "The PH influences the balance, tanginess, preservations, sulfite levels, and others.",
+      "label": "dhc.data.juicePh.label",
+      "details": "dhc.data.juicePh.details",
       "placeholder": 4.0,
       "min": 1.0,
       "max": 6.0
@@ -72,8 +74,8 @@
       "id": "desiredTanninLvl",
       "datatype": "number",
       "group": "adjust",
-      "label": "Desired Tanning Levels (0-low, to 10-high)",
-      "details": "This makes the link from the level of tannin your juice currently has, and the desired level. Must be above original level. (and on the same scale)",
+      "label": "dhc.data.desiredTanninLvl.label",
+      "details": "dhc.data.desiredTanninLvl.details",
       "placeholder": 3,
       "min": 0,
       "max": 10

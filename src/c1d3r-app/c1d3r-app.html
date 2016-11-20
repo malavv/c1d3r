@@ -11,6 +11,21 @@
 
 
 
+<!--
+`c1d3r-app` is the main element controlling the flow of the brewing guide.
+
+Examples:
+
+    <c1d3r-app>
+      <c1d3r-recipe path="data/recipes/" id="dhc"  locale='["en"]'></c1d3r-recipe>
+      <c1d3r-recipe path="data/recipes/" id="wine" locale='["en"]' disabled></c1d3r-recipe>
+      ...
+    </c1d3r-app>
+
+Given a set of recipe it will manage the visual and data aspects of the guide.
+
+@element c1d3r-app
+-->
 </head><body><div hidden="" by-vulcanize=""><!--
 @license
 Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
@@ -9487,6 +9502,254 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 <!--
 @license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Element access to Web Storage API (window.localStorage).
+
+Keeps `value` property in sync with localStorage.
+
+Value is saved as json by default.
+
+### Usage:
+
+`ls-sample` will automatically save changes to its value.
+
+    <dom-module id="ls-sample">
+      <iron-localstorage name="my-app-storage"
+        value="{{cartoon}}"
+        on-iron-localstorage-load-empty="initializeDefaultCartoon"
+      ></iron-localstorage>
+    </dom-module>
+
+    <script>
+      Polymer({
+        is: 'ls-sample',
+        properties: {
+          cartoon: {
+            type: Object
+          }
+        },
+        // initializes default if nothing has been stored
+        initializeDefaultCartoon: function() {
+          this.cartoon = {
+            name: "Mickey",
+            hasEars: true
+          }
+        },
+        // use path set api to propagate changes to localstorage
+        makeModifications: function() {
+          this.set('cartoon.name', "Minions");
+          this.set('cartoon.hasEars', false);
+        }
+      });
+    </script>
+
+### Tech notes:
+
+* * `value.*` is observed, and saved on modifications. You must use
+    path change notification methods such as `set()` to modify value
+    for changes to be observed.
+
+* * Set `auto-save-disabled` to prevent automatic saving.
+
+* * Value is saved as JSON by default.
+
+* * To delete a key, set value to null
+
+* Element listens to StorageAPI `storage` event, and will reload upon receiving it.
+
+* **Warning**: do not bind value to sub-properties until Polymer
+[bug 1550](https://github.com/Polymer/polymer/issues/1550)
+is resolved. Local storage will be blown away.
+`<iron-localstorage value="{{foo.bar}}"` will cause **data loss**.
+
+@demo demo/index.html
+@hero hero.svg
+-->
+<dom-module id="iron-localstorage" assetpath="../../bower_components/iron-localstorage/"></dom-module>
+<script>
+
+  Polymer({
+    is: 'iron-localstorage',
+
+    properties: {
+      /**
+       * localStorage item key
+       */
+      name: {
+        type: String,
+        value: ''
+      },
+      /**
+       * The data associated with this storage.
+       * If set to null item will be deleted.
+       * @type {*}
+       */
+      value: {
+        type: Object,
+        notify: true
+      },
+
+      /**
+       * If true: do not convert value to JSON on save/load
+       */
+      useRaw: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Value will not be saved automatically if true. You'll have to do it manually with `save()`
+       */
+      autoSaveDisabled: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Last error encountered while saving/loading items
+       */
+      errorMessage: {
+        type: String,
+        notify: true
+      },
+
+      /** True if value has been loaded */
+      _loaded: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    observers: [
+      '_debounceReload(name,useRaw)',
+      '_trySaveValue(autoSaveDisabled)',
+      '_trySaveValue(value.*)'
+    ],
+
+    ready: function() {
+      this._boundHandleStorage = this._handleStorage.bind(this);
+    },
+
+    attached: function() {
+      window.addEventListener('storage', this._boundHandleStorage);
+    },
+
+    detached: function() {
+      window.removeEventListener('storage', this._boundHandleStorage);
+    },
+
+    _handleStorage: function(ev) {
+      if (ev.key == this.name) {
+        this._load(true);
+      }
+    },
+
+    _trySaveValue: function() {
+      if (this._doNotSave) {
+        return;
+      }
+      if (this._loaded && !this.autoSaveDisabled) {
+        this.debounce('save', this.save);
+      }
+    },
+
+    _debounceReload: function() {
+      this.debounce('reload', this.reload);
+    },
+
+    /**
+     * Loads the value again. Use if you modify
+     * localStorage using DOM calls, and want to
+     * keep this element in sync.
+     */
+    reload: function() {
+      this._loaded = false;
+      this._load();
+    },
+
+    /**
+     * loads value from local storage
+     * @param {boolean=} externalChange true if loading changes from a different window
+     */
+    _load: function(externalChange) {
+      try {
+        var v = window.localStorage.getItem(this.name);
+      } catch (ex) {
+        this.errorMessage = ex.message;
+
+        this._error("Could not save to localStorage.  Try enabling cookies for this page.", ex);
+      };
+
+      if (v === null) {
+        this._loaded = true;
+        this._doNotSave = true;  // guard for save watchers
+        this.value = null;
+        this._doNotSave = false;
+        this.fire('iron-localstorage-load-empty', { externalChange: externalChange});
+      } else {
+        if (!this.useRaw) {
+          try { // parse value as JSON
+            v = JSON.parse(v);
+          } catch(x) {
+            this.errorMessage = "Could not parse local storage value";
+            Polymer.Base._error("could not parse local storage value", v);
+            v = null;
+          }
+        }
+        this._loaded = true;
+        this._doNotSave = true;
+        this.value = v;
+        this._doNotSave = false;
+        this.fire('iron-localstorage-load', { externalChange: externalChange});
+      }
+    },
+
+    /**
+     * Saves the value to localStorage. Call to save if autoSaveDisabled is set.
+     * If `value` is null or undefined, deletes localStorage.
+     */
+    save: function() {
+      var v = this.useRaw ? this.value : JSON.stringify(this.value);
+      try {
+        if (this.value === null || this.value === undefined) {
+          window.localStorage.removeItem(this.name);
+        } else {
+          window.localStorage.setItem(this.name, /** @type {string} */ (v));
+        }
+      }
+      catch(ex) {
+        // Happens in Safari incognito mode,
+        this.errorMessage = ex.message;
+        Polymer.Base._error("Could not save to localStorage. Incognito mode may be blocking this action", ex);
+      }
+    }
+
+    /**
+     * Fired when value loads from localStorage.
+     *
+     * @event iron-localstorage-load
+     * @param {{externalChange:boolean}} detail -
+     *     externalChange: true if change occured in different window.
+     */
+
+    /**
+     * Fired when loaded value does not exist.
+     * Event handler can be used to initialize default value.
+     *
+     * @event iron-localstorage-load-empty
+     * @param {{externalChange:boolean}} detail -
+     *     externalChange: true if change occured in different window.
+     */
+  });
+
+</script>
+<!--
+@license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -10649,6 +10912,139 @@ Polymer({
       data: raw.data,
       img: raw.img != null ? url + '/' + raw.img : '../data/img/no-recipe-img.png'
     });
+  }
+});</script>
+</dom-module>
+<script>'use strict';
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+/**
+ * Behaviour inherited by all the components managing i18n functionality.
+ * @type {{translate, registerKey, loadDictionary, _addHandler, _addTranslation}}
+ */
+I18nBehavior = function () {
+  'use strict';
+
+  var currentLocale = 'en',
+      handlers = new Map(),
+      translations = new Map([[currentLocale, new Map()]]);
+
+  return {
+    localeChanged: function localeChanged(newLocale, oldLocale) {
+      console.info("Locale changed from " + oldLocale + " to " + newLocale);
+
+      if (!translations.has(newLocale)) {
+        console.log('No translation dictionary known for locale ' + newLocale);
+        return;
+      }
+      currentLocale = newLocale;
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        var _loop = function _loop() {
+          var _step$value = _slicedToArray(_step.value, 2);
+
+          var key = _step$value[0];
+          var handlerList = _step$value[1];
+
+          handlerList.forEach(function (h) {
+            return h(translations.get(newLocale).get(key));
+          });
+        };
+
+        for (var _iterator = handlers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          _loop();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    },
+    translate: function translate(key) {
+      return translations.get(currentLocale).get(key);
+    },
+    registerKey: function registerKey(key, handler) {
+      this._addHandler(key, handler);
+    },
+    loadDictionary: function loadDictionary(dict) {
+      var _this = this;
+
+      Object.keys(dict).filter(function (k) {
+        return k !== 'locale';
+      }).forEach(function (key) {
+        return _this._addTranslation(dict['locale'], key, dict[key]);
+      });
+    },
+
+    /**
+     * Adds a callback for translation.
+     * @param {string} key Alpha Numeric Identifier Key
+     * @param {function(string)} handle Function do place the translation at the right place.
+     * @private
+     */
+    _addHandler: function _addHandler(key, handle) {
+      console.assert(key != null, 'Must be a valid key, not ' + key);
+
+      handlers.set(key, (handlers.get(key) || []).concat(handle));
+
+      // Translate if already available.
+      if (translations.has(currentLocale) && translations.get(currentLocale).has(key)) {
+        handle(translations.get(currentLocale).get(key));
+      }
+    },
+    _addTranslation: function _addTranslation(locale, key, translation) {
+      if (!translations.has(locale)) translations.set(locale, new Map());
+
+      // Will overwrite, sorry
+      translations.get(locale).set(key, translation);
+
+      // Update all handlers.
+      if (locale === currentLocale && handlers.has(key)) {
+        handlers.get(key).forEach(function (h) {
+          return h(translation);
+        });
+      }
+    }
+  };
+}();</script><dom-module id="c1d3r-strings" assetpath="../c1d3r-data/">
+  <template>
+    <iron-ajax auto="" url="[[url]]" handle-as="json" timeout="[[timeout]]" on-response="_handle"></iron-ajax>
+  </template>
+
+  <script>'use strict';
+
+Polymer({
+
+  is: 'c1d3r-strings',
+
+  hostAttributes: { hidden: true },
+
+  behaviors: [I18nBehavior],
+
+  properties: {
+    locale: String,
+    timeout: { type: Number, value: function value() {
+        return window.cfg.ajaxLoadTimeoutInMs;
+      } },
+    url: String
+  },
+
+  _handle: function _handle(evt) {
+    this.loadDictionary(evt.detail.response);
   }
 });</script>
 </dom-module>
@@ -21024,6 +21420,7 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
       <paper-dropdown-menu class="custom" vertical-align="bottom" no-label-float="true">
         <paper-listbox class="dropdown-content" selected="{{locale}}" attr-for-selected="code">
           <paper-item code="en">English</paper-item>
+          <paper-item code="fr">Français</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
     </div>
@@ -21040,16 +21437,100 @@ Polymer({
   properties: {
     locale: {
       type: String,
-      notify: true
+      observer: 'localeChanged',
+      value: 'en'
     },
     version: String
   },
+
+  behaviors: [I18nBehavior],
 
   setVersion: function setVersion(version) {
     this.set('version', version);
   }
 });</script>
 </dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
+  /**
+  `iron-selector` is an element which can be used to manage a list of elements
+  that can be selected.  Tapping on the item will make the item selected.  The `selected` indicates
+  which item is being selected.  The default is to use the index of the item.
+
+  Example:
+
+      <iron-selector selected="0">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </iron-selector>
+
+  If you want to use the attribute value of an element for `selected` instead of the index,
+  set `attrForSelected` to the name of the attribute.  For example, if you want to select item by
+  `name`, set `attrForSelected` to `name`.
+
+  Example:
+
+      <iron-selector attr-for-selected="name" selected="foo">
+        <div name="foo">Foo</div>
+        <div name="bar">Bar</div>
+        <div name="zot">Zot</div>
+      </iron-selector>
+
+  You can specify a default fallback with `fallbackSelection` in case the `selected` attribute does
+  not match the `attrForSelected` attribute of any elements.
+
+  Example:
+
+        <iron-selector attr-for-selected="name" selected="non-existing"
+                       fallback-selection="default">
+          <div name="foo">Foo</div>
+          <div name="bar">Bar</div>
+          <div name="default">Default</div>
+        </iron-selector>
+
+  Note: When the selector is multi, the selection will set to `fallbackSelection` iff
+  the number of matching elements is zero.
+
+  `iron-selector` is not styled. Use the `iron-selected` CSS class to style the selected element.
+
+  Example:
+
+      <style>
+        .iron-selected {
+          background: #eee;
+        }
+      </style>
+
+      ...
+
+      <iron-selector selected="0">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </iron-selector>
+
+  @demo demo/index.html
+  */
+
+  Polymer({
+
+    is: 'iron-selector',
+
+    behaviors: [
+      Polymer.IronMultiSelectableBehavior
+    ]
+
+  });
+
+</script>
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -21100,6 +21581,129 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 </style>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
+(function(){
+/**
+`iron-signals` provides basic publish-subscribe functionality.
+
+Note: avoid using `iron-signals` whenever you can use
+a controller (parent element) to mediate communication
+instead.
+
+To send a signal, fire a custom event of type `iron-signal`, with
+a detail object containing `name` and `data` fields.
+
+    this.fire('iron-signal', {name: 'hello', data: null});
+
+To receive a signal, listen for `iron-signal-<name>` event on a
+`iron-signals` element.
+
+  <iron-signals on-iron-signal-hello="{{helloSignal}}">
+
+You can fire a signal event from anywhere, and all
+`iron-signals` elements will receive the event, regardless
+of where they are in DOM.
+
+@demo demo/index.html
+*/
+  Polymer({
+    is: 'iron-signals',
+
+    attached: function() {
+      signals.push(this);
+    },
+    detached: function() {
+      var i = signals.indexOf(this);
+      if (i >= 0) {
+        signals.splice(i, 1);
+      }
+    }
+  });
+
+  // private shared database
+  var signals = [];
+
+  // signal dispatcher
+  function notify(name, data) {
+    // convert generic-signal event to named-signal event
+    var signal = new CustomEvent('iron-signal-' + name, {
+      // if signals bubble, it's easy to get confusing duplicates
+      // (1) listen on a container on behalf of local child
+      // (2) some deep child ignores the event and it bubbles
+      //     up to said container
+      // (3) local child event bubbles up to container
+      // also, for performance, we avoid signals flying up the
+      // tree from all over the place
+      bubbles: false,
+      detail: data
+    });
+    // dispatch named-signal to all 'signals' instances,
+    // only interested listeners will react
+    signals.forEach(function(s) {
+      s.dispatchEvent(signal);
+    });
+  }
+
+  // signal listener at document
+  document.addEventListener('iron-signal', function(e) {
+    notify(e.detail.name, e.detail.data);
+  });
+
+})();
+</script>
+<!--
+The `c1d3r-localized` element allows the translation of some text.
+
+    <c1d3r-localized
+        key="splash.detail.1"></c1d3r-localized>
+
+The key will be used when referring in string translation files.
+-->
+<dom-module id="c1d3r-localized" assetpath="../c1d3r-data/">
+  <template>[[text]]</template>
+
+  <script>'use strict';
+
+Polymer({
+  is: 'c1d3r-localized',
+
+  properties: {
+    /**
+     * Key for the localized resource. (Alphanumeric string plus '.')
+     */
+    key: {
+      type: String,
+      observer: 'keyChanged'
+    },
+    /**
+     * Translated Text.
+     */
+    text: String
+  },
+
+  /**
+   * Register the translation behaviour.
+   */
+  behaviors: [I18nBehavior],
+
+  keyChanged: function keyChanged(newKey) {
+    var _this = this;
+
+    if (newKey == null) return;
+    this.registerKey(newKey, function (s) {
+      return _this.text = s;
+    });
+  }
+});</script>
+</dom-module>
 <dom-module id="c1d3r-splash" assetpath="../c1d3r-ui/">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -21127,6 +21731,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-align: justify;
         padding: 1em 0 2em;
         font-size: 1.2em;
+        line-height: 1.5;
       }
       div.recipe {
         width: 290px;
@@ -21160,28 +21765,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="title">C1D3R</div>
 
       <div class="details">
-        <p>C1d3r is an interactive *hard* cider brewing guide. It aims at providing simple and easy to follow instructions meant for beginners and seasoned cider makers alike. As opposed to a written guide, C1d3r allows you to factor in often overlooked parameters which impact the recommended steps and related quantities.</p>
-        <p>This project is meant to be simple and straight to the point. It offers flexibility but within strictly defined recipes. C1d3r is neither meant to be a generic recipe maker nor a brewing simulator. At the core of the application is its set of curated recipes.</p>
+        <p><c1d3r-localized key="splash.detail.1"></c1d3r-localized></p>
+        <p><c1d3r-localized key="splash.detail.2"></c1d3r-localized></p>
       </div>
 
       <!--Recipe Selector-->
-      <div class="layout horizontal wrap">
+      <iron-selector attr-for-selected="recipe" selected-item="{{chosen}}" selectable="div.recipe.enabled" class="layout horizontal wrap">
         <template is="dom-repeat" items="[[recipes]]">
-          <div class="recipe enabled" on-tap="_selectRecipe">{{item.name}}</div>
-          <div class="recipe disabled" on-tap="_selectRecipe" title="Not yet ready.">⚠ Apple Wine</div>
-          <div class="recipe disabled" on-tap="_selectRecipe" title="Not yet ready.">⚠ Mainstream Hard Cider</div>
-          <div class="recipe disabled" on-tap="_selectRecipe" title="Not yet ready.">⚠ TBD</div>
+          <div class$="[[_recipeClass(item)]]" recipe$="[[item.id]]">
+            <c1d3r-localized key$="[[item.id]]"></c1d3r-localized>
+          </div>
         </template>
         <div class="flex"></div>
-      </div>
-
+      </iron-selector>
     </div>
 
     <!--background space on the right-->
     <div class="flex-1"></div>
 
   </template>
-
   <script>'use strict';
 
 Polymer({
@@ -21191,36 +21793,27 @@ Polymer({
   hostAttributes: {},
 
   properties: {
-    recipes: Array
+    recipes: Array,
+    chosen: {
+      type: Object,
+      observer: 'chosenChanged'
+    }
   },
 
   onBlur: function onBlur() {/* ignored */},
   onFocus: function onFocus() {/* ignored */},
-  selectRecipe: function selectRecipe(recipe) {
-    this.fire('selected', recipe);
+  reset: function reset() {
+    this.$$('iron-selector').select(null);
   },
-
-
-  /**
-   * Sets the recipe from a tap event.
-   * @param evt Event from the template element.
-   * @returns {*}
-   * @private
-   */
-  _selectRecipe: function _selectRecipe(evt) {
-    if (evt.currentTarget.classList.contains("disabled")) return;
-    this.selectRecipe(this._tmplItemFromEvent(evt));
+  chosenChanged: function chosenChanged(chosen) {
+    if (chosen == null) return;
+    var recipe = this.recipes.filter(function (r) {
+      return r.id == chosen.getAttribute('recipe');
+    });
+    if (recipe[0] != null) this.fire('recipe-selected', recipe[0]);
   },
-
-
-  /**
-   * Get's the "item" model given an event from a dom-template.
-   * @param evt Event from the template element.
-   * @returns {*}
-   * @private
-   */
-  _tmplItemFromEvent: function _tmplItemFromEvent(evt) {
-    return evt.model.__data__.item;
+  _recipeClass: function _recipeClass(recipe) {
+    return "recipe " + (recipe.disabled ? "disabled" : "enabled");
   }
 });</script>
 </dom-module>
@@ -22168,254 +22761,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     });
   </script>
 </dom-module>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Element access to Web Storage API (window.localStorage).
-
-Keeps `value` property in sync with localStorage.
-
-Value is saved as json by default.
-
-### Usage:
-
-`ls-sample` will automatically save changes to its value.
-
-    <dom-module id="ls-sample">
-      <iron-localstorage name="my-app-storage"
-        value="{{cartoon}}"
-        on-iron-localstorage-load-empty="initializeDefaultCartoon"
-      ></iron-localstorage>
-    </dom-module>
-
-    <script>
-      Polymer({
-        is: 'ls-sample',
-        properties: {
-          cartoon: {
-            type: Object
-          }
-        },
-        // initializes default if nothing has been stored
-        initializeDefaultCartoon: function() {
-          this.cartoon = {
-            name: "Mickey",
-            hasEars: true
-          }
-        },
-        // use path set api to propagate changes to localstorage
-        makeModifications: function() {
-          this.set('cartoon.name', "Minions");
-          this.set('cartoon.hasEars', false);
-        }
-      });
-    </script>
-
-### Tech notes:
-
-* * `value.*` is observed, and saved on modifications. You must use
-    path change notification methods such as `set()` to modify value
-    for changes to be observed.
-
-* * Set `auto-save-disabled` to prevent automatic saving.
-
-* * Value is saved as JSON by default.
-
-* * To delete a key, set value to null
-
-* Element listens to StorageAPI `storage` event, and will reload upon receiving it.
-
-* **Warning**: do not bind value to sub-properties until Polymer
-[bug 1550](https://github.com/Polymer/polymer/issues/1550)
-is resolved. Local storage will be blown away.
-`<iron-localstorage value="{{foo.bar}}"` will cause **data loss**.
-
-@demo demo/index.html
-@hero hero.svg
--->
-<dom-module id="iron-localstorage" assetpath="../../bower_components/iron-localstorage/"></dom-module>
-<script>
-
-  Polymer({
-    is: 'iron-localstorage',
-
-    properties: {
-      /**
-       * localStorage item key
-       */
-      name: {
-        type: String,
-        value: ''
-      },
-      /**
-       * The data associated with this storage.
-       * If set to null item will be deleted.
-       * @type {*}
-       */
-      value: {
-        type: Object,
-        notify: true
-      },
-
-      /**
-       * If true: do not convert value to JSON on save/load
-       */
-      useRaw: {
-        type: Boolean,
-        value: false
-      },
-
-      /**
-       * Value will not be saved automatically if true. You'll have to do it manually with `save()`
-       */
-      autoSaveDisabled: {
-        type: Boolean,
-        value: false
-      },
-      /**
-       * Last error encountered while saving/loading items
-       */
-      errorMessage: {
-        type: String,
-        notify: true
-      },
-
-      /** True if value has been loaded */
-      _loaded: {
-        type: Boolean,
-        value: false
-      }
-    },
-
-    observers: [
-      '_debounceReload(name,useRaw)',
-      '_trySaveValue(autoSaveDisabled)',
-      '_trySaveValue(value.*)'
-    ],
-
-    ready: function() {
-      this._boundHandleStorage = this._handleStorage.bind(this);
-    },
-
-    attached: function() {
-      window.addEventListener('storage', this._boundHandleStorage);
-    },
-
-    detached: function() {
-      window.removeEventListener('storage', this._boundHandleStorage);
-    },
-
-    _handleStorage: function(ev) {
-      if (ev.key == this.name) {
-        this._load(true);
-      }
-    },
-
-    _trySaveValue: function() {
-      if (this._doNotSave) {
-        return;
-      }
-      if (this._loaded && !this.autoSaveDisabled) {
-        this.debounce('save', this.save);
-      }
-    },
-
-    _debounceReload: function() {
-      this.debounce('reload', this.reload);
-    },
-
-    /**
-     * Loads the value again. Use if you modify
-     * localStorage using DOM calls, and want to
-     * keep this element in sync.
-     */
-    reload: function() {
-      this._loaded = false;
-      this._load();
-    },
-
-    /**
-     * loads value from local storage
-     * @param {boolean=} externalChange true if loading changes from a different window
-     */
-    _load: function(externalChange) {
-      try {
-        var v = window.localStorage.getItem(this.name);
-      } catch (ex) {
-        this.errorMessage = ex.message;
-
-        this._error("Could not save to localStorage.  Try enabling cookies for this page.", ex);
-      };
-
-      if (v === null) {
-        this._loaded = true;
-        this._doNotSave = true;  // guard for save watchers
-        this.value = null;
-        this._doNotSave = false;
-        this.fire('iron-localstorage-load-empty', { externalChange: externalChange});
-      } else {
-        if (!this.useRaw) {
-          try { // parse value as JSON
-            v = JSON.parse(v);
-          } catch(x) {
-            this.errorMessage = "Could not parse local storage value";
-            Polymer.Base._error("could not parse local storage value", v);
-            v = null;
-          }
-        }
-        this._loaded = true;
-        this._doNotSave = true;
-        this.value = v;
-        this._doNotSave = false;
-        this.fire('iron-localstorage-load', { externalChange: externalChange});
-      }
-    },
-
-    /**
-     * Saves the value to localStorage. Call to save if autoSaveDisabled is set.
-     * If `value` is null or undefined, deletes localStorage.
-     */
-    save: function() {
-      var v = this.useRaw ? this.value : JSON.stringify(this.value);
-      try {
-        if (this.value === null || this.value === undefined) {
-          window.localStorage.removeItem(this.name);
-        } else {
-          window.localStorage.setItem(this.name, /** @type {string} */ (v));
-        }
-      }
-      catch(ex) {
-        // Happens in Safari incognito mode,
-        this.errorMessage = ex.message;
-        Polymer.Base._error("Could not save to localStorage. Incognito mode may be blocking this action", ex);
-      }
-    }
-
-    /**
-     * Fired when value loads from localStorage.
-     *
-     * @event iron-localstorage-load
-     * @param {{externalChange:boolean}} detail -
-     *     externalChange: true if change occured in different window.
-     */
-
-    /**
-     * Fired when loaded value does not exist.
-     * Event handler can be used to initialize default value.
-     *
-     * @event iron-localstorage-load-empty
-     * @param {{externalChange:boolean}} detail -
-     *     externalChange: true if change occured in different window.
-     */
-  });
-
-</script>
 <script>// https://d3js.org Version 4.2.8. Copyright 2016 Mike Bostock.
 (function(t,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports):"function"==typeof define&&define.amd?define(["exports"],n):n(t.d3=t.d3||{})})(this,function(t){"use strict";function n(t){return function(n,e){return bs(t(n),e)}}function e(t,n,e){var r=Math.abs(n-t)/Math.max(0,e),i=Math.pow(10,Math.floor(Math.log(r)/Math.LN10)),o=r/i;return o>=Ds?i*=10:o>=Os?i*=5:o>=Fs&&(i*=2),n<t?-i:i}function r(t){return t.length}function i(){}function o(t,n){var e=new i;if(t instanceof i)t.each(function(t,n){e.set(n,t)});else if(Array.isArray(t)){var r,o=-1,u=t.length;if(null==n)for(;++o<u;)e.set(o,t[o]);else for(;++o<u;)e.set(n(r=t[o],o,t),r)}else if(t)for(var a in t)e.set(a,t[a]);return e}function u(){return{}}function a(t,n,e){t[n]=e}function c(){return o()}function s(t,n,e){t.set(n,e)}function f(){}function l(t,n){var e=new f;if(t instanceof f)t.each(function(t){e.add(t)});else if(t){var r=-1,i=t.length;if(null==n)for(;++r<i;)e.add(t[r]);else for(;++r<i;)e.add(n(t[r],r,t))}return e}function h(t){return+t}function p(t){return t*t}function d(t){return t*(2-t)}function v(t){return((t*=2)<=1?t*t:--t*(2-t)+1)/2}function _(t){return t*t*t}function y(t){return--t*t*t+1}function g(t){return((t*=2)<=1?t*t*t:(t-=2)*t*t+2)/2}function m(t){return 1-Math.cos(t*wf)}function x(t){return Math.sin(t*wf)}function b(t){return(1-Math.cos(bf*t))/2}function w(t){return Math.pow(2,10*t-10)}function M(t){return 1-Math.pow(2,-10*t)}function T(t){return((t*=2)<=1?Math.pow(2,10*t-10):2-Math.pow(2,10-10*t))/2}function N(t){return 1-Math.sqrt(1-t*t)}function k(t){return Math.sqrt(1- --t*t)}function S(t){return((t*=2)<=1?1-Math.sqrt(1-t*t):Math.sqrt(1-(t-=2)*t)+1)/2}function A(t){return 1-E(1-t)}function E(t){return(t=+t)<Mf?Pf*t*t:t<Nf?Pf*(t-=Tf)*t+kf:t<Af?Pf*(t-=Sf)*t+Ef:Pf*(t-=Cf)*t+zf}function C(t){return((t*=2)<=1?1-E(1-t):E(t-1)+1)/2}function z(t,n){return t[0]-n[0]||t[1]-n[1]}function P(t){for(var n=t.length,e=[0,1],r=2,i=2;i<n;++i){for(;r>1&&Xf(t[e[r-2]],t[e[r-1]],t[i])<=0;)--r;e[r++]=i}return e.slice(0,r)}function q(){this._x0=this._y0=this._x1=this._y1=null,this._=[]}function L(){return new q}function R(t,n,e,r){if(isNaN(n)||isNaN(e))return t;var i,o,u,a,c,s,f,l,h,p=t._root,d={data:r},v=t._x0,_=t._y0,y=t._x1,g=t._y1;if(!p)return t._root=d,t;for(;p.length;)if((s=n>=(o=(v+y)/2))?v=o:y=o,(f=e>=(u=(_+g)/2))?_=u:g=u,i=p,!(p=p[l=f<<1|s]))return i[l]=d,t;if(a=+t._x.call(null,p.data),c=+t._y.call(null,p.data),n===a&&e===c)return d.next=p,i?i[l]=d:t._root=d,t;do i=i?i[l]=new Array(4):t._root=new Array(4),(s=n>=(o=(v+y)/2))?v=o:y=o,(f=e>=(u=(_+g)/2))?_=u:g=u;while((l=f<<1|s)===(h=(c>=u)<<1|a>=o));return i[h]=p,i[l]=d,t}function U(t){var n,e,r,i,o=t.length,u=new Array(o),a=new Array(o),c=1/0,s=1/0,f=-(1/0),l=-(1/0);for(e=0;e<o;++e)isNaN(r=+this._x.call(null,n=t[e]))||isNaN(i=+this._y.call(null,n))||(u[e]=r,a[e]=i,r<c&&(c=r),r>f&&(f=r),i<s&&(s=i),i>l&&(l=i));for(f<c&&(c=this._x0,f=this._x1),l<s&&(s=this._y0,l=this._y1),this.cover(c,s).cover(f,l),e=0;e<o;++e)R(this,u[e],a[e],t[e]);return this}function D(t){for(var n=0,e=t.length;n<e;++n)this.remove(t[n]);return this}function O(t){return t[0]}function F(t){return t[1]}function I(t,n,e){var r=new Y(null==n?O:n,null==e?F:e,NaN,NaN,NaN,NaN);return null==t?r:r.addAll(t)}function Y(t,n,e,r,i,o){this._x=t,this._y=n,this._x0=e,this._y0=r,this._x1=i,this._y1=o,this._root=void 0}function B(t){for(var n={data:t.data},e=n;t=t.next;)e=e.next={data:t.data};return n}function j(t){if(!(t>=1))throw new Error;this._size=t,this._call=this._error=null,this._tasks=[],this._data=[],this._waiting=this._active=this._ended=this._start=0}function H(t){if(!t._start)try{X(t)}catch(n){if(t._tasks[t._ended+t._active-1])W(t,n);else if(!t._data)throw n}}function X(t){for(;t._start=t._waiting&&t._active<t._size;){var n=t._ended+t._active,e=t._tasks[n],r=e.length-1,i=e[r];e[r]=V(t,n),--t._waiting,++t._active,e=i.apply(null,e),t._tasks[n]&&(t._tasks[n]=e||dl)}}function V(t,n){return function(e,r){t._tasks[n]&&(--t._active,++t._ended,t._tasks[n]=null,null==t._error&&(null!=e?W(t,e):(t._data[n]=r,t._waiting?H(t):$(t))))}}function W(t,n){var e,r=t._tasks.length;for(t._error=n,t._data=void 0,t._waiting=NaN;--r>=0;)if((e=t._tasks[r])&&(t._tasks[r]=null,e.abort))try{e.abort()}catch(t){}t._active=NaN,$(t)}function $(t){if(!t._active&&t._call){var n=t._data;t._data=void 0,t._call(t._error,n)}}function Z(t){return new j(arguments.length?+t:1/0)}function G(t){return t.innerRadius}function J(t){return t.outerRadius}function Q(t){return t.startAngle}function K(t){return t.endAngle}function tt(t){return t&&t.padAngle}function nt(t){return t>=1?gl:t<=-1?-gl:Math.asin(t)}function et(t,n,e,r,i,o,u,a){var c=e-t,s=r-n,f=u-i,l=a-o,h=(f*(n-o)-l*(t-i))/(l*c-f*s);return[t+h*c,n+h*s]}function rt(t,n,e,r,i,o,u){var a=t-e,c=n-r,s=(u?o:-o)/Math.sqrt(a*a+c*c),f=s*c,l=-s*a,h=t+f,p=n+l,d=e+f,v=r+l,_=(h+d)/2,y=(p+v)/2,g=d-h,m=v-p,x=g*g+m*m,b=i-o,w=h*v-d*p,M=(m<0?-1:1)*Math.sqrt(Math.max(0,b*b*x-w*w)),T=(w*m-g*M)/x,N=(-w*g-m*M)/x,k=(w*m+g*M)/x,S=(-w*g+m*M)/x,A=T-_,E=N-y,C=k-_,z=S-y;return A*A+E*E>C*C+z*z&&(T=k,N=S),{cx:T,cy:N,x01:-f,y01:-l,x11:T*(i/b-1),y11:N*(i/b-1)}}function it(t){this._context=t}function ot(t){return t[0]}function ut(t){return t[1]}function at(t){this._curve=t}function ct(t){function n(n){return new at(t(n))}return n._curve=t,n}function st(t){var n=t.curve;return t.angle=t.x,delete t.x,t.radius=t.y,delete t.y,t.curve=function(t){return arguments.length?n(ct(t)):n()._curve},t}function ft(t,n,e){t._context.bezierCurveTo((2*t._x0+t._x1)/3,(2*t._y0+t._y1)/3,(t._x0+2*t._x1)/3,(t._y0+2*t._y1)/3,(t._x0+4*t._x1+n)/6,(t._y0+4*t._y1+e)/6)}function lt(t){this._context=t}function ht(t){this._context=t}function pt(t){this._context=t}function dt(t,n){this._basis=new lt(t),this._beta=n}function vt(t,n,e){t._context.bezierCurveTo(t._x1+t._k*(t._x2-t._x0),t._y1+t._k*(t._y2-t._y0),t._x2+t._k*(t._x1-n),t._y2+t._k*(t._y1-e),t._x2,t._y2)}function _t(t,n){this._context=t,this._k=(1-n)/6}function yt(t,n){this._context=t,this._k=(1-n)/6}function gt(t,n){this._context=t,this._k=(1-n)/6}function mt(t,n,e){var r=t._x1,i=t._y1,o=t._x2,u=t._y2;if(t._l01_a>_l){var a=2*t._l01_2a+3*t._l01_a*t._l12_a+t._l12_2a,c=3*t._l01_a*(t._l01_a+t._l12_a);r=(r*a-t._x0*t._l12_2a+t._x2*t._l01_2a)/c,i=(i*a-t._y0*t._l12_2a+t._y2*t._l01_2a)/c}if(t._l23_a>_l){var s=2*t._l23_2a+3*t._l23_a*t._l12_a+t._l12_2a,f=3*t._l23_a*(t._l23_a+t._l12_a);o=(o*s+t._x1*t._l23_2a-n*t._l12_2a)/f,u=(u*s+t._y1*t._l23_2a-e*t._l12_2a)/f}t._context.bezierCurveTo(r,i,o,u,t._x2,t._y2)}function xt(t,n){this._context=t,this._alpha=n}function bt(t,n){this._context=t,this._alpha=n}function wt(t,n){this._context=t,this._alpha=n}function Mt(t){this._context=t}function Tt(t){return t<0?-1:1}function Nt(t,n,e){var r=t._x1-t._x0,i=n-t._x1,o=(t._y1-t._y0)/(r||i<0&&-0),u=(e-t._y1)/(i||r<0&&-0),a=(o*i+u*r)/(r+i);return(Tt(o)+Tt(u))*Math.min(Math.abs(o),Math.abs(u),.5*Math.abs(a))||0}function kt(t,n){var e=t._x1-t._x0;return e?(3*(t._y1-t._y0)/e-n)/2:n}function St(t,n,e){var r=t._x0,i=t._y0,o=t._x1,u=t._y1,a=(o-r)/3;t._context.bezierCurveTo(r+a,i+a*n,o-a,u-a*e,o,u)}function At(t){this._context=t}function Et(t){this._context=new Ct(t)}function Ct(t){this._context=t}function zt(t){return new At(t)}function Pt(t){return new Et(t)}function qt(t){this._context=t}function Lt(t){var n,e,r=t.length-1,i=new Array(r),o=new Array(r),u=new Array(r);for(i[0]=0,o[0]=2,u[0]=t[0]+2*t[1],n=1;n<r-1;++n)i[n]=1,o[n]=4,u[n]=4*t[n]+2*t[n+1];for(i[r-1]=2,o[r-1]=7,u[r-1]=8*t[r-1]+t[r],n=1;n<r;++n)e=i[n]/o[n-1],o[n]-=e,u[n]-=e*u[n-1];for(i[r-1]=u[r-1]/o[r-1],n=r-2;n>=0;--n)i[n]=(u[n]-i[n+1])/o[n];for(o[r-1]=(t[r]+i[r-1])/2,n=0;n<r-1;++n)o[n]=2*t[n+1]-i[n+1];return[i,o]}function Rt(t,n){this._context=t,this._t=n}function Ut(t){return new Rt(t,0)}function Dt(t){return new Rt(t,1)}function Ot(t,n){return t[n]}function Ft(t){for(var n,e=0,r=-1,i=t.length;++r<i;)(n=+t[r][1])&&(e+=n);return e}function It(t,n){var e=Object.create(t.prototype);for(var r in n)e[r]=n[r];return e}function Yt(){}function Bt(t){var n;return t=(t+"").trim().toLowerCase(),(n=Th.exec(t))?(n=parseInt(n[1],16),new Wt(n>>8&15|n>>4&240,n>>4&15|240&n,(15&n)<<4|15&n,1)):(n=Nh.exec(t))?jt(parseInt(n[1],16)):(n=kh.exec(t))?new Wt(n[1],n[2],n[3],1):(n=Sh.exec(t))?new Wt(255*n[1]/100,255*n[2]/100,255*n[3]/100,1):(n=Ah.exec(t))?Ht(n[1],n[2],n[3],n[4]):(n=Eh.exec(t))?Ht(255*n[1]/100,255*n[2]/100,255*n[3]/100,n[4]):(n=Ch.exec(t))?$t(n[1],n[2]/100,n[3]/100,1):(n=zh.exec(t))?$t(n[1],n[2]/100,n[3]/100,n[4]):Ph.hasOwnProperty(t)?jt(Ph[t]):"transparent"===t?new Wt(NaN,NaN,NaN,0):null}function jt(t){return new Wt(t>>16&255,t>>8&255,255&t,1)}function Ht(t,n,e,r){return r<=0&&(t=n=e=NaN),new Wt(t,n,e,r)}function Xt(t){return t instanceof Yt||(t=Bt(t)),t?(t=t.rgb(),new Wt(t.r,t.g,t.b,t.opacity)):new Wt}function Vt(t,n,e,r){return 1===arguments.length?Xt(t):new Wt(t,n,e,null==r?1:r)}function Wt(t,n,e,r){this.r=+t,this.g=+n,this.b=+e,this.opacity=+r}function $t(t,n,e,r){return r<=0?t=n=e=NaN:e<=0||e>=1?t=n=NaN:n<=0&&(t=NaN),new Jt(t,n,e,r)}function Zt(t){if(t instanceof Jt)return new Jt(t.h,t.s,t.l,t.opacity);if(t instanceof Yt||(t=Bt(t)),!t)return new Jt;if(t instanceof Jt)return t;t=t.rgb();var n=t.r/255,e=t.g/255,r=t.b/255,i=Math.min(n,e,r),o=Math.max(n,e,r),u=NaN,a=o-i,c=(o+i)/2;return a?(u=n===o?(e-r)/a+6*(e<r):e===o?(r-n)/a+2:(n-e)/a+4,a/=c<.5?o+i:2-o-i,u*=60):a=c>0&&c<1?0:u,new Jt(u,a,c,t.opacity)}function Gt(t,n,e,r){return 1===arguments.length?Zt(t):new Jt(t,n,e,null==r?1:r)}function Jt(t,n,e,r){this.h=+t,this.s=+n,this.l=+e,this.opacity=+r}function Qt(t,n,e){return 255*(t<60?n+(e-n)*t/60:t<180?e:t<240?n+(e-n)*(240-t)/60:n)}function Kt(t){if(t instanceof nn)return new nn(t.l,t.a,t.b,t.opacity);if(t instanceof sn){var n=t.h*qh;return new nn(t.l,Math.cos(n)*t.c,Math.sin(n)*t.c,t.opacity)}t instanceof Wt||(t=Xt(t));var e=un(t.r),r=un(t.g),i=un(t.b),o=en((.4124564*e+.3575761*r+.1804375*i)/Uh),u=en((.2126729*e+.7151522*r+.072175*i)/Dh),a=en((.0193339*e+.119192*r+.9503041*i)/Oh);return new nn(116*u-16,500*(o-u),200*(u-a),t.opacity)}function tn(t,n,e,r){return 1===arguments.length?Kt(t):new nn(t,n,e,null==r?1:r)}function nn(t,n,e,r){this.l=+t,this.a=+n,this.b=+e,this.opacity=+r}function en(t){return t>Bh?Math.pow(t,1/3):t/Yh+Fh}function rn(t){return t>Ih?t*t*t:Yh*(t-Fh)}function on(t){return 255*(t<=.0031308?12.92*t:1.055*Math.pow(t,1/2.4)-.055)}function un(t){return(t/=255)<=.04045?t/12.92:Math.pow((t+.055)/1.055,2.4)}function an(t){if(t instanceof sn)return new sn(t.h,t.c,t.l,t.opacity);t instanceof nn||(t=Kt(t));var n=Math.atan2(t.b,t.a)*Lh;return new sn(n<0?n+360:n,Math.sqrt(t.a*t.a+t.b*t.b),t.l,t.opacity)}function cn(t,n,e,r){return 1===arguments.length?an(t):new sn(t,n,e,null==r?1:r)}function sn(t,n,e,r){this.h=+t,this.c=+n,this.l=+e,this.opacity=+r}function fn(t){if(t instanceof hn)return new hn(t.h,t.s,t.l,t.opacity);t instanceof Wt||(t=Xt(t));var n=t.r/255,e=t.g/255,r=t.b/255,i=(Gh*r+$h*n-Zh*e)/(Gh+$h-Zh),o=r-i,u=(Wh*(e-i)-Xh*o)/Vh,a=Math.sqrt(u*u+o*o)/(Wh*i*(1-i)),c=a?Math.atan2(u,o)*Lh-120:NaN;return new hn(c<0?c+360:c,a,i,t.opacity)}function ln(t,n,e,r){return 1===arguments.length?fn(t):new hn(t,n,e,null==r?1:r)}function hn(t,n,e,r){this.h=+t,this.s=+n,this.l=+e,this.opacity=+r}function pn(t,n,e,r,i){var o=t*t,u=o*t;return((1-3*t+3*o-u)*n+(4-6*o+3*u)*e+(1+3*t+3*o-3*u)*r+u*i)/6}function dn(t,n){return function(e){return t+e*n}}function vn(t,n,e){return t=Math.pow(t,e),n=Math.pow(n,e)-t,e=1/e,function(r){return Math.pow(t+r*n,e)}}function _n(t,n){var e=n-t;return e?dn(t,e>180||e<-180?e-360*Math.round(e/360):e):rp(isNaN(t)?n:t)}function yn(t){return 1===(t=+t)?gn:function(n,e){return e-n?vn(n,e,t):rp(isNaN(n)?e:n)}}function gn(t,n){var e=n-t;return e?dn(t,e):rp(isNaN(t)?n:t)}function mn(t){return function(n){var e,r,i=n.length,o=new Array(i),u=new Array(i),a=new Array(i);for(e=0;e<i;++e)r=Vt(n[e]),o[e]=r.r||0,u[e]=r.g||0,a[e]=r.b||0;return o=t(o),u=t(u),a=t(a),r.opacity=1,function(t){return r.r=o(t),r.g=u(t),r.b=a(t),r+""}}}function xn(t){return function(){return t}}function bn(t){return function(n){return t(n)+""}}function wn(t){return"none"===t?yp:(Jh||(Jh=document.createElement("DIV"),Qh=document.documentElement,Kh=document.defaultView),Jh.style.transform=t,t=Kh.getComputedStyle(Qh.appendChild(Jh),null).getPropertyValue("transform"),Qh.removeChild(Jh),t=t.slice(7,-1).split(","),gp(+t[0],+t[1],+t[2],+t[3],+t[4],+t[5]))}function Mn(t){return null==t?yp:(tp||(tp=document.createElementNS("http://www.w3.org/2000/svg","g")),tp.setAttribute("transform",t),(t=tp.transform.baseVal.consolidate())?(t=t.matrix,gp(t.a,t.b,t.c,t.d,t.e,t.f)):yp)}function Tn(t,n,e,r){function i(t){return t.length?t.pop()+" ":""}function o(t,r,i,o,u,a){if(t!==i||r!==o){var c=u.push("translate(",null,n,null,e);a.push({i:c-4,x:sp(t,i)},{i:c-2,x:sp(r,o)})}else(i||o)&&u.push("translate("+i+n+o+e)}function u(t,n,e,o){t!==n?(t-n>180?n+=360:n-t>180&&(t+=360),o.push({i:e.push(i(e)+"rotate(",null,r)-2,x:sp(t,n)})):n&&e.push(i(e)+"rotate("+n+r)}function a(t,n,e,o){t!==n?o.push({i:e.push(i(e)+"skewX(",null,r)-2,x:sp(t,n)}):n&&e.push(i(e)+"skewX("+n+r)}function c(t,n,e,r,o,u){if(t!==e||n!==r){var a=o.push(i(o)+"scale(",null,",",null,")");u.push({i:a-4,x:sp(t,e)},{i:a-2,x:sp(n,r)})}else 1===e&&1===r||o.push(i(o)+"scale("+e+","+r+")")}return function(n,e){var r=[],i=[];return n=t(n),e=t(e),o(n.translateX,n.translateY,e.translateX,e.translateY,r,i),u(n.rotate,e.rotate,r,i),a(n.skewX,e.skewX,r,i),c(n.scaleX,n.scaleY,e.scaleX,e.scaleY,r,i),n=e=null,function(t){for(var n,e=-1,o=i.length;++e<o;)r[(n=i[e]).i]=n.x(t);return r.join("")}}}function Nn(t){return((t=Math.exp(t))+1/t)/2}function kn(t){return((t=Math.exp(t))-1/t)/2}function Sn(t){return((t=Math.exp(2*t))-1)/(t+1)}function An(t){return function(n,e){var r=t((n=Gt(n)).h,(e=Gt(e)).h),i=gn(n.s,e.s),o=gn(n.l,e.l),u=gn(n.opacity,e.opacity);return function(t){return n.h=r(t),n.s=i(t),n.l=o(t),n.opacity=u(t),n+""}}}function En(t,n){var e=gn((t=tn(t)).l,(n=tn(n)).l),r=gn(t.a,n.a),i=gn(t.b,n.b),o=gn(t.opacity,n.opacity);return function(n){return t.l=e(n),t.a=r(n),t.b=i(n),t.opacity=o(n),t+""}}function Cn(t){return function(n,e){var r=t((n=cn(n)).h,(e=cn(e)).h),i=gn(n.c,e.c),o=gn(n.l,e.l),u=gn(n.opacity,e.opacity);return function(t){return n.h=r(t),n.c=i(t),n.l=o(t),n.opacity=u(t),n+""}}}function zn(t){return function n(e){function r(n,r){var i=t((n=ln(n)).h,(r=ln(r)).h),o=gn(n.s,r.s),u=gn(n.l,r.l),a=gn(n.opacity,r.opacity);return function(t){return n.h=i(t),n.s=o(t),n.l=u(Math.pow(t,e)),n.opacity=a(t),n+""}}return e=+e,r.gamma=n,r}(1)}function Pn(){for(var t,n=0,e=arguments.length,r={};n<e;++n){if(!(t=arguments[n]+"")||t in r)throw new Error("illegal type: "+t);r[t]=[]}return new qn(r)}function qn(t){this._=t}function Ln(t,n){return t.trim().split(/^|\s+/).map(function(t){var e="",r=t.indexOf(".");if(r>=0&&(e=t.slice(r+1),t=t.slice(0,r)),t&&!n.hasOwnProperty(t))throw new Error("unknown type: "+t);return{type:t,name:e}})}function Rn(t,n){for(var e,r=0,i=t.length;r<i;++r)if((e=t[r]).name===n)return e.value}function Un(t,n,e){for(var r=0,i=t.length;r<i;++r)if(t[r].name===n){t[r]=qp,t=t.slice(0,r).concat(t.slice(r+1));break}return null!=e&&t.push({name:n,value:e}),t}function Dn(t){return new Function("d","return {"+t.map(function(t,n){return JSON.stringify(t)+": d["+n+"]"}).join(",")+"}")}function On(t,n){var e=Dn(t);return function(r,i){return n(e(r),i,t)}}function Fn(t){var n=Object.create(null),e=[];return t.forEach(function(t){for(var r in t)r in n||e.push(n[r]=r)}),e}function In(t){return function(n,e){t(null==n?e:null)}}function Yn(t){var n=t.responseType;return n&&"text"!==n?t.response:t.responseText}function Bn(t,n){return function(e){return t(e.responseText,n)}}function jn(){return ad||(fd(Hn),ad=sd.now()+cd)}function Hn(){ad=0}function Xn(){this._call=this._time=this._next=null}function Vn(t,n,e){var r=new Xn;return r.restart(t,n,e),r}function Wn(){jn(),++ed;for(var t,n=Lp;n;)(t=ad-n._time)>=0&&n._call.call(null,t),n=n._next;--ed}function $n(){ad=(ud=sd.now())+cd,ed=rd=0;try{Wn()}finally{ed=0,Gn(),ad=0}}function Zn(){var t=sd.now(),n=t-ud;n>od&&(cd-=n,ud=t)}function Gn(){for(var t,n,e=Lp,r=1/0;e;)e._call?(r>e._time&&(r=e._time),t=e,e=e._next):(n=e._next,e._next=null,e=t?t._next=n:Lp=n);Rp=t,Jn(r)}function Jn(t){if(!ed){rd&&(rd=clearTimeout(rd));var n=t-ad;n>24?(t<1/0&&(rd=setTimeout($n,n)),id&&(id=clearInterval(id))):(id||(id=setInterval(Zn,od)),ed=1,fd($n))}}function Qn(t,n,e,r){function i(n){return t(n=new Date(+n)),n}return i.floor=i,i.ceil=function(e){return t(e=new Date(e-1)),n(e,1),t(e),e},i.round=function(t){var n=i(t),e=i.ceil(t);return t-n<e-t?n:e},i.offset=function(t,e){return n(t=new Date(+t),null==e?1:Math.floor(e)),t},i.range=function(e,r,o){var u=[];if(e=i.ceil(e),o=null==o?1:Math.floor(o),!(e<r&&o>0))return u;do u.push(new Date(+e));while(n(e,o),t(e),e<r);return u},i.filter=function(e){return Qn(function(n){if(n>=n)for(;t(n),!e(n);)n.setTime(n-1)},function(t,r){if(t>=t)for(;--r>=0;)for(;n(t,1),!e(t););})},e&&(i.count=function(n,r){return pd.setTime(+n),dd.setTime(+r),t(pd),t(dd),Math.floor(e(pd,dd))},i.every=function(t){return t=Math.floor(t),isFinite(t)&&t>0?t>1?i.filter(r?function(n){return r(n)%t===0}:function(n){return i.count(0,n)%t===0}):i:null}),i}function Kn(t){return Qn(function(n){n.setDate(n.getDate()-(n.getDay()+7-t)%7),n.setHours(0,0,0,0)},function(t,n){t.setDate(t.getDate()+7*n)},function(t,n){return(n-t-(n.getTimezoneOffset()-t.getTimezoneOffset())*gd)/bd})}function te(t){return Qn(function(n){n.setUTCDate(n.getUTCDate()-(n.getUTCDay()+7-t)%7),n.setUTCHours(0,0,0,0)},function(t,n){t.setUTCDate(t.getUTCDate()+7*n)},function(t,n){return(n-t)/bd})}function ne(t){if(!(n=kv.exec(t)))throw new Error("invalid format: "+t);var n,e=n[1]||" ",r=n[2]||">",i=n[3]||"-",o=n[4]||"",u=!!n[5],a=n[6]&&+n[6],c=!!n[7],s=n[8]&&+n[8].slice(1),f=n[9]||"";"n"===f?(c=!0,f="g"):Nv[f]||(f=""),(u||"0"===e&&"="===r)&&(u=!0,e="0",r="="),this.fill=e,this.align=r,this.sign=i,this.symbol=o,this.zero=u,this.width=a,this.comma=c,this.precision=s,this.type=f}function ee(t){return t}function re(n){return Av=Cv(n),t.format=Av.format,t.formatPrefix=Av.formatPrefix,Av}function ie(t){if(0<=t.y&&t.y<100){var n=new Date(-1,t.m,t.d,t.H,t.M,t.S,t.L);return n.setFullYear(t.y),n}return new Date(t.y,t.m,t.d,t.H,t.M,t.S,t.L)}function oe(t){if(0<=t.y&&t.y<100){var n=new Date(Date.UTC(-1,t.m,t.d,t.H,t.M,t.S,t.L));return n.setUTCFullYear(t.y),n}return new Date(Date.UTC(t.y,t.m,t.d,t.H,t.M,t.S,t.L))}function ue(t){return{y:t,m:0,d:1,H:0,M:0,S:0,L:0}}function ae(t){function n(t,n){return function(e){var r,i,o,u=[],a=-1,c=0,s=t.length;for(e instanceof Date||(e=new Date(+e));++a<s;)37===t.charCodeAt(a)&&(u.push(t.slice(c,a)),null!=(i=Rv[r=t.charAt(++a)])?r=t.charAt(++a):i="e"===r?" ":"0",(o=n[r])&&(r=o(e,i)),u.push(r),c=a+1);return u.push(t.slice(c,a)),u.join("")}}function e(t,n){return function(e){var i=ue(1900),o=r(i,t,e+="",0);if(o!=e.length)return null;if("p"in i&&(i.H=i.H%12+12*i.p),"W"in i||"U"in i){"w"in i||(i.w="W"in i?1:0);var u="Z"in i?oe(ue(i.y)).getUTCDay():n(ue(i.y)).getDay();i.m=0,i.d="W"in i?(i.w+6)%7+7*i.W-(u+5)%7:i.w+7*i.U-(u+6)%7}return"Z"in i?(i.H+=i.Z/100|0,i.M+=i.Z%100,oe(i)):n(i)}}function r(t,n,e,r){for(var i,o,u=0,a=n.length,c=e.length;u<a;){if(r>=c)return-1;if(i=n.charCodeAt(u++),37===i){if(i=n.charAt(u++),o=B[i in Rv?n.charAt(u++):i],!o||(r=o(t,e,r))<0)return-1}else if(i!=e.charCodeAt(r++))return-1}return r}function i(t,n,e){var r=C.exec(n.slice(e));return r?(t.p=z[r[0].toLowerCase()],e+r[0].length):-1}function o(t,n,e){var r=L.exec(n.slice(e));return r?(t.w=R[r[0].toLowerCase()],e+r[0].length):-1}function u(t,n,e){var r=P.exec(n.slice(e));return r?(t.w=q[r[0].toLowerCase()],e+r[0].length):-1}function a(t,n,e){var r=O.exec(n.slice(e));return r?(t.m=F[r[0].toLowerCase()],e+r[0].length):-1}function c(t,n,e){var r=U.exec(n.slice(e));return r?(t.m=D[r[0].toLowerCase()],e+r[0].length):-1}function s(t,n,e){return r(t,w,n,e)}function f(t,n,e){return r(t,M,n,e)}function l(t,n,e){return r(t,T,n,e)}function h(t){return S[t.getDay()]}function p(t){return k[t.getDay()]}function d(t){return E[t.getMonth()]}function v(t){return A[t.getMonth()]}function _(t){return N[+(t.getHours()>=12)]}function y(t){return S[t.getUTCDay()]}function g(t){return k[t.getUTCDay()]}function m(t){return E[t.getUTCMonth()]}function x(t){return A[t.getUTCMonth()]}function b(t){return N[+(t.getUTCHours()>=12)]}var w=t.dateTime,M=t.date,T=t.time,N=t.periods,k=t.days,S=t.shortDays,A=t.months,E=t.shortMonths,C=fe(N),z=le(N),P=fe(k),q=le(k),L=fe(S),R=le(S),U=fe(A),D=le(A),O=fe(E),F=le(E),I={a:h,A:p,b:d,B:v,c:null,d:ke,e:ke,H:Se,I:Ae,j:Ee,L:Ce,m:ze,M:Pe,p:_,S:qe,U:Le,w:Re,W:Ue,x:null,X:null,y:De,Y:Oe,Z:Fe,"%":tr},Y={a:y,A:g,b:m,B:x,c:null,d:Ie,e:Ie,H:Ye,I:Be,j:je,L:He,m:Xe,M:Ve,p:b,S:We,U:$e,w:Ze,W:Ge,x:null,X:null,y:Je,Y:Qe,Z:Ke,"%":tr},B={a:o,A:u,b:a,B:c,c:s,d:me,e:me,H:be,I:be,j:xe,L:Te,m:ge,M:we,p:i,S:Me,U:pe,w:he,W:de,x:f,X:l,y:_e,Y:ve,Z:ye,"%":Ne};return I.x=n(M,I),I.X=n(T,I),I.c=n(w,I),Y.x=n(M,Y),Y.X=n(T,Y),Y.c=n(w,Y),{format:function(t){var e=n(t+="",I);return e.toString=function(){return t},e},parse:function(t){var n=e(t+="",ie);return n.toString=function(){return t},n},utcFormat:function(t){var e=n(t+="",Y);return e.toString=function(){return t},e},utcParse:function(t){var n=e(t,oe);return n.toString=function(){return t},n}}}function ce(t,n,e){var r=t<0?"-":"",i=(r?-t:t)+"",o=i.length;return r+(o<e?new Array(e-o+1).join(n)+i:i)}function se(t){return t.replace(Ov,"\\$&")}function fe(t){return new RegExp("^(?:"+t.map(se).join("|")+")","i")}function le(t){for(var n={},e=-1,r=t.length;++e<r;)n[t[e].toLowerCase()]=e;return n}function he(t,n,e){var r=Uv.exec(n.slice(e,e+1));return r?(t.w=+r[0],e+r[0].length):-1}function pe(t,n,e){var r=Uv.exec(n.slice(e));return r?(t.U=+r[0],e+r[0].length):-1}function de(t,n,e){var r=Uv.exec(n.slice(e));return r?(t.W=+r[0],e+r[0].length):-1}function ve(t,n,e){var r=Uv.exec(n.slice(e,e+4));return r?(t.y=+r[0],e+r[0].length):-1}function _e(t,n,e){var r=Uv.exec(n.slice(e,e+2));return r?(t.y=+r[0]+(+r[0]>68?1900:2e3),e+r[0].length):-1}function ye(t,n,e){var r=/^(Z)|([+-]\d\d)(?:\:?(\d\d))?/.exec(n.slice(e,e+6));return r?(t.Z=r[1]?0:-(r[2]+(r[3]||"00")),e+r[0].length):-1}function ge(t,n,e){var r=Uv.exec(n.slice(e,e+2));return r?(t.m=r[0]-1,e+r[0].length):-1}function me(t,n,e){var r=Uv.exec(n.slice(e,e+2));return r?(t.d=+r[0],e+r[0].length):-1}function xe(t,n,e){var r=Uv.exec(n.slice(e,e+3));return r?(t.m=0,t.d=+r[0],e+r[0].length):-1}function be(t,n,e){var r=Uv.exec(n.slice(e,e+2));return r?(t.H=+r[0],e+r[0].length):-1}function we(t,n,e){var r=Uv.exec(n.slice(e,e+2));return r?(t.M=+r[0],e+r[0].length):-1}function Me(t,n,e){var r=Uv.exec(n.slice(e,e+2));return r?(t.S=+r[0],e+r[0].length):-1}function Te(t,n,e){var r=Uv.exec(n.slice(e,e+3));return r?(t.L=+r[0],e+r[0].length):-1}function Ne(t,n,e){var r=Dv.exec(n.slice(e,e+1));return r?e+r[0].length:-1}function ke(t,n){return ce(t.getDate(),n,2)}function Se(t,n){return ce(t.getHours(),n,2)}function Ae(t,n){return ce(t.getHours()%12||12,n,2)}function Ee(t,n){return ce(1+Ad.count(Vd(t),t),n,3)}function Ce(t,n){return ce(t.getMilliseconds(),n,3)}function ze(t,n){return ce(t.getMonth()+1,n,2)}function Pe(t,n){return ce(t.getMinutes(),n,2)}function qe(t,n){return ce(t.getSeconds(),n,2)}function Le(t,n){return ce(Cd.count(Vd(t),t),n,2)}function Re(t){return t.getDay()}function Ue(t,n){return ce(zd.count(Vd(t),t),n,2)}function De(t,n){return ce(t.getFullYear()%100,n,2)}function Oe(t,n){return ce(t.getFullYear()%1e4,n,4)}function Fe(t){var n=t.getTimezoneOffset();return(n>0?"-":(n*=-1,"+"))+ce(n/60|0,"0",2)+ce(n%60,"0",2)}function Ie(t,n){return ce(t.getUTCDate(),n,2)}function Ye(t,n){return ce(t.getUTCHours(),n,2)}function Be(t,n){return ce(t.getUTCHours()%12||12,n,2)}function je(t,n){return ce(1+Qd.count(_v(t),t),n,3)}function He(t,n){return ce(t.getUTCMilliseconds(),n,3)}function Xe(t,n){return ce(t.getUTCMonth()+1,n,2)}function Ve(t,n){return ce(t.getUTCMinutes(),n,2)}function We(t,n){return ce(t.getUTCSeconds(),n,2)}function $e(t,n){return ce(tv.count(_v(t),t),n,2)}function Ze(t){return t.getUTCDay()}function Ge(t,n){return ce(nv.count(_v(t),t),n,2)}function Je(t,n){return ce(t.getUTCFullYear()%100,n,2)}function Qe(t,n){return ce(t.getUTCFullYear()%1e4,n,4)}function Ke(){return"+0000"}function tr(){return"%"}function nr(n){return zv=ae(n),t.timeFormat=zv.format,t.timeParse=zv.parse,t.utcFormat=zv.utcFormat,t.utcParse=zv.utcParse,zv}function er(t){return t.toISOString()}function rr(t){var n=new Date(t);return isNaN(n)?null:n}function ir(t){function n(n){var o=n+"",u=e.get(o);if(!u){if(i!==Xv)return i;e.set(o,u=r.push(n))}return t[(u-1)%t.length]}var e=o(),r=[],i=Xv;return t=null==t?[]:Hv.call(t),n.domain=function(t){if(!arguments.length)return r.slice();r=[],e=o();for(var i,u,a=-1,c=t.length;++a<c;)e.has(u=(i=t[a])+"")||e.set(u,r.push(i));return n},n.range=function(e){return arguments.length?(t=Hv.call(e),n):t.slice()},n.unknown=function(t){return arguments.length?(i=t,n):i},n.copy=function(){return ir().domain(r).range(t).unknown(i)},n}function or(){function t(){var t=i().length,r=u[1]<u[0],l=u[r-0],h=u[1-r];n=(h-l)/Math.max(1,t-c+2*s),a&&(n=Math.floor(n)),l+=(h-l-n*(t-c))*f,e=n*(1-c),a&&(l=Math.round(l),e=Math.round(e));var p=Us(t).map(function(t){return l+n*t});return o(r?p.reverse():p)}var n,e,r=ir().unknown(void 0),i=r.domain,o=r.range,u=[0,1],a=!1,c=0,s=0,f=.5;return delete r.unknown,r.domain=function(n){return arguments.length?(i(n),t()):i()},r.range=function(n){return arguments.length?(u=[+n[0],+n[1]],t()):u.slice()},r.rangeRound=function(n){return u=[+n[0],+n[1]],a=!0,t()},r.bandwidth=function(){return e},r.step=function(){return n},r.round=function(n){return arguments.length?(a=!!n,t()):a},r.padding=function(n){return arguments.length?(c=s=Math.max(0,Math.min(1,n)),t()):c},r.paddingInner=function(n){return arguments.length?(c=Math.max(0,Math.min(1,n)),t()):c},r.paddingOuter=function(n){return arguments.length?(s=Math.max(0,Math.min(1,n)),t()):s},r.align=function(n){return arguments.length?(f=Math.max(0,Math.min(1,n)),t()):f},r.copy=function(){return or().domain(i()).range(u).round(a).paddingInner(c).paddingOuter(s).align(f)},t()}function ur(t){var n=t.copy;return t.padding=t.paddingOuter,delete t.paddingInner,delete t.paddingOuter,t.copy=function(){return ur(n())},t}function ar(){return ur(or().paddingInner(1))}function cr(t,n){return(n-=t=+t)?function(e){return(e-t)/n}:Vv(n)}function sr(t){return function(n,e){var r=t(n=+n,e=+e);return function(t){return t<=n?0:t>=e?1:r(t)}}}function fr(t){return function(n,e){var r=t(n=+n,e=+e);return function(t){return t<=0?n:t>=1?e:r(t)}}}function lr(t,n,e,r){var i=t[0],o=t[1],u=n[0],a=n[1];return o<i?(i=e(o,i),u=r(a,u)):(i=e(i,o),u=r(u,a)),function(t){return u(i(t))}}function hr(t,n,e,r){var i=Math.min(t.length,n.length)-1,o=new Array(i),u=new Array(i),a=-1;for(t[i]<t[0]&&(t=t.slice().reverse(),n=n.slice().reverse());++a<i;)o[a]=e(t[a],t[a+1]),u[a]=r(n[a],n[a+1]);return function(n){var e=Ts(t,n,1,i)-1;return u[e](o[e](n))}}function pr(t,n){return n.domain(t.domain()).range(t.range()).interpolate(t.interpolate()).clamp(t.clamp())}function dr(t,n){function e(){return i=Math.min(a.length,c.length)>2?hr:lr,o=u=null,r}function r(n){return(o||(o=i(a,c,f?sr(t):t,s)))(+n)}var i,o,u,a=$v,c=$v,s=dp,f=!1;return r.invert=function(t){return(u||(u=i(c,a,cr,f?fr(n):n)))(+t)},r.domain=function(t){return arguments.length?(a=jv.call(t,Wv),e()):a.slice()},r.range=function(t){return arguments.length?(c=Hv.call(t),e()):c.slice()},r.rangeRound=function(t){return c=Hv.call(t),s=vp,e()},r.clamp=function(t){return arguments.length?(f=!!t,e()):f},r.interpolate=function(t){return arguments.length?(s=t,e()):s},e()}function vr(t){var n=t.domain;return t.ticks=function(t){var e=n();return Is(e[0],e[e.length-1],null==t?10:t)},t.tickFormat=function(t,e){return Zv(n(),t,e)},t.nice=function(r){var i=n(),o=i.length-1,u=null==r?10:r,a=i[0],c=i[o],s=e(a,c,u);return s&&(s=e(Math.floor(a/s)*s,Math.ceil(c/s)*s,u),i[0]=Math.floor(a/s)*s,i[o]=Math.ceil(c/s)*s,n(i)),t},t}function _r(){var t=dr(cr,sp);return t.copy=function(){return pr(t,_r())},vr(t)}function yr(){function t(t){return+t}var n=[0,1];return t.invert=t,t.domain=t.range=function(e){return arguments.length?(n=jv.call(e,Wv),t):n.slice()},t.copy=function(){return yr().domain(n)},vr(t)}function gr(t,n){return(n=Math.log(n/t))?function(e){return Math.log(e/t)/n}:Vv(n)}function mr(t,n){return t<0?function(e){return-Math.pow(-n,e)*Math.pow(-t,1-e)}:function(e){return Math.pow(n,e)*Math.pow(t,1-e)}}function xr(t){return isFinite(t)?+("1e"+t):t<0?0:t}function br(t){return 10===t?xr:t===Math.E?Math.exp:function(n){return Math.pow(t,n)}}function wr(t){return t===Math.E?Math.log:10===t&&Math.log10||2===t&&Math.log2||(t=Math.log(t),function(n){return Math.log(n)/t})}function Mr(t){return function(n){return-t(-n)}}function Tr(){function n(){return o=wr(i),u=br(i),r()[0]<0&&(o=Mr(o),u=Mr(u)),e}var e=dr(gr,mr).domain([1,10]),r=e.domain,i=10,o=wr(10),u=br(10);return e.base=function(t){return arguments.length?(i=+t,n()):i},e.domain=function(t){return arguments.length?(r(t),n()):r()},e.ticks=function(t){var n,e=r(),a=e[0],c=e[e.length-1];(n=c<a)&&(h=a,a=c,c=h);var s,f,l,h=o(a),p=o(c),d=null==t?10:+t,v=[];if(!(i%1)&&p-h<d){if(h=Math.round(h)-1,p=Math.round(p)+1,a>0){for(;h<p;++h)for(f=1,s=u(h);f<i;++f)if(l=s*f,!(l<a)){if(l>c)break;v.push(l)}}else for(;h<p;++h)for(f=i-1,s=u(h);f>=1;--f)if(l=s*f,!(l<a)){if(l>c)break;v.push(l)}}else v=Is(h,p,Math.min(p-h,d)).map(u);return n?v.reverse():v},e.tickFormat=function(n,r){if(null==r&&(r=10===i?".0e":","),"function"!=typeof r&&(r=t.format(r)),n===1/0)return r;null==n&&(n=10);var a=Math.max(1,i*n/e.ticks().length);return function(t){var n=t/u(Math.round(o(t)));return n*i<i-.5&&(n*=i),n<=a?r(t):""}},e.nice=function(){return r(Gv(r(),{floor:function(t){return u(Math.floor(o(t)))},ceil:function(t){return u(Math.ceil(o(t)))}}))},e.copy=function(){return pr(e,Tr().base(i))},e}function Nr(t,n){return t<0?-Math.pow(-t,n):Math.pow(t,n)}function kr(){function t(t,n){return(n=Nr(n,e)-(t=Nr(t,e)))?function(r){return(Nr(r,e)-t)/n}:Vv(n)}function n(t,n){return n=Nr(n,e)-(t=Nr(t,e)),function(r){return Nr(t+n*r,1/e)}}var e=1,r=dr(t,n),i=r.domain;return r.exponent=function(t){return arguments.length?(e=+t,i(i())):e},r.copy=function(){return pr(r,kr().exponent(e))},vr(r)}function Sr(){return kr().exponent(.5)}function Ar(){function t(){var t=0,o=Math.max(1,r.length);for(i=new Array(o-1);++t<o;)i[t-1]=js(e,t/o);return n}function n(t){if(!isNaN(t=+t))return r[Ts(i,t)]}var e=[],r=[],i=[];return n.invertExtent=function(t){var n=r.indexOf(t);return n<0?[NaN,NaN]:[n>0?i[n-1]:e[0],n<i.length?i[n]:e[e.length-1]]},n.domain=function(n){if(!arguments.length)return e.slice();e=[];for(var r,i=0,o=n.length;i<o;++i)r=n[i],null==r||isNaN(r=+r)||e.push(r);return e.sort(bs),t()},n.range=function(n){return arguments.length?(r=Hv.call(n),t()):r.slice()},n.quantiles=function(){return i.slice()},n.copy=function(){return Ar().domain(e).range(r)},n}function Er(){function t(t){if(t<=t)return u[Ts(o,t,0,i)]}function n(){var n=-1;for(o=new Array(i);++n<i;)o[n]=((n+1)*r-(n-i)*e)/(i+1);return t}var e=0,r=1,i=1,o=[.5],u=[0,1];return t.domain=function(t){return arguments.length?(e=+t[0],r=+t[1],n()):[e,r]},t.range=function(t){return arguments.length?(i=(u=Hv.call(t)).length-1,n()):u.slice()},t.invertExtent=function(t){var n=u.indexOf(t);return n<0?[NaN,NaN]:n<1?[e,o[0]]:n>=i?[o[i-1],r]:[o[n-1],o[n]]},t.copy=function(){return Er().domain([e,r]).range(u)},vr(t)}function Cr(){function t(t){if(t<=t)return e[Ts(n,t,0,r)]}var n=[.5],e=[0,1],r=1;return t.domain=function(i){return arguments.length?(n=Hv.call(i),r=Math.min(n.length,e.length-1),t):n.slice()},t.range=function(i){return arguments.length?(e=Hv.call(i),r=Math.min(n.length,e.length-1),t):e.slice()},t.invertExtent=function(t){var r=e.indexOf(t);return[n[r-1],n[r]]},t.copy=function(){return Cr().domain(n).range(e)},t}function zr(t){return new Date(t);
 }function Pr(t){return t instanceof Date?+t:+new Date(+t)}function qr(t,n,r,i,o,u,a,c,s){function f(e){return(a(e)<e?v:u(e)<e?_:o(e)<e?y:i(e)<e?g:n(e)<e?r(e)<e?m:x:t(e)<e?b:w)(e)}function l(n,r,i,o){if(null==n&&(n=10),"number"==typeof n){var u=Math.abs(i-r)/n,a=ws(function(t){return t[2]}).right(M,u);a===M.length?(o=e(r/r_,i/r_,n),n=t):a?(a=M[u/M[a-1][2]<M[a][2]/u?a-1:a],o=a[1],n=a[0]):(o=e(r,i,n),n=c)}return null==o?n:n.every(o)}var h=dr(cr,sp),p=h.invert,d=h.domain,v=s(".%L"),_=s(":%S"),y=s("%I:%M"),g=s("%I %p"),m=s("%a %d"),x=s("%b %d"),b=s("%B"),w=s("%Y"),M=[[a,1,Jv],[a,5,5*Jv],[a,15,15*Jv],[a,30,30*Jv],[u,1,Qv],[u,5,5*Qv],[u,15,15*Qv],[u,30,30*Qv],[o,1,Kv],[o,3,3*Kv],[o,6,6*Kv],[o,12,12*Kv],[i,1,t_],[i,2,2*t_],[r,1,n_],[n,1,e_],[n,3,3*e_],[t,1,r_]];return h.invert=function(t){return new Date(p(t))},h.domain=function(t){return arguments.length?d(jv.call(t,Pr)):d().map(zr)},h.ticks=function(t,n){var e,r=d(),i=r[0],o=r[r.length-1],u=o<i;return u&&(e=i,i=o,o=e),e=l(t,i,o,n),e=e?e.range(i,o+1):[],u?e.reverse():e},h.tickFormat=function(t,n){return null==n?f:s(n)},h.nice=function(t,n){var e=d();return(t=l(t,e[0],e[e.length-1],n))?d(Gv(e,t)):h},h.copy=function(){return pr(h,qr(t,n,r,i,o,u,a,c,s))},h}function Lr(t){var n=t.length;return function(e){return t[Math.max(0,Math.min(n-1,Math.floor(e*n)))]}}function Rr(t){function n(n){var o=(n-e)/(r-e);return t(i?Math.max(0,Math.min(1,o)):o)}var e=0,r=1,i=!1;return n.domain=function(t){return arguments.length?(e=+t[0],r=+t[1],n):[e,r]},n.clamp=function(t){return arguments.length?(i=!!t,n):i},n.interpolator=function(e){return arguments.length?(t=e,n):t},n.copy=function(){return Rr(t).domain([e,r]).clamp(i)},vr(n)}function Ur(t){return function(){var n=this.ownerDocument,e=this.namespaceURI;return e===x_&&n.documentElement.namespaceURI===x_?n.createElement(t):n.createElementNS(e,t)}}function Dr(t){return function(){return this.ownerDocument.createElementNS(t.space,t.local)}}function Or(){return new Fr}function Fr(){this._="@"+(++T_).toString(36)}function Ir(t,n,e){return t=Yr(t,n,e),function(n){var e=n.relatedTarget;e&&(e===this||8&e.compareDocumentPosition(this))||t.call(this,n)}}function Yr(n,e,r){return function(i){var o=t.event;t.event=i;try{n.call(this,this.__data__,e,r)}finally{t.event=o}}}function Br(t){return t.trim().split(/^|\s+/).map(function(t){var n="",e=t.indexOf(".");return e>=0&&(n=t.slice(e+1),t=t.slice(0,e)),{type:t,name:n}})}function jr(t){return function(){var n=this.__on;if(n){for(var e,r=0,i=-1,o=n.length;r<o;++r)e=n[r],t.type&&e.type!==t.type||e.name!==t.name?n[++i]=e:this.removeEventListener(e.type,e.listener,e.capture);++i?n.length=i:delete this.__on}}}function Hr(t,n,e){var r=E_.hasOwnProperty(t.type)?Ir:Yr;return function(i,o,u){var a,c=this.__on,s=r(n,o,u);if(c)for(var f=0,l=c.length;f<l;++f)if((a=c[f]).type===t.type&&a.name===t.name)return this.removeEventListener(a.type,a.listener,a.capture),this.addEventListener(a.type,a.listener=s,a.capture=e),void(a.value=n);this.addEventListener(t.type,s,e),a={type:t.type,name:t.name,value:n,listener:s,capture:e},c?c.push(a):this.__on=[a]}}function Xr(n,e,r,i){var o=t.event;n.sourceEvent=t.event,t.event=n;try{return e.apply(r,i)}finally{t.event=o}}function Vr(){}function Wr(){return[]}function $r(t,n){this.ownerDocument=t.ownerDocument,this.namespaceURI=t.namespaceURI,this._next=null,this._parent=t,this.__data__=n}function Zr(t,n,e,r,i,o){for(var u,a=0,c=n.length,s=o.length;a<s;++a)(u=n[a])?(u.__data__=o[a],r[a]=u):e[a]=new $r(t,o[a]);for(;a<c;++a)(u=n[a])&&(i[a]=u)}function Gr(t,n,e,r,i,o,u){var a,c,s,f={},l=n.length,h=o.length,p=new Array(l);for(a=0;a<l;++a)(c=n[a])&&(p[a]=s=j_+u.call(c,c.__data__,a,n),s in f?i[a]=c:f[s]=c);for(a=0;a<h;++a)s=j_+u.call(t,o[a],a,o),(c=f[s])?(r[a]=c,c.__data__=o[a],f[s]=null):e[a]=new $r(t,o[a]);for(a=0;a<l;++a)(c=n[a])&&f[p[a]]===c&&(i[a]=c)}function Jr(t,n){return t<n?-1:t>n?1:t>=n?0:NaN}function Qr(t){return function(){this.removeAttribute(t)}}function Kr(t){return function(){this.removeAttributeNS(t.space,t.local)}}function ti(t,n){return function(){this.setAttribute(t,n)}}function ni(t,n){return function(){this.setAttributeNS(t.space,t.local,n)}}function ei(t,n){return function(){var e=n.apply(this,arguments);null==e?this.removeAttribute(t):this.setAttribute(t,e)}}function ri(t,n){return function(){var e=n.apply(this,arguments);null==e?this.removeAttributeNS(t.space,t.local):this.setAttributeNS(t.space,t.local,e)}}function ii(t){return function(){this.style.removeProperty(t)}}function oi(t,n,e){return function(){this.style.setProperty(t,n,e)}}function ui(t,n,e){return function(){var r=n.apply(this,arguments);null==r?this.style.removeProperty(t):this.style.setProperty(t,r,e)}}function ai(t){return function(){delete this[t]}}function ci(t,n){return function(){this[t]=n}}function si(t,n){return function(){var e=n.apply(this,arguments);null==e?delete this[t]:this[t]=e}}function fi(t){return t.trim().split(/^|\s+/)}function li(t){return t.classList||new hi(t)}function hi(t){this._node=t,this._names=fi(t.getAttribute("class")||"")}function pi(t,n){for(var e=li(t),r=-1,i=n.length;++r<i;)e.add(n[r])}function di(t,n){for(var e=li(t),r=-1,i=n.length;++r<i;)e.remove(n[r])}function vi(t){return function(){pi(this,t)}}function _i(t){return function(){di(this,t)}}function yi(t,n){return function(){(n.apply(this,arguments)?pi:di)(this,t)}}function gi(){this.textContent=""}function mi(t){return function(){this.textContent=t}}function xi(t){return function(){var n=t.apply(this,arguments);this.textContent=null==n?"":n}}function bi(){this.innerHTML=""}function wi(t){return function(){this.innerHTML=t}}function Mi(t){return function(){var n=t.apply(this,arguments);this.innerHTML=null==n?"":n}}function Ti(){this.nextSibling&&this.parentNode.appendChild(this)}function Ni(){this.previousSibling&&this.parentNode.insertBefore(this,this.parentNode.firstChild)}function ki(){return null}function Si(){var t=this.parentNode;t&&t.removeChild(this)}function Ai(t,n,e){var r=ey(t),i=r.CustomEvent;i?i=new i(n,e):(i=r.document.createEvent("Event"),e?(i.initEvent(n,e.bubbles,e.cancelable),i.detail=e.detail):i.initEvent(n,!1,!1)),t.dispatchEvent(i)}function Ei(t,n){return function(){return Ai(this,t,n)}}function Ci(t,n){return function(){return Ai(this,t,n.apply(this,arguments))}}function zi(t,n){this._groups=t,this._parents=n}function Pi(){return new zi([[document.documentElement]],vy)}function qi(t,n){var e=t.__transition;if(!e||!(e=e[n])||e.state>wy)throw new Error("too late");return e}function Li(t,n){var e=t.__transition;if(!e||!(e=e[n])||e.state>Ty)throw new Error("too late");return e}function Ri(t,n){var e=t.__transition;if(!e||!(e=e[n]))throw new Error("too late");return e}function Ui(t,n,e){function r(t){e.state=My,e.timer.restart(i,e.delay,e.time),e.delay<=t&&i(t-e.delay)}function i(r){var s,f,l,h;if(e.state!==My)return u();for(s in c)if(h=c[s],h.name===e.name){if(h.state===Ny)return ld(i);h.state===ky?(h.state=Ay,h.timer.stop(),h.on.call("interrupt",t,t.__data__,h.index,h.group),delete c[s]):+s<n&&(h.state=Ay,h.timer.stop(),delete c[s])}if(ld(function(){e.state===Ny&&(e.state=ky,e.timer.restart(o,e.delay,e.time),o(r))}),e.state=Ty,e.on.call("start",t,t.__data__,e.index,e.group),e.state===Ty){for(e.state=Ny,a=new Array(l=e.tween.length),s=0,f=-1;s<l;++s)(h=e.tween[s].value.call(t,t.__data__,e.index,e.group))&&(a[++f]=h);a.length=f+1}}function o(n){for(var r=n<e.duration?e.ease.call(null,n/e.duration):(e.timer.restart(u),e.state=Sy,1),i=-1,o=a.length;++i<o;)a[i].call(null,r);e.state===Sy&&(e.on.call("end",t,t.__data__,e.index,e.group),u())}function u(){e.state=Ay,e.timer.stop(),delete c[n];for(var r in c)return;delete t.__transition}var a,c=t.__transition;c[n]=e,e.timer=Vn(r,0,e.time)}function Di(t,n){var e,r;return function(){var i=Li(this,t),o=i.tween;if(o!==e){r=e=o;for(var u=0,a=r.length;u<a;++u)if(r[u].name===n){r=r.slice(),r.splice(u,1);break}}i.tween=r}}function Oi(t,n,e){var r,i;if("function"!=typeof e)throw new Error;return function(){var o=Li(this,t),u=o.tween;if(u!==r){i=(r=u).slice();for(var a={name:n,value:e},c=0,s=i.length;c<s;++c)if(i[c].name===n){i[c]=a;break}c===s&&i.push(a)}o.tween=i}}function Fi(t,n,e){var r=t._id;return t.each(function(){var t=Li(this,r);(t.value||(t.value={}))[n]=e.apply(this,arguments)}),function(t){return Ri(t,r).value[n]}}function Ii(t){return function(){this.removeAttribute(t)}}function Yi(t){return function(){this.removeAttributeNS(t.space,t.local)}}function Bi(t,n,e){var r,i;return function(){var o=this.getAttribute(t);return o===e?null:o===r?i:i=n(r=o,e)}}function ji(t,n,e){var r,i;return function(){var o=this.getAttributeNS(t.space,t.local);return o===e?null:o===r?i:i=n(r=o,e)}}function Hi(t,n,e){var r,i,o;return function(){var u,a=e(this);return null==a?void this.removeAttribute(t):(u=this.getAttribute(t),u===a?null:u===r&&a===i?o:o=n(r=u,i=a))}}function Xi(t,n,e){var r,i,o;return function(){var u,a=e(this);return null==a?void this.removeAttributeNS(t.space,t.local):(u=this.getAttributeNS(t.space,t.local),u===a?null:u===r&&a===i?o:o=n(r=u,i=a))}}function Vi(t,n){function e(){var e=this,r=n.apply(e,arguments);return r&&function(n){e.setAttributeNS(t.space,t.local,r(n))}}return e._value=n,e}function Wi(t,n){function e(){var e=this,r=n.apply(e,arguments);return r&&function(n){e.setAttribute(t,r(n))}}return e._value=n,e}function $i(t,n){return function(){qi(this,t).delay=+n.apply(this,arguments)}}function Zi(t,n){return n=+n,function(){qi(this,t).delay=n}}function Gi(t,n){return function(){Li(this,t).duration=+n.apply(this,arguments)}}function Ji(t,n){return n=+n,function(){Li(this,t).duration=n}}function Qi(t,n){if("function"!=typeof n)throw new Error;return function(){Li(this,t).ease=n}}function Ki(t){return(t+"").trim().split(/^|\s+/).every(function(t){var n=t.indexOf(".");return n>=0&&(t=t.slice(0,n)),!t||"start"===t})}function to(t,n,e){var r,i,o=Ki(n)?qi:Li;return function(){var u=o(this,t),a=u.on;a!==r&&(i=(r=a).copy()).on(n,e),u.on=i}}function no(t){return function(){var n=this.parentNode;for(var e in this.__transition)if(+e!==t)return;n&&n.removeChild(this)}}function eo(t,n){var e,r,i;return function(){var o=ey(this).getComputedStyle(this,null),u=o.getPropertyValue(t),a=(this.style.removeProperty(t),o.getPropertyValue(t));return u===a?null:u===e&&a===r?i:i=n(e=u,r=a)}}function ro(t){return function(){this.style.removeProperty(t)}}function io(t,n,e){var r,i;return function(){var o=ey(this).getComputedStyle(this,null).getPropertyValue(t);return o===e?null:o===r?i:i=n(r=o,e)}}function oo(t,n,e){var r,i,o;return function(){var u=ey(this).getComputedStyle(this,null),a=u.getPropertyValue(t),c=e(this);return null==c&&(this.style.removeProperty(t),c=u.getPropertyValue(t)),a===c?null:a===r&&c===i?o:o=n(r=a,i=c)}}function uo(t,n,e){function r(){var r=this,i=n.apply(r,arguments);return i&&function(n){r.style.setProperty(t,i(n),e)}}return r._value=n,r}function ao(t){return function(){this.textContent=t}}function co(t){return function(){var n=t(this);this.textContent=null==n?"":n}}function so(t,n,e,r){this._groups=t,this._parents=n,this._name=e,this._id=r}function fo(t){return Pi().transition(t)}function lo(){return++Jy}function ho(t,n){for(var e;!(e=t.__transition)||!(e=e[n]);)if(!(t=t.parentNode))return Ky.time=jn(),Ky;return e}function po(t,n,e){var r=t(e);return"translate("+(isFinite(r)?r:n(e))+",0)"}function vo(t,n,e){var r=t(e);return"translate(0,"+(isFinite(r)?r:n(e))+")"}function _o(t){var n=t.bandwidth()/2;return t.round()&&(n=Math.round(n)),function(e){return t(e)+n}}function yo(){return!this.__axis}function go(t,n){function e(e){var s,f=null==i?n.ticks?n.ticks.apply(n,r):n.domain():i,l=null==o?n.tickFormat?n.tickFormat.apply(n,r):ig:o,h=Math.max(u,0)+c,p=t===og||t===ag?po:vo,d=n.range(),v=d[0]+.5,_=d[d.length-1]+.5,y=(n.bandwidth?_o:ig)(n.copy()),g=e.selection?e.selection():e,m=g.selectAll(".domain").data([null]),x=g.selectAll(".tick").data(f,n).order(),b=x.exit(),w=x.enter().append("g").attr("class","tick"),M=x.select("line"),T=x.select("text"),N=t===og||t===cg?-1:1,k=t===cg||t===ug?(s="x","y"):(s="y","x");m=m.merge(m.enter().insert("path",".tick").attr("class","domain").attr("stroke","#000")),x=x.merge(w),M=M.merge(w.append("line").attr("stroke","#000").attr(s+"2",N*u).attr(k+"1",.5).attr(k+"2",.5)),T=T.merge(w.append("text").attr("fill","#000").attr(s,N*h).attr(k,.5).attr("dy",t===og?"0em":t===ag?"0.71em":"0.32em")),e!==g&&(m=m.transition(e),x=x.transition(e),M=M.transition(e),T=T.transition(e),b=b.transition(e).attr("opacity",sg).attr("transform",function(t){return p(y,this.parentNode.__axis||y,t)}),w.attr("opacity",sg).attr("transform",function(t){return p(this.parentNode.__axis||y,y,t)})),b.remove(),m.attr("d",t===cg||t==ug?"M"+N*a+","+v+"H0.5V"+_+"H"+N*a:"M"+v+","+N*a+"V0.5H"+_+"V"+N*a),x.attr("opacity",1).attr("transform",function(t){return p(y,y,t)}),M.attr(s+"2",N*u),T.attr(s,N*h).text(l),g.filter(yo).attr("fill","none").attr("font-size",10).attr("font-family","sans-serif").attr("text-anchor",t===ug?"start":t===cg?"end":"middle"),g.each(function(){this.__axis=y})}var r=[],i=null,o=null,u=6,a=6,c=3;return e.scale=function(t){return arguments.length?(n=t,e):n},e.ticks=function(){return r=rg.call(arguments),e},e.tickArguments=function(t){return arguments.length?(r=null==t?[]:rg.call(t),e):r.slice()},e.tickValues=function(t){return arguments.length?(i=null==t?null:rg.call(t),e):i&&i.slice()},e.tickFormat=function(t){return arguments.length?(o=t,e):o},e.tickSize=function(t){return arguments.length?(u=a=+t,e):u},e.tickSizeInner=function(t){return arguments.length?(u=+t,e):u},e.tickSizeOuter=function(t){return arguments.length?(a=+t,e):a},e.tickPadding=function(t){return arguments.length?(c=+t,e):c},e}function mo(t){return go(og,t)}function xo(t){return go(ug,t)}function bo(t){return go(ag,t)}function wo(t){return go(cg,t)}function Mo(t,n){return t.parent===n.parent?1:2}function To(t){return t.reduce(No,0)/t.length}function No(t,n){return t+n.x}function ko(t){return 1+t.reduce(So,0)}function So(t,n){return Math.max(t,n.y)}function Ao(t){for(var n;n=t.children;)t=n[0];return t}function Eo(t){for(var n;n=t.children;)t=n[n.length-1];return t}function Co(t,n){if(t===n)return t;var e=t.ancestors(),r=n.ancestors(),i=null;for(t=e.pop(),n=r.pop();t===n;)i=t,t=e.pop(),n=r.pop();return i}function zo(t,n){var e,r,i,o,u,a=new Uo(t),c=+t.value&&(a.value=t.value),s=[a];for(null==n&&(n=qo);e=s.pop();)if(c&&(e.value=+e.data.value),(i=n(e.data))&&(u=i.length))for(e.children=new Array(u),o=u-1;o>=0;--o)s.push(r=e.children[o]=new Uo(i[o])),r.parent=e,r.depth=e.depth+1;return a.eachBefore(Ro)}function Po(){return zo(this).eachBefore(Lo)}function qo(t){return t.children}function Lo(t){t.data=t.data.data}function Ro(t){var n=0;do t.height=n;while((t=t.parent)&&t.height<++n)}function Uo(t){this.data=t,this.depth=this.height=0,this.parent=null}function Do(t){this._=t,this.next=null}function Oo(t,n){var e=n.x-t.x,r=n.y-t.y,i=t.r-n.r;return i*i+1e-6>e*e+r*r}function Fo(t,n){var e,r,i,o=null,u=t.head;switch(n.length){case 1:e=Io(n[0]);break;case 2:e=Yo(n[0],n[1]);break;case 3:e=Bo(n[0],n[1],n[2])}for(;u;)i=u._,r=u.next,e&&Oo(e,i)?o=u:(o?(t.tail=o,o.next=null):t.head=t.tail=null,n.push(i),e=Fo(t,n),n.pop(),t.head?(u.next=t.head,t.head=u):(u.next=null,t.head=t.tail=u),o=t.tail,o.next=r),u=r;return t.tail=o,e}function Io(t){return{x:t.x,y:t.y,r:t.r}}function Yo(t,n){var e=t.x,r=t.y,i=t.r,o=n.x,u=n.y,a=n.r,c=o-e,s=u-r,f=a-i,l=Math.sqrt(c*c+s*s);return{x:(e+o+c/l*f)/2,y:(r+u+s/l*f)/2,r:(l+i+a)/2}}function Bo(t,n,e){var r=t.x,i=t.y,o=t.r,u=n.x,a=n.y,c=n.r,s=e.x,f=e.y,l=e.r,h=2*(r-u),p=2*(i-a),d=2*(c-o),v=r*r+i*i-o*o-u*u-a*a+c*c,_=2*(r-s),y=2*(i-f),g=2*(l-o),m=r*r+i*i-o*o-s*s-f*f+l*l,x=_*p-h*y,b=(p*m-y*v)/x-r,w=(y*d-p*g)/x,M=(_*v-h*m)/x-i,T=(h*g-_*d)/x,N=w*w+T*T-1,k=2*(b*w+M*T+o),S=b*b+M*M-o*o,A=(-k-Math.sqrt(k*k-4*N*S))/(2*N);return{x:b+w*A+r,y:M+T*A+i,r:A}}function jo(t,n,e){var r=t.x,i=t.y,o=n.r+e.r,u=t.r+e.r,a=n.x-r,c=n.y-i,s=a*a+c*c;if(s){var f=.5+((u*=u)-(o*=o))/(2*s),l=Math.sqrt(Math.max(0,2*o*(u+s)-(u-=s)*u-o*o))/(2*s);e.x=r+f*a+l*c,e.y=i+f*c-l*a}else e.x=r+u,e.y=i}function Ho(t,n){var e=n.x-t.x,r=n.y-t.y,i=t.r+n.r;return i*i>e*e+r*r}function Xo(t,n,e){var r=t.x-n,i=t.y-e;return r*r+i*i}function Vo(t){this._=t,this.next=null,this.previous=null}function Wo(t){if(!(i=t.length))return 0;var n,e,r,i;if(n=t[0],n.x=0,n.y=0,!(i>1))return n.r;if(e=t[1],n.x=-e.r,e.x=n.r,e.y=0,!(i>2))return n.r+e.r;jo(e,n,r=t[2]);var o,u,a,c,s,f,l,h=n.r*n.r,p=e.r*e.r,d=r.r*r.r,v=h+p+d,_=h*n.x+p*e.x+d*r.x,y=h*n.y+p*e.y+d*r.y;n=new Vo(n),e=new Vo(e),r=new Vo(r),n.next=r.previous=e,e.next=n.previous=r,r.next=e.previous=n;t:for(a=3;a<i;++a){if(jo(n._,e._,r=t[a]),r=new Vo(r),(s=n.previous)===(c=e.next)){if(Ho(c._,r._)){n=e,e=c,--a;continue t}}else{f=c._.r,l=s._.r;do if(f<=l){if(Ho(c._,r._)){e=c,n.next=e,e.previous=n,--a;continue t}c=c.next,f+=c._.r}else{if(Ho(s._,r._)){n=s,n.next=e,e.previous=n,--a;continue t}s=s.previous,l+=s._.r}while(c!==s.next)}for(r.previous=n,r.next=e,n.next=e.previous=e=r,v+=d=r._.r*r._.r,_+=d*r._.x,y+=d*r._.y,h=Xo(n._,o=_/v,u=y/v);(r=r.next)!==e;)(d=Xo(r._,o,u))<h&&(n=r,h=d);e=n.next}for(n=[e._],r=e;(r=r.next)!==e;)n.push(r._);for(r=wg(n),a=0;a<i;++a)n=t[a],n.x-=r.x,n.y-=r.y;return r.r}function $o(t){return null==t?null:Zo(t)}function Zo(t){if("function"!=typeof t)throw new Error;return t}function Go(){return 0}function Jo(t){return Math.sqrt(t.value)}function Qo(t){return function(n){n.children||(n.r=Math.max(0,+t(n)||0))}}function Ko(t,n){return function(e){if(r=e.children){var r,i,o,u=r.length,a=t(e)*n||0;if(a)for(i=0;i<u;++i)r[i].r+=a;if(o=Wo(r),a)for(i=0;i<u;++i)r[i].r-=a;e.r=o+a}}}function tu(t){return function(n){var e=n.parent;n.r*=t,e&&(n.x=e.x+t*n.x,n.y=e.y+t*n.y)}}function nu(t){return t.id}function eu(t){return t.parentId}function ru(t,n){return t.parent===n.parent?1:2}function iu(t){var n=t.children;return n?n[0]:t.t}function ou(t){var n=t.children;return n?n[n.length-1]:t.t}function uu(t,n,e){var r=e/(n.i-t.i);n.c-=r,n.s+=e,t.c+=r,n.z+=e,n.m+=e}function au(t){for(var n,e=0,r=0,i=t.children,o=i.length;--o>=0;)n=i[o],n.z+=e,n.m+=e,e+=n.s+(r+=n.c)}function cu(t,n,e){return t.a.parent===n.parent?t.a:e}function su(t,n){this._=t,this.parent=null,this.children=null,this.A=null,this.a=this,this.z=0,this.m=0,this.c=0,this.s=0,this.t=null,this.i=n}function fu(t){for(var n,e,r,i,o,u=new su(t,0),a=[u];n=a.pop();)if(r=n._.children)for(n.children=new Array(o=r.length),i=o-1;i>=0;--i)a.push(e=n.children[i]=new su(r[i],i)),e.parent=n;return(u.parent=new su(null,0)).children=[u],u}function lu(t,n,e,r,i,o){for(var u,a,c,s,f,l,h,p,d,v,_,y,g=[],m=n.children,x=0,b=m.length,w=n.value;x<b;){for(s=i-e,f=o-r,h=p=l=m[x].value,_=Math.max(f/s,s/f)/(w*t),y=l*l*_,v=Math.max(p/y,y/h),c=x+1;c<b;++c){if(l+=a=m[c].value,a<h&&(h=a),a>p&&(p=a),y=l*l*_,d=Math.max(p/y,y/h),d>v){l-=a;break}v=d}g.push(u={value:l,dice:s<f,children:m.slice(x,c)}),u.dice?Sg(u,e,r,i,w?r+=f*l/w:o):Lg(u,e,r,w?e+=s*l/w:i,o),w-=l,x=c}return g}function hu(t){return t.x+t.vx}function pu(t){return t.y+t.vy}function du(t,n){return n}function vu(t,n){var e=t.get(n);if(!e)throw new Error("missing: "+n);return e}function _u(t){return t.x}function yu(t){return t.y}function gu(){t.event.stopImmediatePropagation()}function mu(t,n){var e=t.document.documentElement,r=_y(t).on("dragstart.drag",null);n&&(r.on("click.drag",Qg,!0),setTimeout(function(){r.on("click.drag",null)},0)),"onselectstart"in e?r.on("selectstart.drag",null):(e.style.MozUserSelect=e.__noselect,delete e.__noselect)}function xu(t,n,e,r,i,o,u,a,c,s){this.target=t,this.type=n,this.subject=e,this.identifier=r,this.active=i,this.x=o,this.y=u,this.dx=a,this.dy=c,this._=s}function bu(){return!t.event.button}function wu(){return this.parentNode}function Mu(n){return null==n?{x:t.event.x,y:t.event.y}:n}function Tu(t){return t[0]}function Nu(t){return t[1]}function ku(){this._=null}function Su(t){t.U=t.C=t.L=t.R=t.P=t.N=null}function Au(t,n){var e=n,r=n.R,i=e.U;i?i.L===e?i.L=r:i.R=r:t._=r,r.U=i,e.U=r,e.R=r.L,e.R&&(e.R.U=e),r.L=e}function Eu(t,n){var e=n,r=n.L,i=e.U;i?i.L===e?i.L=r:i.R=r:t._=r,r.U=i,e.U=r,e.L=r.R,e.L&&(e.L.U=e),r.R=e}function Cu(t){for(;t.L;)t=t.L;return t}function zu(t,n,e,r){var i=[null,null],o=am.push(i)-1;return i.left=t,i.right=n,e&&qu(i,t,n,e),r&&qu(i,n,t,r),om[t.index].halfedges.push(o),om[n.index].halfedges.push(o),i}function Pu(t,n,e){var r=[n,e];return r.left=t,r}function qu(t,n,e,r){t[0]||t[1]?t.left===e?t[1]=r:t[0]=r:(t[0]=r,t.left=n,t.right=e)}function Lu(t,n,e,r,i){var o,u=t[0],a=t[1],c=u[0],s=u[1],f=a[0],l=a[1],h=0,p=1,d=f-c,v=l-s;if(o=n-c,d||!(o>0)){if(o/=d,d<0){if(o<h)return;o<p&&(p=o)}else if(d>0){if(o>p)return;o>h&&(h=o)}if(o=r-c,d||!(o<0)){if(o/=d,d<0){if(o>p)return;o>h&&(h=o)}else if(d>0){if(o<h)return;o<p&&(p=o)}if(o=e-s,v||!(o>0)){if(o/=v,v<0){if(o<h)return;o<p&&(p=o)}else if(v>0){if(o>p)return;o>h&&(h=o)}if(o=i-s,v||!(o<0)){if(o/=v,v<0){if(o>p)return;o>h&&(h=o)}else if(v>0){if(o<h)return;o<p&&(p=o)}return!(h>0||p<1)||(h>0&&(t[0]=[c+h*d,s+h*v]),p<1&&(t[1]=[c+p*d,s+p*v]),!0)}}}}}function Ru(t,n,e,r,i){var o=t[1];if(o)return!0;var u,a,c=t[0],s=t.left,f=t.right,l=s[0],h=s[1],p=f[0],d=f[1],v=(l+p)/2,_=(h+d)/2;if(d===h){if(v<n||v>=r)return;if(l>p){if(c){if(c[1]>=i)return}else c=[v,e];o=[v,i]}else{if(c){if(c[1]<e)return}else c=[v,i];o=[v,e]}}else if(u=(l-p)/(d-h),a=_-u*v,u<-1||u>1)if(l>p){if(c){if(c[1]>=i)return}else c=[(e-a)/u,e];o=[(i-a)/u,i]}else{if(c){if(c[1]<e)return}else c=[(i-a)/u,i];o=[(e-a)/u,e]}else if(h<d){if(c){if(c[0]>=r)return}else c=[n,u*n+a];o=[r,u*r+a]}else{if(c){if(c[0]<n)return}else c=[r,u*r+a];o=[n,u*n+a]}return t[0]=c,t[1]=o,!0}function Uu(t,n,e,r){for(var i,o=am.length;o--;)Ru(i=am[o],t,n,e,r)&&Lu(i,t,n,e,r)&&(Math.abs(i[0][0]-i[1][0])>fm||Math.abs(i[0][1]-i[1][1])>fm)||delete am[o]}function Du(t){return om[t.index]={site:t,halfedges:[]}}function Ou(t,n){var e=t.site,r=n.left,i=n.right;return e===i&&(i=r,r=e),i?Math.atan2(i[1]-r[1],i[0]-r[0]):(e===r?(r=n[1],i=n[0]):(r=n[0],i=n[1]),Math.atan2(r[0]-i[0],i[1]-r[1]))}function Fu(t,n){return n[+(n.left!==t.site)]}function Iu(t,n){return n[+(n.left===t.site)]}function Yu(){for(var t,n,e,r,i=0,o=om.length;i<o;++i)if((t=om[i])&&(r=(n=t.halfedges).length)){var u=new Array(r),a=new Array(r);for(e=0;e<r;++e)u[e]=e,a[e]=Ou(t,am[n[e]]);for(u.sort(function(t,n){return a[n]-a[t]}),e=0;e<r;++e)a[e]=n[u[e]];for(e=0;e<r;++e)n[e]=a[e]}}function Bu(t,n,e,r){var i,o,u,a,c,s,f,l,h,p,d,v,_=om.length,y=!0;for(i=0;i<_;++i)if(o=om[i]){for(u=o.site,c=o.halfedges,a=c.length;a--;)am[c[a]]||c.splice(a,1);for(a=0,s=c.length;a<s;)p=Iu(o,am[c[a]]),d=p[0],v=p[1],f=Fu(o,am[c[++a%s]]),l=f[0],h=f[1],(Math.abs(d-l)>fm||Math.abs(v-h)>fm)&&(c.splice(a,0,am.push(Pu(u,p,Math.abs(d-t)<fm&&r-v>fm?[t,Math.abs(l-t)<fm?h:r]:Math.abs(v-r)<fm&&e-d>fm?[Math.abs(h-r)<fm?l:e,r]:Math.abs(d-e)<fm&&v-n>fm?[e,Math.abs(l-e)<fm?h:n]:Math.abs(v-n)<fm&&d-t>fm?[Math.abs(h-n)<fm?l:t,n]:null))-1),++s);s&&(y=!1)}if(y){var g,m,x,b=1/0;for(i=0,y=null;i<_;++i)(o=om[i])&&(u=o.site,g=u[0]-t,m=u[1]-n,x=g*g+m*m,x<b&&(b=x,y=o));if(y){var w=[t,n],M=[t,r],T=[e,r],N=[e,n];y.halfedges.push(am.push(Pu(u=y.site,w,M))-1,am.push(Pu(u,M,T))-1,am.push(Pu(u,T,N))-1,am.push(Pu(u,N,w))-1)}}for(i=0;i<_;++i)(o=om[i])&&(o.halfedges.length||delete om[i])}function ju(){Su(this),this.x=this.y=this.arc=this.site=this.cy=null}function Hu(t){var n=t.P,e=t.N;if(n&&e){var r=n.site,i=t.site,o=e.site;if(r!==o){var u=i[0],a=i[1],c=r[0]-u,s=r[1]-a,f=o[0]-u,l=o[1]-a,h=2*(c*l-s*f);if(!(h>=-lm)){var p=c*c+s*s,d=f*f+l*l,v=(l*p-s*d)/h,_=(c*d-f*p)/h,y=cm.pop()||new ju;y.arc=t,y.site=i,y.x=v+u,y.y=(y.cy=_+a)+Math.sqrt(v*v+_*_),t.circle=y;for(var g=null,m=um._;m;)if(y.y<m.y||y.y===m.y&&y.x<=m.x){if(!m.L){g=m.P;break}m=m.L}else{if(!m.R){g=m;break}m=m.R}um.insert(g,y),g||(rm=y)}}}}function Xu(t){var n=t.circle;n&&(n.P||(rm=n.N),um.remove(n),cm.push(n),Su(n),t.circle=null)}function Vu(){Su(this),this.edge=this.site=this.circle=null}function Wu(t){var n=sm.pop()||new Vu;return n.site=t,n}function $u(t){Xu(t),im.remove(t),sm.push(t),Su(t)}function Zu(t){var n=t.circle,e=n.x,r=n.cy,i=[e,r],o=t.P,u=t.N,a=[t];$u(t);for(var c=o;c.circle&&Math.abs(e-c.circle.x)<fm&&Math.abs(r-c.circle.cy)<fm;)o=c.P,a.unshift(c),$u(c),c=o;a.unshift(c),Xu(c);for(var s=u;s.circle&&Math.abs(e-s.circle.x)<fm&&Math.abs(r-s.circle.cy)<fm;)u=s.N,a.push(s),$u(s),s=u;a.push(s),Xu(s);var f,l=a.length;for(f=1;f<l;++f)s=a[f],c=a[f-1],qu(s.edge,c.site,s.site,i);c=a[0],s=a[l-1],s.edge=zu(c.site,s.site,null,i),Hu(c),Hu(s)}function Gu(t){for(var n,e,r,i,o=t[0],u=t[1],a=im._;a;)if(r=Ju(a,u)-o,r>fm)a=a.L;else{if(i=o-Qu(a,u),!(i>fm)){r>-fm?(n=a.P,e=a):i>-fm?(n=a,e=a.N):n=e=a;break}if(!a.R){n=a;break}a=a.R}Du(t);var c=Wu(t);if(im.insert(n,c),n||e){if(n===e)return Xu(n),e=Wu(n.site),im.insert(c,e),c.edge=e.edge=zu(n.site,c.site),Hu(n),void Hu(e);if(!e)return void(c.edge=zu(n.site,c.site));Xu(n),Xu(e);var s=n.site,f=s[0],l=s[1],h=t[0]-f,p=t[1]-l,d=e.site,v=d[0]-f,_=d[1]-l,y=2*(h*_-p*v),g=h*h+p*p,m=v*v+_*_,x=[(_*g-p*m)/y+f,(h*m-v*g)/y+l];qu(e.edge,s,d,x),c.edge=zu(s,t,null,x),e.edge=zu(t,d,null,x),Hu(n),Hu(e)}}function Ju(t,n){var e=t.site,r=e[0],i=e[1],o=i-n;if(!o)return r;var u=t.P;if(!u)return-(1/0);e=u.site;var a=e[0],c=e[1],s=c-n;if(!s)return a;var f=a-r,l=1/o-1/s,h=f/s;return l?(-h+Math.sqrt(h*h-2*l*(f*f/(-2*s)-c+s/2+i-o/2)))/l+r:(r+a)/2}function Qu(t,n){var e=t.N;if(e)return Ju(e,n);var r=t.site;return r[1]===n?r[0]:1/0}function Ku(t,n,e){return(t[0]-e[0])*(n[1]-t[1])-(t[0]-n[0])*(e[1]-t[1])}function ta(t,n){return n[1]-t[1]||n[0]-t[0]}function na(t,n){var e,r,i,o=t.sort(ta).pop();for(am=[],om=new Array(t.length),im=new ku,um=new ku;;)if(i=rm,o&&(!i||o[1]<i.y||o[1]===i.y&&o[0]<i.x))o[0]===e&&o[1]===r||(Gu(o),e=o[0],r=o[1]),o=t.pop();else{if(!i)break;Zu(i.arc)}if(Yu(),n){var u=+n[0][0],a=+n[0][1],c=+n[1][0],s=+n[1][1];Uu(u,a,c,s),Bu(u,a,c,s)}this.edges=am,this.cells=om,im=um=am=om=null}function ea(t,n,e){this.target=t,this.type=n,this.transform=e}function ra(t,n,e){this.k=t,this.x=n,this.y=e}function ia(t){return t.__zoom||dm}function oa(){t.event.stopImmediatePropagation()}function ua(){return!t.event.button}function aa(){var t,n,e=this;return e instanceof SVGElement?(e=e.ownerSVGElement||e,t=e.width.baseVal.value,n=e.height.baseVal.value):(t=e.clientWidth,n=e.clientHeight),[[0,0],[t,n]]}function ca(){return this.__zoom||dm}function sa(){t.event.stopImmediatePropagation()}function fa(t){return{type:t}}function la(){return!t.event.button}function ha(){var t=this.ownerSVGElement||this;return[[0,0],[t.width.baseVal.value,t.height.baseVal.value]]}function pa(t){for(;!t.__brush;)if(!(t=t.parentNode))return;return t.__brush}function da(t){return t[0][0]===t[1][0]||t[0][1]===t[1][1]}function va(t){var n=t.__brush;return n?n.dim.output(n.selection):null}function _a(){return ga(Tm)}function ya(){return ga(Nm)}function ga(n){function e(t){var e=t.property("__brush",a).selectAll(".overlay").data([fa("overlay")]);e.enter().append("rect").attr("class","overlay").attr("pointer-events","all").attr("cursor",Sm.overlay).merge(e).each(function(){var t=pa(this).extent;_y(this).attr("x",t[0][0]).attr("y",t[0][1]).attr("width",t[1][0]-t[0][0]).attr("height",t[1][1]-t[0][1])}),t.selectAll(".selection").data([fa("selection")]).enter().append("rect").attr("class","selection").attr("cursor",Sm.selection).attr("fill","#777").attr("fill-opacity",.3).attr("stroke","#fff").attr("shape-rendering","crispEdges");var i=t.selectAll(".handle").data(n.handles,function(t){return t.type});i.exit().remove(),i.enter().append("rect").attr("class",function(t){return"handle handle--"+t.type}).attr("cursor",function(t){return Sm[t.type]}),t.each(r).attr("fill","none").attr("pointer-events","all").style("-webkit-tap-highlight-color","rgba(0,0,0,0)").on("mousedown.brush touchstart.brush",u)}function r(){var t=_y(this),n=pa(this).selection;n?(t.selectAll(".selection").style("display",null).attr("x",n[0][0]).attr("y",n[0][1]).attr("width",n[1][0]-n[0][0]).attr("height",n[1][1]-n[0][1]),t.selectAll(".handle").style("display",null).attr("x",function(t){return"e"===t.type[t.type.length-1]?n[1][0]-h/2:n[0][0]-h/2}).attr("y",function(t){return"s"===t.type[0]?n[1][1]-h/2:n[0][1]-h/2}).attr("width",function(t){return"n"===t.type||"s"===t.type?n[1][0]-n[0][0]+h:h}).attr("height",function(t){return"e"===t.type||"w"===t.type?n[1][1]-n[0][1]+h:h})):t.selectAll(".selection,.handle").style("display","none").attr("x",null).attr("y",null).attr("width",null).attr("height",null)}function i(t,n){return t.__brush.emitter||new o(t,n)}function o(t,n){this.that=t,this.args=n,this.state=t.__brush,this.active=0}function u(){function e(){var t=L_(T);!U||w||M||(Math.abs(t[0]-O[0])>Math.abs(t[1]-O[1])?M=!0:w=!0),O=t,b=!0,mm(),o()}function o(){var t;switch(m=O[0]-D[0],x=O[1]-D[1],k){case bm:case xm:S&&(m=Math.max(P-l,Math.min(L-v,m)),h=l+m,_=v+m),A&&(x=Math.max(q-p,Math.min(R-y,x)),d=p+x,g=y+x);break;case wm:S<0?(m=Math.max(P-l,Math.min(L-l,m)),h=l+m,_=v):S>0&&(m=Math.max(P-v,Math.min(L-v,m)),h=l,_=v+m),A<0?(x=Math.max(q-p,Math.min(R-p,x)),d=p+x,g=y):A>0&&(x=Math.max(q-y,Math.min(R-y,x)),d=p,g=y+x);break;case Mm:S&&(h=Math.max(P,Math.min(L,l-m*S)),_=Math.max(P,Math.min(L,v+m*S))),A&&(d=Math.max(q,Math.min(R,p-x*A)),g=Math.max(q,Math.min(R,y+x*A)))}_<h&&(S*=-1,t=l,l=v,v=t,t=h,h=_,_=t,N in Am&&Y.attr("cursor",Sm[N=Am[N]])),g<d&&(A*=-1,t=p,p=y,y=t,t=d,d=g,g=t,N in Em&&Y.attr("cursor",Sm[N=Em[N]])),E.selection&&(z=E.selection),w&&(h=z[0][0],_=z[1][0]),M&&(d=z[0][1],g=z[1][1]),z[0][0]===h&&z[0][1]===d&&z[1][0]===_&&z[1][1]===g||(E.selection=[[h,d],[_,g]],r.call(T),F.brush())}function u(){if(sa(),t.event.touches){if(t.event.touches.length)return;c&&clearTimeout(c),c=setTimeout(function(){c=null},500),I.on("touchmove.brush touchend.brush touchcancel.brush",null)}else mu(t.event.view,b),B.on("keydown.brush keyup.brush mousemove.brush mouseup.brush",null);I.attr("pointer-events","all"),Y.attr("cursor",Sm.overlay),E.selection&&(z=E.selection),da(z)&&(E.selection=null,r.call(T)),F.end()}function a(){switch(t.event.keyCode){case 16:U=S&&A;break;case 18:k===wm&&(S&&(v=_-m*S,l=h+m*S),A&&(y=g-x*A,p=d+x*A),k=Mm,o());break;case 32:k!==wm&&k!==Mm||(S<0?v=_-m:S>0&&(l=h-m),A<0?y=g-x:A>0&&(p=d-x),k=bm,Y.attr("cursor",Sm.selection),o());break;default:return}mm()}function s(){switch(t.event.keyCode){case 16:U&&(w=M=U=!1,o());break;case 18:k===Mm&&(S<0?v=_:S>0&&(l=h),A<0?y=g:A>0&&(p=d),k=wm,o());break;case 32:k===bm&&(t.event.altKey?(S&&(v=_-m*S,l=h+m*S),A&&(y=g-x*A,p=d+x*A),k=Mm):(S<0?v=_:S>0&&(l=h),A<0?y=g:A>0&&(p=d),k=wm),Y.attr("cursor",Sm[N]),o());break;default:return}mm()}if(t.event.touches){if(t.event.changedTouches.length<t.event.touches.length)return mm()}else if(c)return;if(f.apply(this,arguments)){var l,h,p,d,v,_,y,g,m,x,b,w,M,T=this,N=t.event.target.__data__.type,k="selection"===(t.event.metaKey?N="overlay":N)?xm:t.event.altKey?Mm:wm,S=n===Nm?null:Cm[N],A=n===Tm?null:zm[N],E=pa(T),C=E.extent,z=E.selection,P=C[0][0],q=C[0][1],L=C[1][0],R=C[1][1],U=S&&A&&t.event.shiftKey,D=L_(T),O=D,F=i(T,arguments).beforestart();"overlay"===N?E.selection=z=[[l=n===Nm?P:D[0],p=n===Tm?q:D[1]],[v=n===Nm?L:l,y=n===Tm?R:p]]:(l=z[0][0],p=z[0][1],v=z[1][0],y=z[1][1]),h=l,d=p,_=v,g=y;var I=_y(T).attr("pointer-events","none"),Y=I.selectAll(".overlay").attr("cursor",Sm[N]);if(t.event.touches)I.on("touchmove.brush",e,!0).on("touchend.brush touchcancel.brush",u,!0);else{var B=_y(t.event.view).on("keydown.brush",a,!0).on("keyup.brush",s,!0).on("mousemove.brush",e,!0).on("mouseup.brush",u,!0);Kg(t.event.view)}sa(),Cy(T),r.call(T),F.start()}}function a(){var t=this.__brush||{selection:null};return t.extent=s.apply(this,arguments),t.dim=n,t}var c,s=ha,f=la,l=Pn(e,"start","brush","end"),h=6;return e.move=function(t,e){t.selection?t.on("start.brush",function(){i(this,arguments).beforestart().start()}).on("interrupt.brush end.brush",function(){i(this,arguments).end()}).tween("brush",function(){function t(t){u.selection=1===t&&da(s)?null:f(t),r.call(o),a.brush()}var o=this,u=o.__brush,a=i(o,arguments),c=u.selection,s=n.input("function"==typeof e?e.apply(this,arguments):e,u.extent),f=dp(c,s);
@@ -22557,25 +22902,25 @@ Polymer({
       <div class="flex"></div>
 
       <div class="content">
-        <div class="title">How does it works?</div>
+        <div class="title"><c1d3r-localized key="tutorial.title"></c1d3r-localized></div>
 
         <div class="desc">
-          <p>In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.</p>
+          <p><c1d3r-localized key="tutorial.desc.1"></c1d3r-localized></p>
 
           <c1d3r-progress id="progress-example" step="0"></c1d3r-progress>
 
-          <p>This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.</p>
+          <p><c1d3r-localized key="tutorial.progress"></c1d3r-localized></p>
 
           <ul>
-            <li>Stage 1 being an introductory page that will describe the style and type of the recipe.</li>
-            <li>Stage 2 allows the user to describe the apple juice and adjustable ingredients that will serve as the base of the hard cider.</li>
-            <li>Stage 3 dictates the steps that were generated to best fit the initial ingredients that were proposed.</li>
-            <li>Stage 4 proposes way to save and archive the initial conditions and steps for future references.</li>
+            <li><c1d3r-localized key="tutorial.step.1"></c1d3r-localized></li>
+            <li><c1d3r-localized key="tutorial.step.2"></c1d3r-localized></li>
+            <li><c1d3r-localized key="tutorial.step.3"></c1d3r-localized></li>
+            <li><c1d3r-localized key="tutorial.step.4"></c1d3r-localized></li>
           </ul>
 
           <div class="skip">
-            <paper-checkbox checked="{{storage.skipTutorial}}"></paper-checkbox>
-            Do not show the tutorial again.
+            <paper-checkbox checked="{{skipTutorial}}"></paper-checkbox>
+            <c1d3r-localized key="tutorial.skip"></c1d3r-localized>
           </div>
         </div>
       </div>
@@ -22587,14 +22932,15 @@ Polymer({
 
     <div class="nav">
       <div class="flex"></div>
-      <paper-button on-tap="_navBack">Go Back</paper-button>
-      <paper-button on-tap="_navNext">Next</paper-button>
+      <paper-button on-tap="_navBack"><c1d3r-localized key="wizard.back"></c1d3r-localized></paper-button>
+      <paper-button on-tap="_navNext"><c1d3r-localized key="wizard.next"></c1d3r-localized></paper-button>
     </div>
 
-    <iron-localstorage name="c1d3r-app-storage" value="{{storage}}" on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
   </template>
 
   <script>'use strict';
+
+var blinkPeriodInMs = 2500;
 
 Polymer({
   is: 'c1d3r-tutorial',
@@ -22602,48 +22948,29 @@ Polymer({
   hostAttributes: {},
 
   properties: {
-    skip: {
-      type: Boolean,
-      observer: '_skipChanged'
-    },
     cancelHandle: Number,
-    blinkPeriod: {
-      type: Number,
-      value: 2500
-    },
-    storage: Object
+    skipTutorial: {
+      type: Boolean,
+      notify: true
+    }
   },
 
   onBlur: function onBlur() {
-    this.cancelAsync(this.cancelHandle);
+    window.clearInterval(this.cancelHandle);
   },
   onFocus: function onFocus() {
-    var _this = this;
+    if (this.skipTutorial) this.fire('next');
 
-    if (this.storage.skipTutorial) this.fire('next');
-    this.$$('c1d3r-progress').step = 0;
-    this.cancelHandle = this.async(function () {
-      return _this._blink();
-    }, this.blinkPeriod);
+    this._startProgressAnimation();
   },
-  _blink: function _blink() {
-    var _this2 = this;
+  _startProgressAnimation: function _startProgressAnimation() {
+    var progressEl = this.$$('c1d3r-progress');
 
-    var progressBar = this.$$('c1d3r-progress');
-    progressBar.set('step', (progressBar.step + 1) % 4);
-    this.cancelHandle = this.async(function () {
-      return _this2._blink();
-    }, this.blinkPeriod);
-  },
-  _skipChanged: function _skipChanged(wantsSkip) {
-    if (!wantsSkip) return;
-    console.info('now skipping tutorial.');
-    this.set('storage.skipTutorial', true);
-  },
-  _initStorage: function _initStorage() {
-    this.storage = {
-      skipTutorial: false
-    };
+    progressEl.step = 0;
+
+    this.cancelHandle = window.setInterval(function () {
+      return progressEl.set('step', (progressEl.step + 1) % 4);
+    }, blinkPeriodInMs);
   },
   _navBack: function _navBack() {
     this.fire('home');
@@ -23840,8 +24167,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         @apply(--layout);
         @apply(--layout-center-center);
-
-        font-family: var(--main-title-font);
       }
 
       div.container {
@@ -23859,29 +24184,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       div.desc {
         max-width: 450px;
+        line-height: 1.5;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        text-align: justify;
       }
       div.name {
         font-size: 24px;
       }
       div.charac ul li {
-        font-family: 'Open Sans', sans-serif;
+        line-height: 1.5;
+        font-family: 'Roboto', 'Noto', sans-serif;
       }
     </style>
 
     <div class="container shadow-elevation-2dp">
-      <iron-image src="{{recipe.img}}" sizing="contain"></iron-image>
+      <iron-image src="[[imgUrl]]" sizing="contain"></iron-image>
 
       <div class="desc">
-        <div class="name">{{recipe.name}}</div>
-        <div class="detail">{{recipe.synopsis}}</div>
-        <div class="detail">{{recipe.history}}</div>
-        <div class="detail">{{recipe.details}}</div>
+        <div class="name"><c1d3r-localized key$="[[recipe.id]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.synopsis]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.history]]"></c1d3r-localized></div>
+        <div class="detail"><c1d3r-localized key$="[[recipe.data.details]]"></c1d3r-localized></div>
       </div>
 
       <div class="charac">
         <ul>
-          <template is="dom-repeat" items="{{recipe.characteristics}}">
-            <li>{{item}}</li>
+          <template is="dom-repeat" items="[[recipe.data.characteristics]]">
+            <li><c1d3r-localized key$="[[item]]"></c1d3r-localized></li>
           </template>
         </ul>
       </div>
@@ -23900,9 +24229,17 @@ Polymer({
     recipe: {
       type: Object,
       notify: true
+    },
+    imgUrl: {
+      type: String,
+      computed: '_getImgUrl(recipe)'
     }
   },
 
+  _getImgUrl: function _getImgUrl(recipe) {
+    if (recipe == null) return null;
+    return recipe.path + recipe.id + '/' + recipe.data.img;
+  },
   onBlur: function onBlur() {},
   onFocus: function onFocus() {}
 });</script>
@@ -24320,7 +24657,9 @@ Polymer({
     isBool: Boolean,
     isLogging: {
       type: Boolean,
-      value: false
+      value: function value() {
+        return window.cfg.logging.dataEntryChanged;
+      }
     },
     isNumber: Boolean,
     placeholder: String,
@@ -24380,7 +24719,7 @@ Polymer({
     </style>
 
     <div class="index">{{number}}</div>
-    <div class="title flex">{{entryItem.title}}</div>
+    <div class="title flex"><c1d3r-localized key$="[[entryItem.title]]"></c1d3r-localized></div>
     <div class="data">
       <template is="dom-if" if="[[entryItem.isBool]]">
         <paper-checkbox checked="{{entryItem.value}}"></paper-checkbox>
@@ -24414,14 +24753,19 @@ Polymer({
     }
   },
 
-  observers: ['_isInputValid(users.splices)'],
-
   validate: function validate() {
     (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
   },
-  reset: function reset() {
+  removeInvalid: function removeInvalid() {
     var pi = this.$$('paper-input');
     if (pi != null) pi.invalid = false;
+  },
+  reset: function reset() {
+    var pi = this.$$('paper-input');
+    if (pi != null) {
+      pi.value = "";
+      pi.invalid = false;
+    }
 
     var pc = this.$$('paper-checkbox');
     if (pc != null) pc.active = false;
@@ -24433,8 +24777,7 @@ Polymer({
   _onBlur: function _onBlur(evt) {
     evt.stopPropagation();
     this.fire('hide-details');
-  },
-  _isInputValid: function _isInputValid() {}
+  }
 });</script>
 </dom-module>
 <dom-module id="c1d3r-entry" assetpath="../c1d3r-ui/">
@@ -24457,9 +24800,11 @@ Polymer({
         background-color: #FADCD9;
         @apply(--shadow-elevation-2dp);
         font-size: 0.8em;
+        line-height: 1.5;
       }
       div.sidebar div.detail {
         padding-top: 4em;
+        line-height: 1.5;
       }
       div.content {
         @apply(--layout-vertical);
@@ -24475,29 +24820,31 @@ Polymer({
         @apply(--shadow-elevation-2dp);
         margin-top: 1px;
         padding: 10px;
+        line-height: 1.5;
         background-color: white;
       }
     </style>
 
     <div class="sidebar">
       <div class="warning">
-        Watch out for juice that contains preservatives; sorbates, or sorbitol
-        as it will interfere with the fermentation process and might/will lead to
-        unwanted results.
+        <c1d3r-localized key="entry.warning"></c1d3r-localized>
       </div>
-      <div class="detail"></div>
+      <div class="detail">
+        <div><c1d3r-localized id="detailTitle"></c1d3r-localized></div>
+        <div><c1d3r-localized id="detailContent"></c1d3r-localized></div>
+      </div>
     </div>
 
     <div class="content flex">
       <div class="content-block">
-        <div class="head">Ingredients</div>
+        <div class="head"><c1d3r-localized key="entry.ingredient.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[ingEntries]]">
           <div class="step">
             <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
           </div>
         </template>
 
-        <div class="head">Personalization</div>
+        <div class="head"><c1d3r-localized key="entry.personalization.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[adjustEntries]]">
           <div class="step">
             <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
@@ -24509,7 +24856,6 @@ Polymer({
 
   <script>'use strict';
 
-var txt = 'Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.';
 Polymer({
   is: 'c1d3r-entry',
 
@@ -24532,7 +24878,7 @@ Polymer({
 
   // Lifecycle
   attached: function attached() {
-    this.setDetails('Instructions', txt);
+    this.setDetails('entry.detail.instruction', 'entry.detail.explanation');
   },
 
 
@@ -24541,14 +24887,14 @@ Polymer({
     var _this = this;
 
     if (newRecipe == null) return;
-    this.set('ingEntries', newRecipe.data.filter(function (data) {
+    this.set('ingEntries', newRecipe.data.data.filter(function (data) {
       return data.group === 'ingredient';
     }).map(function (data) {
       return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
         return _this.set('data.' + key, val);
       });
     }));
-    this.set('adjustEntries', newRecipe.data.filter(function (data) {
+    this.set('adjustEntries', newRecipe.data.data.filter(function (data) {
       return data.group === 'adjust';
     }).map(function (data) {
       return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
@@ -24560,20 +24906,21 @@ Polymer({
 
   // public methods
   setDetails: function setDetails(title, content) {
-    this.$$('div.sidebar div.detail').innerHTML = '<div>' + title + '</div><div>' + content + '</div>';
+    this.$.detailTitle.key = title;
+    this.$.detailContent.key = content;
   },
 
 
   // private
   _onShowDetails: function _onShowDetails(evt) {
     var entry = evt.detail.model;
-    this.setDetails(this._getCategory(entry) + ' ' + evt.detail.index, entry.details);
+    this.setDetails(this._getCategory(entry), entry.details);
   },
   _onHideDetails: function _onHideDetails() {
-    this.setDetails('Instructions', txt);
+    this.setDetails("entry.detail.instruction", 'entry.detail.explanation');
   },
   _getCategory: function _getCategory(entry) {
-    return entry.group === 'adjust' ? 'Personalization' : 'Ingredient';
+    return entry.group === 'adjust' ? 'entry.personalization.detail' : 'entry.ingredient.detail';
   },
   isValid: function isValid() {
     var inputs = Polymer.dom(this.root).querySelectorAll('c1d3r-input');
@@ -24587,7 +24934,16 @@ Polymer({
   onBlur: function onBlur() {},
   onFocus: function onFocus() {
     Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(function (i) {
-      return i.reset();
+      return i.removeInvalid();
+    });
+  },
+  reset: function reset() {
+    var _this2 = this;
+
+    this.async(function () {
+      Polymer.dom(_this2.root).querySelectorAll('c1d3r-input').forEach(function (i) {
+        return i.reset();
+      });
     });
   }
 });</script>
@@ -24925,8 +25281,6 @@ Custom property | Description | Default
 }));
 </script>
 
-<!--download("hello world", "dlText.json", "application/json");-->
-
 <dom-module id="c1d3r-final" assetpath="../c1d3r-ui/">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -24938,10 +25292,9 @@ Custom property | Description | Default
       }
     </style>
 
-    <h2>Final</h2>
-
-    Enjoy your recipe, and please save the following information for futher years.
-
+    <h2><c1d3r-localized key="final.title"></c1d3r-localized></h2>
+    <c1d3r-localized key="final.download"></c1d3r-localized>
+    <iron-localstorage name="cfg" value="{{cfg}}"></iron-localstorage>
     <paper-icon-button icon="icons:archive" on-tap="_onArchive">Raised button</paper-icon-button>
   </template>
 
@@ -24969,8 +25322,8 @@ Polymer({
     var now = new Date().toISOString().slice(0, 10);
 
     download(JSON.stringify({
-      version: window.app.version,
-      recipe: this.recipe,
+      version: this.cfg.version,
+      recipe: this.recipe.data,
       data: this.juice,
       guide: this.guide
     }), this.recipe.id + "_" + now + ".json", "application/json");
@@ -25195,7 +25548,7 @@ Polymer({
    *
    * @param fPh Final PH of the solution.
    * @param volumeL Solution volume in liters.
-   * @return Mass of potassium metabisulfite to add.
+   * @return {number} Mass of potassium metabisulfite to add.
    */
   _getPotassMetaAddInG: function _getPotassMetaAddInG(oPh, fPh, volumeL) {
     var juicePh = _fromString(oPh);
@@ -25421,6 +25774,287 @@ Polymer({
   }
 });</script>
 </dom-module>
+<dom-module id="c1d3r-g" assetpath="../c1d3r-ui/">
+  <template>
+    <style>
+      div.content {
+        @apply(--layout-vertical);
+      }
+      div.head {
+        @apply(--layout-horizontal);
+        color: #333;
+        padding-top: 30px;
+        padding-bottom: 10px;
+      }
+      /* Do not remove, steps are dynamically added. */
+      div.step {
+        @apply(--layout-horizontal);
+        @apply(--shadow-elevation-2dp);
+        margin-top: 1px;
+        padding: 10px;
+        background-color: white;
+        line-height: 1.5;
+      }
+    </style>
+
+    <div class="content">
+      <!--Initial Prep-->
+      <div class="content-block" id="stepGroup0">
+        <div class="head"><c1d3r-localized key="guide.group.0"></c1d3r-localized></div>
+      </div>
+      <!--Sanitization-->
+      <div class="content-block" id="stepGroup1">
+        <div class="head"><c1d3r-localized key="guide.group.1"></c1d3r-localized></div>
+      </div>
+      <!--Yeast Preparation-->
+      <div class="content-block" id="stepGroup2">
+        <div class="head"><c1d3r-localized key="guide.group.2"></c1d3r-localized></div>
+      </div>
+      <!--First Fermentation-->
+      <div class="content-block" id="stepGroup3">
+        <div class="head"><c1d3r-localized key="guide.group.3"></c1d3r-localized></div>
+      </div>
+      <!--Second Fermentation-->
+      <div class="content-block" id="stepGroup4">
+        <div class="head"><c1d3r-localized key="guide.group.4"></c1d3r-localized></div>
+      </div>
+      <!-- Packaging and Bottling -->
+      <div class="content-block" id="stepGroup5">
+        <div class="head"><c1d3r-localized key="guide.group.5"></c1d3r-localized></div>
+      </div>
+    </div>
+  </template>
+
+  <script>'use strict';
+
+function _fromString(val) {
+  if (val == null) return val;
+  if (typeof val === 'number') return val;
+  console.assert(typeof val === 'string', 'Invalid value type. Should be a String.');
+  if (val.trim().length === 0) return null;
+  return Number(val);
+}
+
+Polymer({
+  is: 'c1d3r-g',
+
+  properties: {
+    recipe: {
+      type: Object,
+      observer: 'recipeChanged'
+    },
+    data: {
+      type: Object,
+      notify: true
+    },
+    isLogging: {
+      type: Boolean,
+      value: function value() {
+        return window.cfg.logging.stepDependencyChanged;
+      }
+    }
+  },
+
+  observers: ['_dataAttrChanged(data.*)'],
+
+  behaviors: [I18nBehavior],
+
+  /**
+   * Logging data attribute changes.
+   */
+  _dataAttrChanged: function _dataAttrChanged(evt) {
+    if (this.isLogging) console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
+
+    // Steps to update concatenates steps from all groups with id = path of updated data element.
+    if (this.recipe == null) return;
+
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.recipe.data.steps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var group = _step.value;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = group.filter(function (s) {
+            return s.quantities.some(function (q) {
+              return q.id == evt.path;
+            });
+          })[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var step = _step2.value;
+
+            this._updateStep(this.$$('#step-' + step.id), step);
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  },
+  _updateStep: function _updateStep(el, step) {
+    var _this = this;
+
+    var content = this.translate(step.tmpl);
+    var elements = step.quantities.map(function (qty) {
+      return Number(_this.get(qty.id)).toPrecision(3) + ' ' + qty.sym;
+    });
+
+    for (var i = 0; i < elements.length; i++) {
+      content = content.replace('{' + i + '}', '<span style="font-weight: bold;padding: 0 5px;">' + elements[i] + '</span>');
+    }
+
+    el.innerHTML = content;
+  },
+  _makeStep: function _makeStep(id, content) {
+    var div = document.createElement('div');
+    div.classList.add('step');
+    if (id != 'ignored') div.id = id;
+    div.appendChild(document.createTextNode(content));
+    return div;
+  },
+  _setInSteps: function _setInSteps() {
+    var stepGroups = [this.$.stepGroup0, this.$.stepGroup1, this.$.stepGroup2, this.$.stepGroup3, this.$.stepGroup4, this.$.stepGroup5];
+    // remove all
+    for (var i = 0; i < this.recipe.data.steps.length; i++) {
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = stepGroups[i].querySelectorAll('.step')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var el = _step3.value;
+
+          el.parentElement.removeChild(el);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }
+    for (var _i = 0; _i < this.recipe.data.steps.length; _i++) {
+      var group = stepGroups[_i];
+      var steps = this.recipe.data.steps[_i];
+      if (group == null || steps == null) continue;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        for (var _iterator4 = steps[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var step = _step4.value;
+
+          group.appendChild(this._makeStep('step-' + step.id, this.translate(step.tmpl)));
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4.return) {
+            _iterator4.return();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+    }
+  },
+  recipeChanged: function recipeChanged(recipe) {
+    var _this2 = this;
+
+    if (recipe == null) return;
+
+    this._setInSteps();
+
+    fetch(recipe.path + recipe.id + '/' + recipe.data.func).then(function (response) {
+      return response.text();
+    }).then(function (script) {
+      return eval(script);
+    }).then(function (fun) {
+
+      Object.keys(recipe.data.observers).map(function (key, idx) {
+        var parameters = recipe.data.observers[key];
+        var funcName = '_func' + idx;
+        var funcSignature = funcName + '(' + parameters.join(', ') + ')';
+
+        _this2[funcName] = function () {
+          // Convert raw to numbers
+          var args = [].concat(Array.prototype.slice.call(arguments)).map(function (arg) {
+            return _fromString(arg);
+          });
+
+          // will call "function _{id}(arguments...){}" and use the result of as the attribute's new value.
+          var callback = fun[key.replace('data.', '_')];
+          var attrNewValue = callback.apply(null, args);
+          this.set(key, attrNewValue);
+        };
+
+        _this2._addComplexObserverEffect(funcSignature);
+      });
+
+      recipe.data.data.filter(function (d) {
+        return d.group === 'preset';
+      }).forEach(function (d) {
+        return _this2.set('data.' + d.id, d.value);
+      });
+    });
+  },
+  listSteps: function listSteps() {
+    return Array.from(Polymer.dom(this.root).querySelectorAll('.content-block')).map(function (block) {
+      return Array.from(block.children);
+    }).map(function (steps) {
+      return {
+        text: steps[0].innerText,
+        steps: steps.slice(1).filter(function (s) {
+          return !s.hidden;
+        }).map(function (s) {
+          return s.innerText;
+        })
+      };
+    });
+  }
+});</script>
+</dom-module>
 <dom-module id="c1d3r-steps" assetpath="../c1d3r-ui/">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
@@ -25436,13 +26070,10 @@ Polymer({
     </style>
 
     <div class="sidebar">
-      <h2>Guide</h2>
+      <h2><c1d3r-localized key="guide.title"></c1d3r-localized></h2>
     </div>
 
-    <iron-pages selected="[[recipe.id]]" attr-for-selected="recipe-id" class="flex layout vertical">
-      <c1d3r-dryhardcider recipe-id="dryHardCider" class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-dryhardcider>
-    </iron-pages>
-
+    <c1d3r-g class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-g>
   </template>
 
   <script>'use strict';
@@ -25453,7 +26084,7 @@ Polymer({
   hostAttributes: {},
 
   properties: {
-    recipe: Object,
+    recipe: { type: Object },
     data: {
       type: Object,
       notify: true
@@ -25465,7 +26096,7 @@ Polymer({
   },
 
   onBlur: function onBlur() {
-    this.set('guide', this.$$('c1d3r-dryHardCider').listSteps());
+    this.set('guide', this.$$('c1d3r-g').listSteps());
     return false;
   },
   onFocus: function onFocus() {}
@@ -25505,14 +26136,7 @@ Polymer({
   observers: ['_newRecipe(recipe)', '_attributeChanged(data.*)'],
 
   _newRecipe: function _newRecipe(recipe) {
-    var _this = this;
-
     if (recipe == null) return;
-    recipe.data.filter(function (d) {
-      return d.group === 'preset';
-    }).forEach(function (d) {
-      return _this.set('data.' + d.id, d.value);
-    });
   },
   _attributeChanged: function _attributeChanged(values) {
     if (this.isLogging) console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));
@@ -25552,8 +26176,10 @@ Polymer({
 
     <div class="nav layout horizontal">
       <div class="flex"></div>
-      <paper-button on-tap="navBack">Go Back</paper-button>
-      <paper-button on-tap="navNext">[[_nextOrFinishStep(selected)]]</paper-button>
+      <paper-button on-tap="navBack"><c1d3r-localized key="wizard.back"></c1d3r-localized></paper-button>
+      <paper-button on-tap="navNext">
+        <c1d3r-localized key$="[[_nextOrFinishStep(selected)]]"></c1d3r-localized>
+      </paper-button>
     </div>
 
     <!-- Data -->
@@ -25585,10 +26211,11 @@ Polymer({
 
   navHome: function navHome() {
     this.fire('home');
+    this.$$('c1d3r-entry').reset();
   },
   navBack: function navBack() {
     if (this.selected === 0) {
-      this.fire('home');
+      this.navHome();
       return;
     }
     this.set('selected', this.selected - 1);
@@ -25598,7 +26225,7 @@ Polymer({
 
     if (this.selected === 3) {
       this.set('selected', 0);
-      this.fire('home');
+      this.navHome();
       return;
     }
 
@@ -25618,7 +26245,7 @@ Polymer({
     return this.selected == null || pages[this.selected] == null || pages[this.selected].isValid == null || pages[this.selected].isValid();
   },
   _nextOrFinishStep: function _nextOrFinishStep(selected) {
-    return selected === 3 ? 'Finish' : 'Next';
+    return selected === 3 ? 'wizard.finish' : 'wizard.next';
   },
   _pageChanged: function _pageChanged(newPage, oldPage) {
     var pages = this.$$('iron-pages').children;
@@ -25647,31 +26274,41 @@ Polymer({
       }
     </style>
 
-    <iron-pages selected="[[selected]]" class="layout vertical flex">
-      <c1d3r-splash recipes="[[recipes]]" on-selected="_selectRecipe" class="flex"></c1d3r-splash>
-      <c1d3r-tutorial on-next="_navRecipe" on-home="_navHome" class="flex"></c1d3r-tutorial>
-      <c1d3r-wizard recipe="[[recipe]]" on-home="_navHome" class="flex"></c1d3r-wizard>
+    <iron-pages id="appPages" class="layout vertical flex" selected="[[selected]]">
+      <!-- Application Splash Page with the Recipe Options -->
+      <c1d3r-splash id="splash" class="flex" recipes="[[recipes]]" on-recipe-selected="_onRecipeSelected"></c1d3r-splash>
+      <!-- Tutorial page about of this guide works. -->
+      <c1d3r-tutorial class="flex" on-home="_navToHome" on-next="_navToGuide" skip-tutorial="{{cfg.skipTutorial}}"></c1d3r-tutorial>
+      <!-- The actual guide -->
+      <c1d3r-wizard id="guide" class="flex" recipe="[[recipe]]" on-home="_navToHome"></c1d3r-wizard>
     </iron-pages>
 
-    <c1d3r-footer locale="{{locale}}"></c1d3r-footer>
+    <c1d3r-footer id="footer"></c1d3r-footer>
 
-    <!-- Loads the application manifest -->
-    <iron-ajax auto="" url="../../manifest.json" handle-as="json" on-response="_handleManifest"></iron-ajax>
+    <!-- Load Locale Specific Application Strings -->
+    <c1d3r-strings locale="en" url="/data/strings_en.json"></c1d3r-strings>
+    <c1d3r-strings locale="fr" url="/data/strings_fr.json"></c1d3r-strings>
 
-    <!--Load All Possible Recipe (need to also load in c1d3r-steps-->
-    <c1d3r-loader urls="[&quot;data/recipes/dryHardCider&quot;]" recipes="{{recipes}}"></c1d3r-loader>
+    <!-- App Persistent Configuration -->
+    <iron-localstorage name="cfg" value="{{cfg}}" on-iron-localstorage-load-empty="_initCfg"></iron-localstorage>
   </template>
 
   <script>'use strict';
+
+var Page = {
+  Home: 0,
+  Tutorial: 1,
+  Guide: 2
+};
 
 Polymer({
 
   is: 'c1d3r-app',
 
   properties: {
-    locale: {
-      value: 'en',
-      observer: '_localeChanged'
+    cfg: {
+      type: Object,
+      notify: true
     },
     recipe: {
       type: Object,
@@ -25682,56 +26319,25 @@ Polymer({
       type: Number,
       value: 0,
       observer: '_pageChanged'
+    },
+    version: {
+      type: Number,
+      value: "2.1.1"
     }
   },
 
+  // ----------------------------------- LifeCycles ----------------------------------------------------------------
   /**
-   * On component Ready (part of component life-cycle)
+   * Just after the component is inserted in the DOM. (Before it is shown.)
    */
-  ready: function ready() {
-    this.set('recipes', Polymer.dom(this.root).querySelectorAll('c1d3r-recipe'));
+  attached: function attached() {
+    // Loads in the recipes that are inside its content.
+    this.set('recipes', Polymer.dom(this).children);
+    this.$.footer.setVersion(this.version);
   },
 
 
-  /**
-   * Processes Application Manifest.
-   */
-  _handleManifest: function _handleManifest(evt) {
-    window.app = evt.detail.response;
-    this.$$('c1d3r-footer').setVersion(window.app.version);
-  },
-
-  /**
-   * On user switched locale
-   */
-  _localeChanged: function _localeChanged(newLangCode, oldLangCode) {
-    console.info('locale changed from ' + oldLangCode + ' to ' + newLangCode);
-  },
-
-  /**
-   * Navigate to the Home (splash page)
-   */
-  _navHome: function _navHome() {
-    this.set('recipe', undefined);
-    this.$$('c1d3r-wizard').reset();
-    this.$$('iron-pages').selectIndex(0);
-  },
-
-  /**
-   * Navigate to the app with a recipe selected.
-   */
-  _navRecipe: function _navRecipe() {
-    this.set('selected', 2);
-  },
-
-  /**
-   * Select a specific recipe.
-   */
-  _selectRecipe: function _selectRecipe(evt) {
-    this.set('selected', 1);
-    this.set('recipe', evt.detail);
-  },
-
+  // ----------------------------------- On Change Listeners -------------------------------------------------------
   /**
    * Manages calling onFocus and onBlur during page switching.
    * @param newPage Page moving to
@@ -25739,9 +26345,51 @@ Polymer({
    * @private
    */
   _pageChanged: function _pageChanged(newPage, oldPage) {
-    var pages = this.$$('iron-pages').children;
+    var pages = this.$.appPages.children;
     if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null) pages[oldPage].onBlur();
     if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null) pages[newPage].onFocus();
+  },
+
+
+  // ----------------------------------- Private Methods  ----------------------------------------------------------
+  /**
+   * Navigate to the Home (splash page)
+   * @private
+   */
+  _navToHome: function _navToHome() {
+    this.set('selected', Page.Home);
+    this.set('recipe', null);
+    this.$.guide.reset();
+    this.$.splash.reset();
+  },
+
+  /**
+   * Navigate to the app with a recipe selected.
+   * @private
+   */
+  _navToGuide: function _navToGuide() {
+    this.set('selected', Page.Guide);
+  },
+
+  /**
+   * Called when a recipe was selected by the user.
+   * @param {Event} evt Event containing the selected recipe.
+   * @private
+   */
+  _onRecipeSelected: function _onRecipeSelected(evt) {
+    this.set('selected', this.cfg.skipTutorial ? Page.Guide : Page.Tutorial);
+    this.set('recipe', evt.detail);
+  },
+
+  /**
+   * Creates a default app configuration if none exists.
+   * @private
+   */
+  _initCfg: function _initCfg() {
+    this.cfg = {
+      version: this.version,
+      skipTutorial: false
+    };
   }
 });</script>
 </dom-module>

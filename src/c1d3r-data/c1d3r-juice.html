@@ -34,14 +34,7 @@ Polymer({
   observers: ['_newRecipe(recipe)', '_attributeChanged(data.*)'],
 
   _newRecipe: function _newRecipe(recipe) {
-    var _this = this;
-
     if (recipe == null) return;
-    recipe.data.filter(function (d) {
-      return d.group === 'preset';
-    }).forEach(function (d) {
-      return _this.set('data.' + d.id, d.value);
-    });
   },
   _attributeChanged: function _attributeChanged(values) {
     if (this.isLogging) console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));

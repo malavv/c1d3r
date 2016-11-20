@@ -2,9 +2,9 @@
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 
 <link rel="import" href="c1d3r-progress.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
 </head><body><dom-module id="c1d3r-tutorial">
   <template>
@@ -49,25 +49,25 @@
       <div class="flex"></div>
 
       <div class="content">
-        <div class="title">How does it works?</div>
+        <div class="title"><c1d3r-localized key="tutorial.title"></c1d3r-localized></div>
 
         <div class="desc">
-          <p>In this guide, we will guide you to creating the hard cider you want from the apple juice you have. As we recognize that apple juice makes a big difference in the final product, and that far more than usual what you get from recipe book is a static recipe that does not take the juice into account, we created for you a product that will help you achieve reliable results with us doing all the legwork. This is the reason why our recipe maker is focused around stages explained by a visual progress indicator.</p>
+          <p><c1d3r-localized key="tutorial.desc.1"></c1d3r-localized></p>
 
           <c1d3r-progress id="progress-example" step="0"></c1d3r-progress>
 
-          <p>This progress bar serves as an indicator of where you are in the progress. It also indicates how close you are to completion and where you are heading when going back.</p>
+          <p><c1d3r-localized key="tutorial.progress"></c1d3r-localized></p>
 
           <ul>
-            <li>Stage 1 being an introductory page that will describe the style and type of the recipe.</li>
-            <li>Stage 2 allows the user to describe the apple juice and adjustable ingredients that will serve as the base of the hard cider.</li>
-            <li>Stage 3 dictates the steps that were generated to best fit the initial ingredients that were proposed.</li>
-            <li>Stage 4 proposes way to save and archive the initial conditions and steps for future references.</li>
+            <li><c1d3r-localized key="tutorial.step.1"></c1d3r-localized></li>
+            <li><c1d3r-localized key="tutorial.step.2"></c1d3r-localized></li>
+            <li><c1d3r-localized key="tutorial.step.3"></c1d3r-localized></li>
+            <li><c1d3r-localized key="tutorial.step.4"></c1d3r-localized></li>
           </ul>
 
           <div class="skip">
-            <paper-checkbox checked="{{storage.skipTutorial}}"></paper-checkbox>
-            Do not show the tutorial again.
+            <paper-checkbox checked="{{skipTutorial}}"></paper-checkbox>
+            <c1d3r-localized key="tutorial.skip"></c1d3r-localized>
           </div>
         </div>
       </div>
@@ -79,14 +79,15 @@
 
     <div class="nav">
       <div class="flex"></div>
-      <paper-button on-tap="_navBack">Go Back</paper-button>
-      <paper-button on-tap="_navNext">Next</paper-button>
+      <paper-button on-tap="_navBack"><c1d3r-localized key="wizard.back"></c1d3r-localized></paper-button>
+      <paper-button on-tap="_navNext"><c1d3r-localized key="wizard.next"></c1d3r-localized></paper-button>
     </div>
 
-    <iron-localstorage name="c1d3r-app-storage" value="{{storage}}" on-iron-localstorage-load-empty="_initStorage"></iron-localstorage>
   </template>
 
   <script>'use strict';
+
+var blinkPeriodInMs = 2500;
 
 Polymer({
   is: 'c1d3r-tutorial',
@@ -94,48 +95,29 @@ Polymer({
   hostAttributes: {},
 
   properties: {
-    skip: {
-      type: Boolean,
-      observer: '_skipChanged'
-    },
     cancelHandle: Number,
-    blinkPeriod: {
-      type: Number,
-      value: 2500
-    },
-    storage: Object
+    skipTutorial: {
+      type: Boolean,
+      notify: true
+    }
   },
 
   onBlur: function onBlur() {
-    this.cancelAsync(this.cancelHandle);
+    window.clearInterval(this.cancelHandle);
   },
   onFocus: function onFocus() {
-    var _this = this;
+    if (this.skipTutorial) this.fire('next');
 
-    if (this.storage.skipTutorial) this.fire('next');
-    this.$$('c1d3r-progress').step = 0;
-    this.cancelHandle = this.async(function () {
-      return _this._blink();
-    }, this.blinkPeriod);
+    this._startProgressAnimation();
   },
-  _blink: function _blink() {
-    var _this2 = this;
+  _startProgressAnimation: function _startProgressAnimation() {
+    var progressEl = this.$$('c1d3r-progress');
 
-    var progressBar = this.$$('c1d3r-progress');
-    progressBar.set('step', (progressBar.step + 1) % 4);
-    this.cancelHandle = this.async(function () {
-      return _this2._blink();
-    }, this.blinkPeriod);
-  },
-  _skipChanged: function _skipChanged(wantsSkip) {
-    if (!wantsSkip) return;
-    console.info('now skipping tutorial.');
-    this.set('storage.skipTutorial', true);
-  },
-  _initStorage: function _initStorage() {
-    this.storage = {
-      skipTutorial: false
-    };
+    progressEl.step = 0;
+
+    this.cancelHandle = window.setInterval(function () {
+      return progressEl.set('step', (progressEl.step + 1) % 4);
+    }, blinkPeriodInMs);
   },
   _navBack: function _navBack() {
     this.fire('home');

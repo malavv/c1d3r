@@ -1,0 +1,34 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="i18n-behavior.html">
+
+</head><body><dom-module id="c1d3r-strings">
+  <template>
+    <iron-ajax auto="" url="[[url]]" handle-as="json" timeout="[[timeout]]" on-response="_handle"></iron-ajax>
+  </template>
+
+  <script>'use strict';
+
+Polymer({
+
+  is: 'c1d3r-strings',
+
+  hostAttributes: { hidden: true },
+
+  behaviors: [I18nBehavior],
+
+  properties: {
+    locale: String,
+    timeout: { type: Number, value: function value() {
+        return window.cfg.ajaxLoadTimeoutInMs;
+      } },
+    url: String
+  },
+
+  _handle: function _handle(evt) {
+    this.loadDictionary(evt.detail.response);
+  }
+});</script>
+</dom-module>
+</body></html>

@@ -10,6 +10,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-validator.html">
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
+<link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 <link rel="import" href="c1d3r-input.html">
 
 </head><body><dom-module id="c1d3r-entry">
@@ -32,9 +33,11 @@
         background-color: #FADCD9;
         @apply(--shadow-elevation-2dp);
         font-size: 0.8em;
+        line-height: 1.5;
       }
       div.sidebar div.detail {
         padding-top: 4em;
+        line-height: 1.5;
       }
       div.content {
         @apply(--layout-vertical);
@@ -50,29 +53,31 @@
         @apply(--shadow-elevation-2dp);
         margin-top: 1px;
         padding: 10px;
+        line-height: 1.5;
         background-color: white;
       }
     </style>
 
     <div class="sidebar">
       <div class="warning">
-        Watch out for juice that contains preservatives; sorbates, or sorbitol
-        as it will interfere with the fermentation process and might/will lead to
-        unwanted results.
+        <c1d3r-localized key="entry.warning"></c1d3r-localized>
       </div>
-      <div class="detail"></div>
+      <div class="detail">
+        <div><c1d3r-localized id="detailTitle"></c1d3r-localized></div>
+        <div><c1d3r-localized id="detailContent"></c1d3r-localized></div>
+      </div>
     </div>
 
     <div class="content flex">
       <div class="content-block">
-        <div class="head">Ingredients</div>
+        <div class="head"><c1d3r-localized key="entry.ingredient.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[ingEntries]]">
           <div class="step">
             <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
           </div>
         </template>
 
-        <div class="head">Personalization</div>
+        <div class="head"><c1d3r-localized key="entry.personalization.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[adjustEntries]]">
           <div class="step">
             <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
@@ -84,7 +89,6 @@
 
   <script>'use strict';
 
-var txt = 'Here you specify additional details regarding the initial ingredients and control some of the adjustments that are possibles to the recipe.';
 Polymer({
   is: 'c1d3r-entry',
 
@@ -107,7 +111,7 @@ Polymer({
 
   // Lifecycle
   attached: function attached() {
-    this.setDetails('Instructions', txt);
+    this.setDetails('entry.detail.instruction', 'entry.detail.explanation');
   },
 
 
@@ -116,14 +120,14 @@ Polymer({
     var _this = this;
 
     if (newRecipe == null) return;
-    this.set('ingEntries', newRecipe.data.filter(function (data) {
+    this.set('ingEntries', newRecipe.data.data.filter(function (data) {
       return data.group === 'ingredient';
     }).map(function (data) {
       return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
         return _this.set('data.' + key, val);
       });
     }));
-    this.set('adjustEntries', newRecipe.data.filter(function (data) {
+    this.set('adjustEntries', newRecipe.data.data.filter(function (data) {
       return data.group === 'adjust';
     }).map(function (data) {
       return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
@@ -135,20 +139,21 @@ Polymer({
 
   // public methods
   setDetails: function setDetails(title, content) {
-    this.$$('div.sidebar div.detail').innerHTML = '<div>' + title + '</div><div>' + content + '</div>';
+    this.$.detailTitle.key = title;
+    this.$.detailContent.key = content;
   },
 
 
   // private
   _onShowDetails: function _onShowDetails(evt) {
     var entry = evt.detail.model;
-    this.setDetails(this._getCategory(entry) + ' ' + evt.detail.index, entry.details);
+    this.setDetails(this._getCategory(entry), entry.details);
   },
   _onHideDetails: function _onHideDetails() {
-    this.setDetails('Instructions', txt);
+    this.setDetails("entry.detail.instruction", 'entry.detail.explanation');
   },
   _getCategory: function _getCategory(entry) {
-    return entry.group === 'adjust' ? 'Personalization' : 'Ingredient';
+    return entry.group === 'adjust' ? 'entry.personalization.detail' : 'entry.ingredient.detail';
   },
   isValid: function isValid() {
     var inputs = Polymer.dom(this.root).querySelectorAll('c1d3r-input');
@@ -162,7 +167,16 @@ Polymer({
   onBlur: function onBlur() {},
   onFocus: function onFocus() {
     Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(function (i) {
-      return i.reset();
+      return i.removeInvalid();
+    });
+  },
+  reset: function reset() {
+    var _this2 = this;
+
+    this.async(function () {
+      Polymer.dom(_this2.root).querySelectorAll('c1d3r-input').forEach(function (i) {
+        return i.reset();
+      });
     });
   }
 });</script>
