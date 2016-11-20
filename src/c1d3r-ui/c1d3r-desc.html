@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles-classes.html">
@@ -6,7 +6,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-desc">
+<dom-module id="c1d3r-desc">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -45,7 +45,9 @@
     </style>
 
     <div class="container shadow-elevation-2dp">
-      <iron-image src="[[imgUrl]]" sizing="contain"></iron-image>
+      <iron-image
+          src="[[imgUrl]]"
+          sizing="contain"></iron-image>
 
       <div class="desc">
         <div class="name"><c1d3r-localized key$="[[recipe.id]]"></c1d3r-localized></div>
@@ -65,30 +67,31 @@
 
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
+      is: 'c1d3r-desc',
 
-Polymer({
-  is: 'c1d3r-desc',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        recipe: {
+          type: Object,
+          notify: true
+        },
+        imgUrl: {
+          type: String,
+          computed: '_getImgUrl(recipe)'
+        }
+      },
 
-  properties: {
-    recipe: {
-      type: Object,
-      notify: true
-    },
-    imgUrl: {
-      type: String,
-      computed: '_getImgUrl(recipe)'
-    }
-  },
+      _getImgUrl(recipe) {
+        if (recipe == null)
+          return null;
+        return recipe.path + recipe.id + '/' + recipe.data.img;
+      },
 
-  _getImgUrl: function _getImgUrl(recipe) {
-    if (recipe == null) return null;
-    return recipe.path + recipe.id + '/' + recipe.data.img;
-  },
-  onBlur: function onBlur() {},
-  onFocus: function onFocus() {}
-});</script>
+      onBlur() {},
+      onFocus() {}
+    });
+  </script>
 </dom-module>
-</body></html>

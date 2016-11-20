@@ -1,44 +1,47 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
-</head><body><dom-module id="c1d3r-juice">
+<dom-module id="c1d3r-juice">
   <template>
     <style></style>
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
 
-Polymer({
+      is: 'c1d3r-juice',
 
-  is: 'c1d3r-juice',
+      hostAttributes: {
+        hidden: true
+      },
 
-  hostAttributes: {
-    hidden: true
-  },
+      properties: {
 
-  properties: {
+        data: {
+          type: Object,
+          notify: true,
+          value: function() { return {}; }
+        },
+        isLogging: {
+          type: Boolean,
+          value: false
+        },
+        recipe: Object
+      },
 
-    data: {
-      type: Object,
-      notify: true,
-      value: function value() {
-        return {};
+      observers: [
+          '_newRecipe(recipe)',
+          '_attributeChanged(data.*)'
+      ],
+
+      _newRecipe(recipe) {
+        if (recipe == null)
+          return;
+      },
+
+      _attributeChanged(values) {
+        if (this.isLogging)
+          console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));
       }
-    },
-    isLogging: {
-      type: Boolean,
-      value: false
-    },
-    recipe: Object
-  },
-
-  observers: ['_newRecipe(recipe)', '_attributeChanged(data.*)'],
-
-  _newRecipe: function _newRecipe(recipe) {
-    if (recipe == null) return;
-  },
-  _attributeChanged: function _attributeChanged(values) {
-    if (this.isLogging) console.info('[juice]<' + values.path + '> => ' + JSON.stringify(values.value));
-  }
-});</script>
+    });
+  </script>
 </dom-module>
-</body></html>

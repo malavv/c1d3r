@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -12,7 +12,7 @@
 <link rel="import" href="../c1d3r-data/c1d3r-dataentry.html">
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-input">
+<dom-module id="c1d3r-input">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -39,8 +39,16 @@
         <paper-checkbox checked="{{entryItem.value}}"></paper-checkbox>
       </template>
       <template is="dom-if" if="[[entryItem.isNumber]]">
-        <c1d3r-validator item="{{entryItem}}" error-message="{{entryItem.errorMessage}}" validator-name="[[entryItem.id]]"></c1d3r-validator>
-        <paper-input auto-validate="" required="" invalid="{{invalid}}" placeholder="[[entryItem.placeholder]]" value="{{entryItem.value}}" validator$="[[entryItem.id]]" error-message="{{entryItem.errorMessage}}"></paper-input>
+        <c1d3r-validator
+            item="{{entryItem}}"
+            error-message="{{entryItem.errorMessage}}"
+            validator-name="[[entryItem.id]]"></c1d3r-validator>
+        <paper-input auto-validate required
+            invalid="{{invalid}}"
+            placeholder="[[entryItem.placeholder]]"
+            value="{{entryItem.value}}"
+            validator$="[[entryItem.id]]"
+            error-message="{{entryItem.errorMessage}}"></paper-input>
       </template>
     </div>
     <div>
@@ -48,50 +56,52 @@
     </div>
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
+      is: 'c1d3r-input',
 
-Polymer({
-  is: 'c1d3r-input',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        number: Number,
+        entryItem: {
+          type: Object,
+          notify: true
+        },
+        invalid: {
+          type: Boolean,
+          notify: true
+        }
+      },
 
-  properties: {
-    number: Number,
-    entryItem: {
-      type: Object,
-      notify: true
-    },
-    invalid: {
-      type: Boolean,
-      notify: true
-    }
-  },
+      validate() {
+        (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
+      },
 
-  validate: function validate() {
-    (this.$$('paper-checkbox') || this.$$('paper-input')).validate();
-  },
-  removeInvalid: function removeInvalid() {
-    var pi = this.$$('paper-input');
-    if (pi != null) pi.invalid = false;
-  },
-  reset: function reset() {
-    var pi = this.$$('paper-input');
-    if (pi != null) {
-      pi.value = "";
-      pi.invalid = false;
-    }
+      removeInvalid() {
+        let pi = this.$$('paper-input');
+        if (pi != null)
+          pi.invalid = false;
+      },
+      reset() {
+        let pi = this.$$('paper-input');
+        if (pi != null) {
+          pi.value = "";
+          pi.invalid = false;
+        }
 
-    var pc = this.$$('paper-checkbox');
-    if (pc != null) pc.active = false;
-  },
-  _onFocus: function _onFocus(evt) {
-    evt.stopPropagation();
-    this.fire('show-details', { index: this.number, model: this.entryItem });
-  },
-  _onBlur: function _onBlur(evt) {
-    evt.stopPropagation();
-    this.fire('hide-details');
-  }
-});</script>
+        let pc = this.$$('paper-checkbox');
+        if (pc != null)
+          pc.active = false;
+      },
+      _onFocus(evt) {
+        evt.stopPropagation();
+        this.fire('show-details', { index: this.number, model: this.entryItem });
+      },
+      _onBlur(evt) {
+        evt.stopPropagation();
+        this.fire('hide-details');
+      }
+    });
+  </script>
 </dom-module>
-</body></html>

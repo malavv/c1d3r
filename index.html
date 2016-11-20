@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head>
+<!doctype html>
+<html lang="en">
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
@@ -10,23 +12,23 @@
   <link rel="manifest" href="manifest.json">
 
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-  <script>'use strict';
-
-// This configuration must take place between loading web components and loading the first component.
-window.cfg = {
-  /** Maximum waiting time before considering a request missing. */
-  ajaxLoadTimeoutInMs: 2000,
-  logging: {
-    dataEntryChanged: false,
-    stepDependencyChanged: false
-  }
-};
-window.Polymer = {
-  /** Components are created on first call. */
-  lazyRegister: true,
-  /** Real shadow dom if browser supports it. Experimental in most browser but will fallback if missing. */
-  dom: 'shadow'
-};</script>
+  <script>
+    // This configuration must take place between loading web components and loading the first component.
+    window.cfg = {
+      /** Maximum waiting time before considering a request missing. */
+      ajaxLoadTimeoutInMs : 2000,
+      logging: {
+        dataEntryChanged: false,
+        stepDependencyChanged: false
+      }
+    };
+    window.Polymer = {
+      /** Components are created on first call. */
+      lazyRegister: true,
+      /** Real shadow dom if browser supports it. Experimental in most browser but will fallback if missing. */
+      dom: 'shadow'
+    };
+  </script>
 
   <link rel="import" href="src/c1d3r-app/c1d3r-app.html">
   <link rel="import" href="src/c1d3r-data/c1d3r-recipe.html">
@@ -42,11 +44,10 @@ window.Polymer = {
 </head>
 <body>
   <c1d3r-app>
-    <c1d3r-recipe path="data/recipes/" id="dhc" locale="[&quot;en&quot;, &quot;fr&quot;]"></c1d3r-recipe>
-    <c1d3r-recipe path="data/recipes/" id="wine" locale="[&quot;en&quot;, &quot;fr&quot;]" disabled=""></c1d3r-recipe>
-    <c1d3r-recipe path="data/recipes/" id="com" locale="[&quot;en&quot;, &quot;fr&quot;]" disabled=""></c1d3r-recipe>
-    <c1d3r-recipe path="data/recipes/" id="tbd" locale="[&quot;en&quot;, &quot;fr&quot;]" disabled=""></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="dhc"  locale='["en", "fr"]'></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="wine" locale='["en", "fr"]' disabled></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="com"  locale='["en", "fr"]' disabled></c1d3r-recipe>
+    <c1d3r-recipe path="data/recipes/" id="tbd"  locale='["en", "fr"]' disabled></c1d3r-recipe>
   </c1d3r-app>
-
-
-</body></html>
+</body>
+</html>

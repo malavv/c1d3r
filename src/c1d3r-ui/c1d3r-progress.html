@@ -1,8 +1,8 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <script src="../../bower_components/d3/d3.min.js"></script>
 
-</head><body><dom-module id="c1d3r-progress">
+<dom-module id="c1d3r-progress">
   <template>
     <style>
     </style>
@@ -13,82 +13,93 @@
 
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
+      is: 'c1d3r-progress',
 
-Polymer({
-  is: 'c1d3r-progress',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        svg: Object,
+        padding: {
+          type: Number,
+          value: 20
+        },
+        numSteps: {
+          type: Number,
+          value: 4
+        },
+        step: {
+          type: Number,
+          notify: true,
+          observer: '_stepChanged',
+          value: 0
+        }
+      },
 
-  properties: {
-    svg: Object,
-    padding: {
-      type: Number,
-      value: 20
-    },
-    numSteps: {
-      type: Number,
-      value: 4
-    },
-    step: {
-      type: Number,
-      notify: true,
-      observer: '_stepChanged',
-      value: 0
-    }
-  },
+      ready() {
+        let step = d3.select(this.$.progress).selectAll('circle.step').data(d3.range(0, this.numSteps));
+        let path = d3.select(this.$.progress).selectAll('path').data(d3.range(0, this.numSteps));
 
-  ready: function ready() {
-    var _this = this;
+        this._moveCircle(step);
+        this._movePath(path);
 
-    var step = d3.select(this.$.progress).selectAll('circle.step').data(d3.range(0, this.numSteps));
-    var path = d3.select(this.$.progress).selectAll('path').data(d3.range(0, this.numSteps));
+        this._moveCircle(step.enter().append('circle'));
+        this._movePath(path.enter().append('path'));
 
-    this._moveCircle(step);
-    this._movePath(path);
+        d3.select(this.$.progress)
+            .append('circle')
+            .attr('class', 'chosen')
+            .attr('r', 7)
+            .attr('cx', d => this.padding + this.step * this._dx())
+            .attr('cy', 20)
+            .attr('fill', 'orange');
 
-    this._moveCircle(step.enter().append('circle'));
-    this._movePath(path.enter().append('path'));
 
-    d3.select(this.$.progress).append('circle').attr('class', 'chosen').attr('r', 7).attr('cx', function (d) {
-      return _this.padding + _this.step * _this._dx();
-    }).attr('cy', 20).attr('fill', 'orange');
+        step.exit().remove();
+      },
 
-    step.exit().remove();
-  },
-  _moveCircle: function _moveCircle(circleElements) {
-    var _this2 = this;
+      _moveCircle(circleElements) {
+        circleElements
+            .attr('class', 'step')
+            .attr('r', 10)
+            .attr('cx', d => this.padding + d * this._dx())
+            .attr('cy', 20)
+            .attr('fill-opacity', 0)
+            .attr('stroke-width', 6)
+            .attr('stroke', 'black');
+      },
 
-    circleElements.attr('class', 'step').attr('r', 10).attr('cx', function (d) {
-      return _this2.padding + d * _this2._dx();
-    }).attr('cy', 20).attr('fill-opacity', 0).attr('stroke-width', 6).attr('stroke', 'black');
-  },
-  _movePath: function _movePath(pathElements) {
-    var _this3 = this;
+      _movePath(pathElements) {
+        pathElements
+            .attr('transform', d => this._translate(this.padding + d * this._dx(), 20))
+            .attr('d', this._horizontalLine(this._dx() - 20, 10, 0))
+            .attr('stroke-width', 6)
+            .attr('stroke', 'black')
+            .style('visibility', d =>  d == (this.numSteps - 1) ? 'hidden' : 'visible');
+      },
 
-    pathElements.attr('transform', function (d) {
-      return _this3._translate(_this3.padding + d * _this3._dx(), 20);
-    }).attr('d', this._horizontalLine(this._dx() - 20, 10, 0)).attr('stroke-width', 6).attr('stroke', 'black').style('visibility', function (d) {
-      return d == _this3.numSteps - 1 ? 'hidden' : 'visible';
+      _dx() {
+        return (600 - (2 * this.padding)) / (this.numSteps - 1);
+      },
+
+      _translate(x, y) {
+        return 'translate(' + x + ', ' + y + ')';
+      },
+
+      _horizontalLine(length, xOff, yOff) {
+        return 'm ' + xOff + ',' + yOff + ' ' + length + ',0';
+      },
+
+      _stepChanged(newv) {
+        console.assert(newv >=0 && newv <= this.numSteps, 'Invalid step number.');
+
+        d3.select(this.$.progress).select('circle.chosen')
+            .attr('r', 7)
+            .attr('cx', d => this.padding + this.step * this._dx())
+            .attr('cy', 20)
+            .attr('fill', 'orange');
+      }
     });
-  },
-  _dx: function _dx() {
-    return (600 - 2 * this.padding) / (this.numSteps - 1);
-  },
-  _translate: function _translate(x, y) {
-    return 'translate(' + x + ', ' + y + ')';
-  },
-  _horizontalLine: function _horizontalLine(length, xOff, yOff) {
-    return 'm ' + xOff + ',' + yOff + ' ' + length + ',0';
-  },
-  _stepChanged: function _stepChanged(newv) {
-    var _this4 = this;
-
-    console.assert(newv >= 0 && newv <= this.numSteps, 'Invalid step number.');
-
-    d3.select(this.$.progress).select('circle.chosen').attr('r', 7).attr('cx', function (d) {
-      return _this4.padding + _this4.step * _this4._dx();
-    }).attr('cy', 20).attr('fill', 'orange');
-  }
-});</script>
-</dom-module></body></html>
+  </script>
+</dom-module>

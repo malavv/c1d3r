@@ -1,11 +1,11 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 <link rel="import" href="../c1d3r-data/i18n-behavior.html">
 
-</head><body><dom-module id="c1d3r-g">
+<dom-module id="c1d3r-g">
   <template>
     <style>
       div.content {
@@ -56,234 +56,153 @@
     </div>
   </template>
 
-  <script>'use strict';
+  <script>
 
-function _fromString(val) {
-  if (val == null) return val;
-  if (typeof val === 'number') return val;
-  console.assert(typeof val === 'string', 'Invalid value type. Should be a String.');
-  if (val.trim().length === 0) return null;
-  return Number(val);
-}
-
-Polymer({
-  is: 'c1d3r-g',
-
-  properties: {
-    recipe: {
-      type: Object,
-      observer: 'recipeChanged'
-    },
-    data: {
-      type: Object,
-      notify: true
-    },
-    isLogging: {
-      type: Boolean,
-      value: function value() {
-        return window.cfg.logging.stepDependencyChanged;
-      }
+    function _fromString(val) {
+      if (val == null)
+        return val;
+      if (typeof val === 'number')
+        return val;
+      console.assert(typeof val === 'string', 'Invalid value type. Should be a String.');
+      if (val.trim().length === 0)
+        return null;
+      return Number(val);
     }
-  },
 
-  observers: ['_dataAttrChanged(data.*)'],
+    Polymer({
+      is: 'c1d3r-g',
 
-  behaviors: [I18nBehavior],
+      properties: {
+        recipe: {
+          type: Object,
+          observer: 'recipeChanged'
+        },
+        data: {
+          type: Object,
+          notify: true
+        },
+        isLogging: {
+          type: Boolean,
+          value: function() { return window.cfg.logging.stepDependencyChanged; }
+        }
+      },
 
-  /**
-   * Logging data attribute changes.
-   */
-  _dataAttrChanged: function _dataAttrChanged(evt) {
-    if (this.isLogging) console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
+      observers: [
+        '_dataAttrChanged(data.*)'
+      ],
 
-    // Steps to update concatenates steps from all groups with id = path of updated data element.
-    if (this.recipe == null) return;
+      behaviors: [ I18nBehavior ],
 
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+      /**
+       * Logging data attribute changes.
+       */
+      _dataAttrChanged(evt) {
+        if (this.isLogging)
+          console.info('[dryHardCider]<' + evt.path + '> => ' + JSON.stringify(evt.value));
 
-    try {
-      for (var _iterator = this.recipe.data.steps[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var group = _step.value;
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        // Steps to update concatenates steps from all groups with id = path of updated data element.
+        if (this.recipe == null)
+          return;
 
-        try {
-          for (var _iterator2 = group.filter(function (s) {
-            return s.quantities.some(function (q) {
-              return q.id == evt.path;
-            });
-          })[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var step = _step2.value;
-
+        for (let group of this.recipe.data.steps) {
+          for (let step of group.filter(s => s.quantities.some(q => q.id == evt.path))) {
             this._updateStep(this.$$('#step-' + step.id), step);
           }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
+        }
+      },
+
+      _updateStep(el, step) {
+        let content = this.translate(step.tmpl);
+        let elements = step.quantities.map(qty => Number(this.get(qty.id)).toPrecision(3) + ' ' + qty.sym);
+
+        for (let i = 0; i < elements.length; i++) {
+          content = content.replace('{' + i + '}', '<span style="font-weight: bold;padding: 0 5px;">' + elements[i] + '</span>');
+        }
+
+        el.innerHTML = content;
+      },
+
+      _makeStep(id, content) {
+        let div = document.createElement('div');
+        div.classList.add('step');
+        if (id != 'ignored')
+          div.id = id;
+        div.appendChild(document.createTextNode(content));
+        return div;
+      },
+
+      _setInSteps() {
+        let stepGroups = [
+          this.$.stepGroup0,
+          this.$.stepGroup1,
+          this.$.stepGroup2,
+          this.$.stepGroup3,
+          this.$.stepGroup4,
+          this.$.stepGroup5
+        ];
+        // remove all
+        for (let i = 0; i < this.recipe.data.steps.length; i++) {
+          for (let el of stepGroups[i].querySelectorAll('.step')) {
+            el.parentElement.removeChild(el);
           }
         }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
+        for (let i = 0; i < this.recipe.data.steps.length; i++) {
+          let group = stepGroups[i];
+          let steps = this.recipe.data.steps[i];
+          if (group == null || steps == null)
+            continue;
+          for (let step of steps) {
+            group.appendChild(this._makeStep('step-' + step.id, this.translate(step.tmpl)));
+          }
         }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-  },
-  _updateStep: function _updateStep(el, step) {
-    var _this = this;
+      },
 
-    var content = this.translate(step.tmpl);
-    var elements = step.quantities.map(function (qty) {
-      return Number(_this.get(qty.id)).toPrecision(3) + ' ' + qty.sym;
+      recipeChanged(recipe) {
+        if (recipe == null)
+          return;
+
+        this._setInSteps();
+
+        fetch(recipe.path + recipe.id + '/' + recipe.data.func)
+          .then(response => response.text())
+          .then(script => eval(script))
+          .then(fun => {
+
+            Object.keys(recipe.data.observers)
+                .map((key, idx) => {
+                  let parameters = recipe.data.observers[key];
+                  let funcName = '_func' + idx;
+                  let funcSignature = funcName + '(' + parameters.join(', ') + ')';
+
+                  this[funcName] = function() {
+                    // Convert raw to numbers
+                    let args = [...arguments].map(arg => _fromString(arg));
+
+                    // will call "function _{id}(arguments...){}" and use the result of as the attribute's new value.
+                    let callback = fun[key.replace('data.', '_')];
+                    let attrNewValue = callback.apply(null, args);
+                    this.set(key, attrNewValue);
+                  };
+
+                  this._addComplexObserverEffect(funcSignature);
+                });
+
+            recipe.data.data
+                .filter(d => d.group === 'preset')
+                .forEach(d => this.set('data.' + d.id, d.value));
+          })
+      },
+
+      listSteps() {
+        return Array.from(Polymer.dom(this.root).querySelectorAll('.content-block'))
+            .map(block => Array.from(block.children))
+            .map(steps => {
+              return {
+                text: steps[0].innerText,
+                steps: steps.slice(1).filter(s => !s.hidden).map(s => s.innerText)
+              };
+            });
+      }
     });
-
-    for (var i = 0; i < elements.length; i++) {
-      content = content.replace('{' + i + '}', '<span style="font-weight: bold;padding: 0 5px;">' + elements[i] + '</span>');
-    }
-
-    el.innerHTML = content;
-  },
-  _makeStep: function _makeStep(id, content) {
-    var div = document.createElement('div');
-    div.classList.add('step');
-    if (id != 'ignored') div.id = id;
-    div.appendChild(document.createTextNode(content));
-    return div;
-  },
-  _setInSteps: function _setInSteps() {
-    var stepGroups = [this.$.stepGroup0, this.$.stepGroup1, this.$.stepGroup2, this.$.stepGroup3, this.$.stepGroup4, this.$.stepGroup5];
-    // remove all
-    for (var i = 0; i < this.recipe.data.steps.length; i++) {
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = stepGroups[i].querySelectorAll('.step')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var el = _step3.value;
-
-          el.parentElement.removeChild(el);
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
-    }
-    for (var _i = 0; _i < this.recipe.data.steps.length; _i++) {
-      var group = stepGroups[_i];
-      var steps = this.recipe.data.steps[_i];
-      if (group == null || steps == null) continue;
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
-
-      try {
-        for (var _iterator4 = steps[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var step = _step4.value;
-
-          group.appendChild(this._makeStep('step-' + step.id, this.translate(step.tmpl)));
-        }
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
-      }
-    }
-  },
-  recipeChanged: function recipeChanged(recipe) {
-    var _this2 = this;
-
-    if (recipe == null) return;
-
-    this._setInSteps();
-
-    fetch(recipe.path + recipe.id + '/' + recipe.data.func).then(function (response) {
-      return response.text();
-    }).then(function (script) {
-      return eval(script);
-    }).then(function (fun) {
-
-      Object.keys(recipe.data.observers).map(function (key, idx) {
-        var parameters = recipe.data.observers[key];
-        var funcName = '_func' + idx;
-        var funcSignature = funcName + '(' + parameters.join(', ') + ')';
-
-        _this2[funcName] = function () {
-          // Convert raw to numbers
-          var args = [].concat(Array.prototype.slice.call(arguments)).map(function (arg) {
-            return _fromString(arg);
-          });
-
-          // will call "function _{id}(arguments...){}" and use the result of as the attribute's new value.
-          var callback = fun[key.replace('data.', '_')];
-          var attrNewValue = callback.apply(null, args);
-          this.set(key, attrNewValue);
-        };
-
-        _this2._addComplexObserverEffect(funcSignature);
-      });
-
-      recipe.data.data.filter(function (d) {
-        return d.group === 'preset';
-      }).forEach(function (d) {
-        return _this2.set('data.' + d.id, d.value);
-      });
-    });
-  },
-  listSteps: function listSteps() {
-    return Array.from(Polymer.dom(this.root).querySelectorAll('.content-block')).map(function (block) {
-      return Array.from(block.children);
-    }).map(function (steps) {
-      return {
-        text: steps[0].innerText,
-        steps: steps.slice(1).filter(function (s) {
-          return !s.hidden;
-        }).map(function (s) {
-          return s.innerText;
-        })
-      };
-    });
-  }
-});</script>
+  </script>
 </dom-module>
-</body></html>

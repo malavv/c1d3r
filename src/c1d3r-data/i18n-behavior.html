@@ -1,106 +1,67 @@
-<html><head><script>'use strict';
+<script>
+  /**
+   * Behaviour inherited by all the components managing i18n functionality.
+   * @type {{translate, registerKey, loadDictionary, _addHandler, _addTranslation}}
+   */
+  window.I18nBehavior = (function() {
+    'use strict';
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-/**
- * Behaviour inherited by all the components managing i18n functionality.
- * @type {{translate, registerKey, loadDictionary, _addHandler, _addTranslation}}
- */
-I18nBehavior = function () {
-  'use strict';
-
-  var currentLocale = 'en',
+    let
+      currentLocale = 'en',
       handlers = new Map(),
       translations = new Map([[currentLocale, new Map()]]);
 
-  return {
-    localeChanged: function localeChanged(newLocale, oldLocale) {
-      console.info("Locale changed from " + oldLocale + " to " + newLocale);
+    return {
+      localeChanged(newLocale, oldLocale) {
+        console.info("Locale changed from " + oldLocale + " to " + newLocale);
 
-      if (!translations.has(newLocale)) {
-        console.log('No translation dictionary known for locale ' + newLocale);
-        return;
-      }
-      currentLocale = newLocale;
-
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        var _loop = function _loop() {
-          var _step$value = _slicedToArray(_step.value, 2);
-
-          var key = _step$value[0];
-          var handlerList = _step$value[1];
-
-          handlerList.forEach(function (h) {
-            return h(translations.get(newLocale).get(key));
-          });
-        };
-
-        for (var _iterator = handlers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          _loop();
+        if (!translations.has(newLocale)) {
+          console.log('No translation dictionary known for locale ' + newLocale);
+          return;
         }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
+        currentLocale = newLocale;
+
+        for (let [key, handlerList] of handlers)
+          handlerList.forEach(h => h(translations.get(newLocale).get(key)));
+      },
+      translate(key) {
+        return translations.get(currentLocale).get(key);
+      },
+      registerKey(key, handler) {
+        this._addHandler(key, handler);
+      },
+      loadDictionary(dict) {
+        Object.keys(dict).filter(k => k !== 'locale')
+            .forEach(key => this._addTranslation(dict['locale'], key, dict[key]));
+      },
+      /**
+       * Adds a callback for translation.
+       * @param {string} key Alpha Numeric Identifier Key
+       * @param {function(string)} handle Function do place the translation at the right place.
+       * @private
+       */
+      _addHandler(key, handle) {
+        console.assert(key != null, 'Must be a valid key, not ' + key);
+
+        handlers.set(key, (handlers.get(key) || []).concat(handle));
+
+        // Translate if already available.
+        if (translations.has(currentLocale) && translations.get(currentLocale).has(key)) {
+          handle(translations.get(currentLocale).get(key));
+        }
+      },
+      _addTranslation(locale, key, translation) {
+        if (!translations.has(locale))
+          translations.set(locale, new Map());
+
+        // Will overwrite, sorry
+        translations.get(locale).set(key, translation);
+
+        // Update all handlers.
+        if (locale === currentLocale && handlers.has(key)) {
+          handlers.get(key).forEach(h => h(translation));
         }
       }
-    },
-    translate: function translate(key) {
-      return translations.get(currentLocale).get(key);
-    },
-    registerKey: function registerKey(key, handler) {
-      this._addHandler(key, handler);
-    },
-    loadDictionary: function loadDictionary(dict) {
-      var _this = this;
-
-      Object.keys(dict).filter(function (k) {
-        return k !== 'locale';
-      }).forEach(function (key) {
-        return _this._addTranslation(dict['locale'], key, dict[key]);
-      });
-    },
-
-    /**
-     * Adds a callback for translation.
-     * @param {string} key Alpha Numeric Identifier Key
-     * @param {function(string)} handle Function do place the translation at the right place.
-     * @private
-     */
-    _addHandler: function _addHandler(key, handle) {
-      console.assert(key != null, 'Must be a valid key, not ' + key);
-
-      handlers.set(key, (handlers.get(key) || []).concat(handle));
-
-      // Translate if already available.
-      if (translations.has(currentLocale) && translations.get(currentLocale).has(key)) {
-        handle(translations.get(currentLocale).get(key));
-      }
-    },
-    _addTranslation: function _addTranslation(locale, key, translation) {
-      if (!translations.has(locale)) translations.set(locale, new Map());
-
-      // Will overwrite, sorry
-      translations.get(locale).set(key, translation);
-
-      // Update all handlers.
-      if (locale === currentLocale && handlers.has(key)) {
-        handlers.get(key).forEach(function (h) {
-          return h(translation);
-        });
-      }
-    }
-  };
-}();</script></head><body></body></html>
+    };
+  }());
+</script>

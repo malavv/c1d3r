@@ -1,13 +1,13 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
-<script src="../../bower_components/downloadjs/download.js"></script>
+<script src='../../bower_components/downloadjs/download.js'></script>
 
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-final">
+<dom-module id="c1d3r-final">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -24,36 +24,34 @@
     <paper-icon-button icon="icons:archive" on-tap="_onArchive">Raised button</paper-icon-button>
   </template>
 
-  <script>"use strict";
+  <script>
+    Polymer({
+      is: 'c1d3r-final',
 
-Polymer({
-  is: 'c1d3r-final',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        recipe: Object,
+        juice: Object,
+        guide: Array
+      },
 
-  properties: {
-    recipe: Object,
-    juice: Object,
-    guide: Array
-  },
+      onBlur() { return false; },
+      onFocus() {},
 
-  onBlur: function onBlur() {
-    return false;
-  },
-  onFocus: function onFocus() {},
-  _stringify: function _stringify(obj) {
-    return JSON.stringify(obj, undefined, 2);
-  },
-  _onArchive: function _onArchive() {
-    var now = new Date().toISOString().slice(0, 10);
+      _stringify(obj) {
+        return JSON.stringify(obj, undefined, 2);
+      },
+      _onArchive() {
+        let now = new Date().toISOString().slice(0, 10);
 
-    download(JSON.stringify({
-      version: this.cfg.version,
-      recipe: this.recipe.data,
-      data: this.juice,
-      guide: this.guide
-    }), this.recipe.id + "_" + now + ".json", "application/json");
-  }
-});</script>
+        download(JSON.stringify({
+          version: this.cfg.version,
+          recipe: this.recipe.data,
+          data: this.juice,
+          guide: this.guide
+        }), this.recipe.id + "_" + now + ".json", "application/json");
+      }
+    });
+  </script>
 </dom-module>
-</body></html>

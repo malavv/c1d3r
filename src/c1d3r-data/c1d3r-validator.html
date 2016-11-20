@@ -1,44 +1,50 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-validator-behavior/iron-validator-behavior.html">
 
-<script>'use strict';
+<script>
+  Polymer({
 
-Polymer({
+    is: 'c1d3r-validator',
 
-  is: 'c1d3r-validator',
+    behaviors: [
+      Polymer.IronValidatorBehavior
+    ],
 
-  behaviors: [Polymer.IronValidatorBehavior],
+    properties: {
+      item: Object,
+      errorMessage: {
+        type: String,
+        notify: true
+      }
+    },
 
-  properties: {
-    item: Object,
-    errorMessage: {
-      type: String,
-      notify: true
+    _validate(raw) {
+      if (raw == null)
+        return true;
+
+      let val = raw.trim();
+      if (val.length === 0)
+        return true;
+
+      let number = Number(val);
+      if (Number.isNaN(Number(val)))
+        throw new Error('Not a valid number');
+
+      if (this.item.min != null && number < this.item.min)
+        throw new Error('Under minimum value of ' + this.item.min);
+      if (this.item.max != null && number > this.item.max)
+        throw new Error('Over maximum value of ' + this.item.max);
+
+      return true;
+    },
+
+    validate: function(values) {
+      try {
+        return this._validate(values);
+      } catch(err) {
+        this.set('errorMessage', err.message);
+        return false;
+      }
     }
-  },
-
-  _validate: function _validate(raw) {
-    if (raw == null) return true;
-
-    var val = raw.trim();
-    if (val.length === 0) return true;
-
-    var number = Number(val);
-    if (Number.isNaN(Number(val))) throw new Error('Not a valid number');
-
-    if (this.item.min != null && number < this.item.min) throw new Error('Under minimum value of ' + this.item.min);
-    if (this.item.max != null && number > this.item.max) throw new Error('Over maximum value of ' + this.item.max);
-
-    return true;
-  },
-
-
-  validate: function validate(values) {
-    try {
-      return this._validate(values);
-    } catch (err) {
-      this.set('errorMessage', err.message);
-      return false;
-    }
-  }
-});</script></head><body></body></html>
+  });
+</script>

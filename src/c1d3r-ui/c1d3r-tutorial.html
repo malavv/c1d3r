@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -6,7 +6,7 @@
 <link rel="import" href="c1d3r-progress.html">
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-tutorial">
+<dom-module id="c1d3r-tutorial">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -85,46 +85,43 @@
 
   </template>
 
-  <script>'use strict';
+  <script>
+    const blinkPeriodInMs = 2500;
 
-var blinkPeriodInMs = 2500;
+    Polymer({
+      is: 'c1d3r-tutorial',
 
-Polymer({
-  is: 'c1d3r-tutorial',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        cancelHandle: Number,
+        skipTutorial: {
+          type: Boolean,
+          notify: true
+        }
+      },
 
-  properties: {
-    cancelHandle: Number,
-    skipTutorial: {
-      type: Boolean,
-      notify: true
-    }
-  },
 
-  onBlur: function onBlur() {
-    window.clearInterval(this.cancelHandle);
-  },
-  onFocus: function onFocus() {
-    if (this.skipTutorial) this.fire('next');
+      onBlur() { window.clearInterval(this.cancelHandle) },
 
-    this._startProgressAnimation();
-  },
-  _startProgressAnimation: function _startProgressAnimation() {
-    var progressEl = this.$$('c1d3r-progress');
+      onFocus() {
+        if (this.skipTutorial)
+          this.fire('next');
 
-    progressEl.step = 0;
+        this._startProgressAnimation();
+      },
 
-    this.cancelHandle = window.setInterval(function () {
-      return progressEl.set('step', (progressEl.step + 1) % 4);
-    }, blinkPeriodInMs);
-  },
-  _navBack: function _navBack() {
-    this.fire('home');
-  },
-  _navNext: function _navNext() {
-    this.fire('next');
-  }
-});</script>
+      _startProgressAnimation() {
+        let progressEl = this.$$('c1d3r-progress');
+
+        progressEl.step = 0;
+
+        this.cancelHandle = window.setInterval(() => progressEl.set('step', (progressEl.step + 1) % 4), blinkPeriodInMs);
+      },
+
+      _navBack() { this.fire('home'); },
+
+      _navNext() { this.fire('next'); }
+    });
+  </script>
 </dom-module>
-</body></html>

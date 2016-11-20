@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -13,7 +13,7 @@
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 <link rel="import" href="c1d3r-input.html">
 
-</head><body><dom-module id="c1d3r-entry">
+<dom-module id="c1d3r-entry">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -73,112 +73,112 @@
         <div class="head"><c1d3r-localized key="entry.ingredient.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[ingEntries]]">
           <div class="step">
-            <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
+            <c1d3r-input
+              class="flex"
+              number="[[index]]"
+              entry-item="{{item}}"
+              on-show-details="_onShowDetails"
+              on-hide-details="_onHideDetails"></c1d3r-input>
           </div>
         </template>
 
         <div class="head"><c1d3r-localized key="entry.personalization.title"></c1d3r-localized></div>
         <template is="dom-repeat" items="[[adjustEntries]]">
           <div class="step">
-            <c1d3r-input class="flex" number="[[index]]" entry-item="{{item}}" on-show-details="_onShowDetails" on-hide-details="_onHideDetails"></c1d3r-input>
+            <c1d3r-input
+                class="flex"
+                number="[[index]]"
+                entry-item="{{item}}"
+                on-show-details="_onShowDetails"
+                on-hide-details="_onHideDetails"></c1d3r-input>
           </div>
         </template>
       </div>
     </div>
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
+      is: 'c1d3r-entry',
 
-Polymer({
-  is: 'c1d3r-entry',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        recipe: {
+          type: Object,
+          notify: true,
+          observer: 'onRecipeChanged'
+        },
+        data: {
+          type: Object,
+          notify: true
+        },
+        ingEntries: {
+          type: Array
+        }
+      },
 
-  properties: {
-    recipe: {
-      type: Object,
-      notify: true,
-      observer: 'onRecipeChanged'
-    },
-    data: {
-      type: Object,
-      notify: true
-    },
-    ingEntries: {
-      type: Array
-    }
-  },
+      // Lifecycle
+      attached() {
+        this.setDetails('entry.detail.instruction', 'entry.detail.explanation');
+      },
 
-  // Lifecycle
-  attached: function attached() {
-    this.setDetails('entry.detail.instruction', 'entry.detail.explanation');
-  },
+      // Property Changed
+      onRecipeChanged(newRecipe) {
+        if (newRecipe == null)
+          return;
+        this.set(
+          'ingEntries',
+          newRecipe.data.data
+            .filter(data => data.group === 'ingredient')
+            .map(data => document.createElement('c1d3r-dataentry')
+                .initWithData(data)
+                .dataMap((key, val) => this.set('data.' + key, val))
+            )
+        );
+        this.set(
+            'adjustEntries',
+            newRecipe.data.data
+                .filter(data => data.group === 'adjust')
+                .map(data => document.createElement('c1d3r-dataentry')
+                    .initWithData(data)
+                    .dataMap((key, val) => this.set('data.' + key, val))
+                )
+        );
+      },
 
+      // public methods
+      setDetails(title, content) {
+        this.$.detailTitle.key = title;
+        this.$.detailContent.key = content;
+      },
 
-  // Property Changed
-  onRecipeChanged: function onRecipeChanged(newRecipe) {
-    var _this = this;
+      // private
+      _onShowDetails(evt) {
+        let entry = evt.detail.model;
+        this.setDetails(this._getCategory(entry), entry.details);
+      },
+      _onHideDetails() {
+        this.setDetails("entry.detail.instruction", 'entry.detail.explanation');
+      },
+      _getCategory(entry) {
+        return entry.group === 'adjust' ? 'entry.personalization.detail' : 'entry.ingredient.detail';
+      },
 
-    if (newRecipe == null) return;
-    this.set('ingEntries', newRecipe.data.data.filter(function (data) {
-      return data.group === 'ingredient';
-    }).map(function (data) {
-      return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
-        return _this.set('data.' + key, val);
-      });
-    }));
-    this.set('adjustEntries', newRecipe.data.data.filter(function (data) {
-      return data.group === 'adjust';
-    }).map(function (data) {
-      return document.createElement('c1d3r-dataentry').initWithData(data).dataMap(function (key, val) {
-        return _this.set('data.' + key, val);
-      });
-    }));
-  },
-
-
-  // public methods
-  setDetails: function setDetails(title, content) {
-    this.$.detailTitle.key = title;
-    this.$.detailContent.key = content;
-  },
-
-
-  // private
-  _onShowDetails: function _onShowDetails(evt) {
-    var entry = evt.detail.model;
-    this.setDetails(this._getCategory(entry), entry.details);
-  },
-  _onHideDetails: function _onHideDetails() {
-    this.setDetails("entry.detail.instruction", 'entry.detail.explanation');
-  },
-  _getCategory: function _getCategory(entry) {
-    return entry.group === 'adjust' ? 'entry.personalization.detail' : 'entry.ingredient.detail';
-  },
-  isValid: function isValid() {
-    var inputs = Polymer.dom(this.root).querySelectorAll('c1d3r-input');
-    inputs.forEach(function (i) {
-      return i.validate();
+      isValid() {
+        let inputs = Polymer.dom(this.root).querySelectorAll('c1d3r-input');
+        inputs.forEach(i => i.validate());
+        return !inputs.some(i => i.invalid === true);
+      },
+      onBlur() {},
+      onFocus() {
+        Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.removeInvalid());
+      },
+      reset() {
+        this.async(() => {
+          Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(i => i.reset());
+        });
+      }
     });
-    return !inputs.some(function (i) {
-      return i.invalid === true;
-    });
-  },
-  onBlur: function onBlur() {},
-  onFocus: function onFocus() {
-    Polymer.dom(this.root).querySelectorAll('c1d3r-input').forEach(function (i) {
-      return i.removeInvalid();
-    });
-  },
-  reset: function reset() {
-    var _this2 = this;
-
-    this.async(function () {
-      Polymer.dom(_this2.root).querySelectorAll('c1d3r-input').forEach(function (i) {
-        return i.reset();
-      });
-    });
-  }
-});</script>
+  </script>
 </dom-module>
-</body></html>

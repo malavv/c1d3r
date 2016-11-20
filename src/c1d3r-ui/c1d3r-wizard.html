@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -12,7 +12,7 @@
 <link rel="import" href="../c1d3r-data/c1d3r-juice.html">
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-wizard">
+<dom-module id="c1d3r-wizard">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
 
@@ -55,72 +55,84 @@
     <c1d3r-juice recipe="[[recipe]]" data="{{data}}"></c1d3r-juice>
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
+      is: 'c1d3r-wizard',
 
-Polymer({
-  is: 'c1d3r-wizard',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        selected: {
+          type: Number,
+          value: 0,
+          observer: '_pageChanged'
+        },
+        recipe: {
+          type: Object,
+          notify: true
+        },
+        juice: {
+          type: Object,
+          notify: true
+        }
+      },
 
-  properties: {
-    selected: {
-      type: Number,
-      value: 0,
-      observer: '_pageChanged'
-    },
-    recipe: {
-      type: Object,
-      notify: true
-    },
-    juice: {
-      type: Object,
-      notify: true
-    }
-  },
 
-  navHome: function navHome() {
-    this.fire('home');
-    this.$$('c1d3r-entry').reset();
-  },
-  navBack: function navBack() {
-    if (this.selected === 0) {
-      this.navHome();
-      return;
-    }
-    this.set('selected', this.selected - 1);
-  },
-  navNext: function navNext() {
-    if (!this._isPageValid()) return;
 
-    if (this.selected === 3) {
-      this.set('selected', 0);
-      this.navHome();
-      return;
-    }
+      navHome() {
+        this.fire('home');
+        this.$$('c1d3r-entry').reset();
+      },
 
-    this.set('selected', this.selected + 1);
-  },
-  reset: function reset() {
-    this.set('selected', 0);
-    this.set('juice', {});
-  },
-  onBlur: function onBlur() {},
-  onFocus: function onFocus() {
-    this.selected = 0;
-  },
-  _isPageValid: function _isPageValid() {
-    var pages = this.$$('iron-pages').children;
-    // if no selected space, or no validation, defaults to valid
-    return this.selected == null || pages[this.selected] == null || pages[this.selected].isValid == null || pages[this.selected].isValid();
-  },
-  _nextOrFinishStep: function _nextOrFinishStep(selected) {
-    return selected === 3 ? 'wizard.finish' : 'wizard.next';
-  },
-  _pageChanged: function _pageChanged(newPage, oldPage) {
-    var pages = this.$$('iron-pages').children;
-    if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null) pages[oldPage].onBlur();
-    if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null) pages[newPage].onFocus();
-  }
-});</script>
+      navBack() {
+        if (this.selected === 0) {
+          this.navHome();
+          return;
+        }
+        this.set('selected', this.selected - 1);
+      },
+
+      navNext() {
+        if (!this._isPageValid())
+          return;
+
+        if (this.selected === 3) {
+          this.set('selected', 0);
+          this.navHome();
+          return;
+        }
+
+        this.set('selected', this.selected + 1);
+      },
+
+      reset() {
+        this.set('selected', 0);
+        this.set('juice', {});
+      },
+
+      onBlur() {},
+      onFocus() { this.selected = 0; },
+
+      _isPageValid() {
+        let pages = this.$$('iron-pages').children;
+        // if no selected space, or no validation, defaults to valid
+        return this.selected == null ||
+          pages[this.selected] == null ||
+          pages[this.selected].isValid == null ||
+          pages[this.selected].isValid();
+      },
+
+      _nextOrFinishStep(selected) {
+        return selected === 3 ? 'wizard.finish' : 'wizard.next';
+      },
+
+      _pageChanged(newPage, oldPage) {
+        let pages = this.$$('iron-pages').children;
+        if (oldPage != null && pages[oldPage] != null && pages[oldPage].onBlur != null)
+          pages[oldPage].onBlur();
+        if (newPage != null && pages[newPage] != null && pages[newPage].onFocus != null)
+          pages[newPage].onFocus();
+      }
+    });
+  </script>
 </dom-module>
-</body></html>

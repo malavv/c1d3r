@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
@@ -8,7 +8,7 @@
 <link rel="import" href="c1d3r-g.html">
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-steps">
+<dom-module id="c1d3r-steps">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
     <style>
@@ -29,30 +29,29 @@
     <c1d3r-g class="flex" recipe="{{recipe}}" data="{{data}}"></c1d3r-g>
   </template>
 
-  <script>'use strict';
+  <script>
+    Polymer({
+      is: 'c1d3r-steps',
 
-Polymer({
-  is: 'c1d3r-steps',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        recipe: { type: Object },
+        data: {
+          type: Object,
+          notify: true
+        },
+        guide: {
+          type: Array,
+          notify: true
+        }
+      },
 
-  properties: {
-    recipe: { type: Object },
-    data: {
-      type: Object,
-      notify: true
-    },
-    guide: {
-      type: Array,
-      notify: true
-    }
-  },
-
-  onBlur: function onBlur() {
-    this.set('guide', this.$$('c1d3r-g').listSteps());
-    return false;
-  },
-  onFocus: function onFocus() {}
-});</script>
+      onBlur() {
+        this.set('guide', this.$$('c1d3r-g').listSteps());
+        return false;
+      },
+      onFocus() {}
+    });
+  </script>
 </dom-module>
-</body></html>

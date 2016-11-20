@@ -1,4 +1,4 @@
-<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
@@ -6,7 +6,7 @@
 
 <link rel="import" href="../c1d3r-data/c1d3r-localized.html">
 
-</head><body><dom-module id="c1d3r-splash">
+<dom-module id="c1d3r-splash">
   <template>
     <style include="iron-flex iron-flex-factors"></style>
 
@@ -72,7 +72,11 @@
       </div>
 
       <!--Recipe Selector-->
-      <iron-selector attr-for-selected="recipe" selected-item="{{chosen}}" selectable="div.recipe.enabled" class="layout horizontal wrap">
+      <iron-selector
+          attr-for-selected="recipe"
+          selected-item="{{chosen}}"
+          selectable="div.recipe.enabled"
+          class="layout horizontal wrap">
         <template is="dom-repeat" items="[[recipes]]">
           <div class$="[[_recipeClass(item)]]" recipe$="[[item.id]]">
             <c1d3r-localized key$="[[item.id]]"></c1d3r-localized>
@@ -86,37 +90,39 @@
     <div class="flex-1"></div>
 
   </template>
-  <script>'use strict';
+  <script>
+    Polymer({
 
-Polymer({
+      is: 'c1d3r-splash',
 
-  is: 'c1d3r-splash',
+      hostAttributes: {},
 
-  hostAttributes: {},
+      properties: {
+        recipes: Array,
+        chosen: {
+          type: Object,
+          observer: 'chosenChanged'
+        }
+      },
 
-  properties: {
-    recipes: Array,
-    chosen: {
-      type: Object,
-      observer: 'chosenChanged'
-    }
-  },
+      onBlur() { /* ignored */ },
+      onFocus() { /* ignored */ },
 
-  onBlur: function onBlur() {/* ignored */},
-  onFocus: function onFocus() {/* ignored */},
-  reset: function reset() {
-    this.$$('iron-selector').select(null);
-  },
-  chosenChanged: function chosenChanged(chosen) {
-    if (chosen == null) return;
-    var recipe = this.recipes.filter(function (r) {
-      return r.id == chosen.getAttribute('recipe');
+      reset() {
+        this.$$('iron-selector').select(null);
+      },
+
+      chosenChanged(chosen) {
+        if (chosen == null)
+          return;
+        let recipe = this.recipes.filter(r => r.id == chosen.getAttribute('recipe'));
+        if (recipe[0] != null)
+          this.fire('recipe-selected', recipe[0])
+      },
+
+      _recipeClass(recipe) {
+        return "recipe " + (recipe.disabled ? "disabled" : "enabled");
+      }
     });
-    if (recipe[0] != null) this.fire('recipe-selected', recipe[0]);
-  },
-  _recipeClass: function _recipeClass(recipe) {
-    return "recipe " + (recipe.disabled ? "disabled" : "enabled");
-  }
-});</script>
+  </script>
 </dom-module>
-</body></html>
