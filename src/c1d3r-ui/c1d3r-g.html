@@ -140,6 +140,12 @@
           this.$.stepGroup4,
           this.$.stepGroup5
         ];
+        // remove all
+        for (let i = 0; i < this.recipe.data.steps.length; i++) {
+          for (let el of stepGroups[i].querySelectorAll('.step')) {
+            el.parentElement.removeChild(el);
+          }
+        }
         for (let i = 0; i < this.recipe.data.steps.length; i++) {
           let group = stepGroups[i];
           let steps = this.recipe.data.steps[i];

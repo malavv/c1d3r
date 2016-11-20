@@ -44,7 +44,7 @@
       "group": "adjust",
       "label": "dhc.data.degreeAlcohol.label",
       "details": "dhc.data.degreeAlcohol.details",
-      "placeholder": 4.5,
+      "placeholder": 5,
       "min": 3.0,
       "max": 8.0
     },

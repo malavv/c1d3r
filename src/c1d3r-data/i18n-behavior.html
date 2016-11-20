@@ -19,6 +19,7 @@
           console.log('No translation dictionary known for locale ' + newLocale);
           return;
         }
+        currentLocale = newLocale;
 
         for (let [key, handlerList] of handlers)
           handlerList.forEach(h => h(translations.get(newLocale).get(key)));
