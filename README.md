@@ -21,6 +21,7 @@ Contributions to this project are very welcome. This being an open source projec
 This is the lovely people to thank for this guide:
 ```
 Maxime Lavigne (malavv)
+Nicolas Gauthier
 # Generated using git log --format='%aN' | sort -u
 ```
 ## Building the application
