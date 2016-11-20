@@ -1,8 +1,8 @@
 {
   "locale": "fr",
 
-  "splash.detail.1":"C1D3R est un guide interactif du brassage de cidre *dur*. Son but est d'offrir des instructions simples et faciles à suivre, tant pour les débutants que les vétérans de la fabrication de cidre. Contrairement à un simple tutoriel, C1D3R tiens compte de paramètres souvent oubliés qui auront un impact sur la marche à suivre et les quantitées des ingrédients.",
-  "splash.detail.2": "Ce projet ce veut simple et direct.  Il offre une certaine flexibilité tout en suivant des recettes strictes. C1D3R ne se veut pas un outil de design de recette ni un simlateur de brassage. L'essence de l'application est un ensemble de recettes strucuré.",
+  "splash.detail.1":"C1D3R est un guide interactif pour le brassage de cidre. Son but est d'offrir des instructions simples et faciles à suivre, tant pour les débutants que les vétérans de sa fabrication. Contrairement à un simple tutoriel, C1D3R tiens compte de paramètres souvent oubliés qui auront un impact sur la marche à suivre et les quantitées des ingrédients.",
+  "splash.detail.2": "Ce projet se veut simple et direct. Il offre une certaine flexibilité tout en suivant des recettes strictes. C1D3R ne se veut pas un outil d'élaboration de recette ni un simlateur de brassage. L'essence de l'application est un ensemble de recettes strucuré.",
 
   "tutorial.title": "Comment ça fonctionne?",
   "tutorial.desc.1": "Nous vous guiderons à travers les étapes requises pour créer le cidre dur que vous voulez à partir du jus de pomme que vous avez. Il est important de comprendre que les caractéristiques du jus de pomme aurant un impact significatif sur le produit final. Plusieurs livres ne vous présententeront qu'une seule recette fixe, ne tenant pas compte des variations de ces caractéristiques d'un jus à l'autre. Nous vous offrons donc un produit qui vous aidera à atteindre des résultats constants en s'occupant des calculs à votre place. Votre progrès à travers les étapes sera représenté par un indicateur visuel de progrès.",
