@@ -19,18 +19,18 @@
   "dhc.data.degreeAlcohol.label": "Quel est le pourcentage d'alcool désiré? (+0.5% voir détails)",
   "dhc.data.degreeAlcohol.details": "Le %alc or pourcentage d'alcool par volume est une mesure du taux d'alcool dans le brevage. Un plus haut taux amène habituellement une meilleure conservation et un plus grand potentiel de vieillisement. Le sucre utilisé pour la carbonification en bouteille contribura ppour environ 0.5% en plus du taux entré.",
 
-  "dhc.data.origTanninLvl.label": "Niveau de tannins original (0-faible, to 10-élevé)",
-  "dhc.data.origTanninLvl.details": "Le niveau de tannins influencera le corps et la texture du produit fini.",
+  "dhc.data.origTanninLvl.label": "Niveau de tanins original (0-faible, to 10-élevé)",
+  "dhc.data.origTanninLvl.details": "Le niveau de tanins influencera le corps et la texture du produit fini.",
 
   "dhc.data.juicePh.label": "Quel est l'acidité du jus? (PH)",
   "dhc.data.juicePh.details": "Le PH influence l'équilibre, la conservation du produit, le niveau de sulfites, et autres.",
 
-  "dhc.data.desiredTanninLvl.label": "Niveau de tannins voulus (0-faible, to 10-élevé)",
-  "dhc.data.desiredTanninLvl.details": "Ceci fera le lien entre le niveau de tannins de votre jus et celui désiré dans le produit fini. Il doit être plus haut que le niveau de tannins original. (et sur la même échelle)",
+  "dhc.data.desiredTanninLvl.label": "Niveau de tanins voulus (0-faible, to 10-élevé)",
+  "dhc.data.desiredTanninLvl.details": "Ceci fera le lien entre le niveau de tanins de votre jus et celui désiré dans le produit fini. Il doit être plus haut que le niveau de tanins original. (et sur la même échelle)",
 
   "dhc.steps.ascorbic": "Ajouter {0} d'acide ascorbique.",
   "dhc.steps.potassiumMetaAddInG": "Ajouter {0} de métabisulfite de potassium.",
-  "dhc.steps.tanninAddInG": "Ajouter {0} de tannin à vin.",
+  "dhc.steps.tanninAddInG": "Ajouter {0} de  à vin.",
   "dhc.steps.pectinaseAddInG": "Ajouter {0} de pectinase.",
   "dhc.steps.metaRest": "Laisser le liquide reposer 3 heures. (Couvert, dans un contenant asceptisé)",
   "dhc.steps.tempRest": "Le jus est souvent acheté réfrigéré. La prochaine étape demandera une température d'au moins 20°C. Si ce n'est pas le cas, laisser tempérer couvert jusqu'à la bonne température.",

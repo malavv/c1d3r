@@ -186,7 +186,7 @@
     [
       {
         "id": "nutrientAddInG",
-        "tmpl": "dhc.steps.potassiumMetaAddInG",
+        "tmpl": "dhc.steps.nutrientAddInG",
         "quantities": [{"id": "data.nutrientAddInG", "sym": "g"}]
       },
       {
