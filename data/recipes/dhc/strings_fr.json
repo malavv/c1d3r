@@ -42,7 +42,7 @@
   "dhc.steps.addedVolumeOfSugarAddInL": "Attention. Dû à l'ajout de sucre, le volume final augmentera de {0} à {1}.",
   "dhc.steps.firstFerment": "Fermenter dans un fermenteur pourvu d'un \"air-lock\" durant 5 jours ou jusqu'à 1.010.",
   "dhc.steps.yeastTemp": "S'assurer que la température de la pièce où se trouve le fermenteur demeure entre 15 et 21 °C. Plus chaud et la levure pourrait dévelpopper des goûts non voulus. Plus froid et la fermentation pourrait s'interrompre.",
-  "dhc.steps.secondFerment": "Transférer et fermenter dans une tourie pour 2 semaines ou jusqu'à l'assèchement désiré.",
+  "dhc.steps.secondFerment": "Transférer et fermenter dans une tourie pour 4 semaines ou jusqu'à l'assèchement désiré.",
   "dhc.steps.bottling": "Transférer dans un bac de fermentation.",
   "dhc.steps.priming": "Bien dissoudre {0} de sucre de table.",
   "dhc.steps.bottles": "Embouteiller."
