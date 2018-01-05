@@ -191,7 +191,7 @@
      * @private
      */
     _primingSugarAddKg(volumeInL) {
-      return (volumeInL - 1.0) * 6.55 / 1000;
+      return volumeInL * 6.55 / 1000;
     },
     /**
      * Converts a ppg to a more manageable PtsKgL.
