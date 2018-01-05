@@ -44,6 +44,6 @@
   "dhc.steps.yeastTemp": "Make sure the room of the fermentor is at a temperature between 15 and 21 °C. Hotter than this and the yeast might contribute unwanted \"yeasty\" or \"bready\" taste. Lower and the fermentation might get stuck.",
   "dhc.steps.secondFerment": "Transfer and ferment in secondary fermentor for 4 weeks or until desired dryness.",
   "dhc.steps.bottling": "Transfer to bottling bucket.",
-  "dhc.steps.priming": "Mix-in {0} of priming sugar (table sugar) thoroughly.",
+  "dhc.steps.priming": "Mix-in {0} of priming sugar (table sugar) thoroughly (assuming 1.0L lost to bottling).",
   "dhc.steps.bottles": "Package in bottles."
 }
